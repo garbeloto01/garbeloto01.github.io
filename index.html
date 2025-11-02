@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Painel de Controle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Meu Painel Pessoal 🛠️</h1>
+    </header>
+
+    <main>
+        <section id="secao-noticias">
+            <h2>Últimas Notícias de TI</h2>
+            <div id="conteudo-noticias">
+            </div>
+        </section>
+
+        <section id="secao-redes">
+            <h2>Kit de Ferramentas de Rede</h2>
+            <div id="conteudo-redes">
+
+                <div class="ferramenta">
+                    <h3>Verificador de IP (Público vs. Privado)</h3>
+                    <p>Digite um IP para saber se ele é público ou privado (RFC 1918).</p>
+                    <input type="text" id="ip-input" placeholder="Ex: 192.168.1.1">
+                    <button id="verificar-ip-btn">Verificar</button>
+                    <p id="resultado-ip"></p>
+                </div>
+
+                <div class="ferramenta">
+                    <h3>Qual é o meu IP Público?</h3>
+                    <p>Clique para descobrir o seu endereço de IP público.</p>
+                    <button id="meu-ip-btn">Descobrir Meu IP</button>
+                    <p id="resultado-meu-ip">Seu IP aparecerá aqui...</p>
+                </div>
+
+                <div class="ferramenta">
+                    <h3>Medidor de Latência (Ping Simulado)</h3>
+                    <p>Testa o tempo de resposta (latência) para servidores em diferentes regiões.</p>
+
+                    <button id="ping-btn">Iniciar Teste de Latência</button>
+
+                    <ul id="resultado-ping">
+                    </ul>
+
+                    <div class="botoes-acao">
+                        <button id="repetir-ping-btn" style="display: none;">Repetir Teste</button>
+                        <button id="limpar-ping-btn" style="display: none;">Limpar</button>
+                    </div>
+                </div>
+
+                <div class="ferramenta">
+                    <h3>Medidor de Latência (Ping Simulado)</h3>
+                    <div class="botoes-acao">
+                    </div>
+                </div>
+
+                <div class="ferramenta">
+                    <h3>Consulta DNS (Estilo NSLOOKUP)</h3>
+                    <p>Digite um domínio para fazer uma consulta DNS (via API do Google).</p>
+
+                    <div id="cmd-tela">
+                        <pre id="cmd-output">C:\Users\Painel> Bem-vindo à Consulta DNS!
+Digite um comando (ex: nslookup google.com) e pressione Enter.</pre>
+                    </div>
+
+                    <div id="cmd-input-linha">
+                        <span>C:\Users\Painel></span>
+                        <input type="text" id="cmd-input" placeholder="nslookup...">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        </div>
+        </section>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

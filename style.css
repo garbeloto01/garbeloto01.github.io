@@ -1,0 +1,273 @@
+/* Reseta o básico */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    /* Centraliza */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Duas colunas */
+    gap: 20px;
+    /* Espaço entre elas */
+    padding: 10px;
+}
+
+/* Estilo dos "widgets" */
+section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* --- Estilos do Kit de Redes --- */
+
+.ferramenta {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+#secao-redes input[type="text"] {
+    width: calc(100% - 20px);
+    /* Ocupa 100% da largura menos o padding */
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#secao-redes button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#secao-redes button:hover {
+    background-color: #0056b3;
+}
+
+/* Classes de resultado que o JavaScript usa */
+#resultado-ip {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.privado {
+    color: #007bff;
+}
+
+/* Azul */
+.publico {
+    color: #28a745;
+}
+
+/* Verde */
+.loopback {
+    color: #ffc107;
+}
+
+/* Laranja */
+.erro {
+    color: #dc3545;
+}
+
+/* Vermelho */
+/* ... seu código anterior ... */
+.erro {
+    color: #dc3545;
+}
+
+/* Vermelho */
+
+/* Classe para a mensagem "Buscando..." */
+.buscando {
+    color: #6c757d;
+}
+
+/* Cinza */
+/* ... seu código anterior ... */
+.buscando {
+    color: #6c757d;
+}
+
+/* Cinza */
+
+/* --- Estilos do Medidor de Latência --- */
+#resultado-ping {
+    list-style: none;
+    /* Remove as bolinhas da lista */
+    padding-left: 0;
+    margin-top: 15px;
+}
+
+#resultado-ping li {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+}
+
+#resultado-ping li:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+#resultado-ping li:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* Reutilizando as cores que já temos */
+#resultado-ping span.publico {
+    font-weight: bold;
+}
+
+#resultado-ping span.loopback {
+    font-weight: bold;
+}
+
+#resultado-ping span.erro {
+    font-weight: bold;
+}
+
+/* ... seu código anterior ... */
+#resultado-ping li span.erro {
+    font-weight: bold;
+}
+
+/* --- Estilo para os botões de Ação (Repetir/Limpar) --- */
+.botoes-acao {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    /* Espaço entre os botões */
+}
+
+/* Botão secundário (cinza) */
+.botoes-acao button {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.botoes-acao button:hover {
+    background-color: #5a6268;
+}
+
+/* ... seu código anterior ... */
+
+/* --- Estilos da Ferramenta 4 (CMD Ping) --- */
+
+#cmd-tela {
+    background-color: #0c0c0c;
+    /* Preto */
+    color: #00ff00;
+    /* Verde "hacker" */
+    font-family: 'Consolas', 'Courier New', monospace;
+    /* Fonte monoespaçada */
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    /* Barra de rolagem se o texto for longo */
+    border: 1px solid #333;
+    border-radius: 4px;
+}
+
+/* O <pre> preserva os espaços em branco e quebras de linha do ping */
+#cmd-output {
+    margin: 0;
+    font-family: inherit;
+    /* Herda a fonte do pai */
+    color: inherit;
+    /* Herda a cor do pai */
+    white-space: pre-wrap;
+    /* Quebra a linha se necessário */
+}
+
+#cmd-input-linha {
+    display: flex;
+    align-items: center;
+    background-color: #0c0c0c;
+    padding: 5px 15px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+#cmd-input-linha span {
+    color: #00ff00;
+    font-family: 'Consolas', 'Courier New', monospace;
+    margin-right: 5px;
+}
+
+#cmd-input {
+    flex-grow: 1;
+    /* Ocupa o resto do espaço */
+    background-color: transparent;
+    /* Fundo transparente */
+    border: none;
+    color: #00ff00;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    /* Sem borda azul ao clicar */
+}
+
+/* ... seu código anterior ... */
+
+/* --- Estilos da Seção de Notícias --- */
+.artigo-noticia {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+/* Remove a borda do último artigo */
+.artigo-noticia:last-child {
+    border-bottom: none;
+}
+
+.artigo-noticia h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.artigo-noticia h3 a {
+    text-decoration: none;
+    color: #0056b3;
+    font-size: 1.2rem;
+}
+
+.artigo-noticia h3 a:hover {
+    text-decoration: underline;
+}
+
+.meta-noticia {
+    font-size: 0.9rem;
+    color: #6c757d;
+}

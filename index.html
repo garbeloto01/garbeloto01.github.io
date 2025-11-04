@@ -34,11 +34,13 @@
             <div class="tab-content-container">
 
                 <div id="tab-1" class="tab-pane active">
-                    <h3>Verificador de IP (Público vs. Privado)</h3>
-                    <p>Digite um IP para saber se ele é público ou privado (RFC 1918).</p>
-                    <input type="text" id="ip-input" placeholder="Ex: 192.168.1.1">
+                    <h3>Verificador de IP e Geolocalização</h3>
+                    <p>Digite um IP para saber se é público/privado e ver sua localização.</p>
+                    <input type="text" id="ip-input" placeholder="Ex: 8.8.8.8">
                     <button id="verificar-ip-btn">Verificar</button>
                     <p id="resultado-ip"></p>
+                    <div id="resultado-geoip">
+                    </div>
                 </div>
 
                 <div id="tab-2" class="tab-pane">
@@ -75,6 +77,15 @@ Digite um comando (ex: nslookup google.com) e pressione Enter.</pre>
 
             </div>
         </section>
+        ```
+
+        ---
+
+        Depois de salvar o `index.html` com essa correção, suba o arquivo atualizado para o seu GitHub.
+
+        Espere um minutinho e atualize a página `https://garbeloto01.github.io`. A duplicação terá desaparecido!
+
+        Me diga se deu certo!
 
         </div>
         </section>

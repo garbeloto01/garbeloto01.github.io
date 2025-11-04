@@ -271,3 +271,51 @@ h2 {
     font-size: 0.9rem;
     color: #6c757d;
 }
+
+/* ... seu código anterior ... */
+
+/* --- Estilos do Sistema de Abas (Tabs) --- */
+
+/* O container dos botões */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: -2px;
+    /* Para o 'border-bottom' do .active encostar */
+    border-bottom: 2px solid transparent;
+    /* Borda invisível para alinhar */
+}
+
+.tab-link:hover {
+    background-color: #f8f8f8;
+}
+
+/* O botão que está ATIVO */
+.tab-link.active {
+    font-weight: bold;
+    color: #007bff;
+    border-bottom-color: #007bff;
+    /* Borda azul só no ativo */
+}
+
+/* Os painéis de conteúdo */
+.tab-pane {
+    display: none;
+    /* ESCONDE todas as abas por padrão */
+}
+
+/* O painel que está ATIVO */
+.tab-pane.active {
+    display: block;
+    /* MOSTRA só a aba ativa */
+}

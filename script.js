@@ -385,3 +385,47 @@ function iniciarPainel() {
 
 // Adiciona o "ouvinte" para rodar a função acima QUANDO a página carregar
 document.addEventListener('DOMContentLoaded', iniciarPainel);
+// --- Lógica do Sistema de Abas (Tabs) ---
+
+function setupTabs() {
+    // Pega todos os botões-abas
+    const tabLinks = document.querySelectorAll('.tab-link');
+
+    // Pega todos os painéis-conteúdo
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    // Adiciona um clique em CADA botão
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const tabId = link.getAttribute('data-tab'); // Ex: "tab-1"
+
+            // 1. Remove 'active' de TODOS os botões e painéis
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+
+            // 2. Adiciona 'active' SÓ no botão clicado
+            link.classList.add('active');
+
+            // 3. Adiciona 'active' SÓ no painel correspondente
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+}
+
+// --- ATUALIZAÇÃO DO INICIALIZADOR ---
+// Precisamos garantir que a função setupTabs() rode no início.
+// Encontre sua função 'iniciarPainel()' e adicione a chamada:
+
+/* // [ANTES]
+function iniciarPainel() {
+    carregarNoticias(); 
+}
+document.addEventListener('DOMContentLoaded', iniciarPainel);
+*/
+
+// [DEPOIS - SUBSTITUA PELO CÓDIGO ABAIXO]
+function iniciarPainel() {
+    carregarNoticias(); // Carrega as notícias
+    setupTabs(); // Configura as abas
+}
+document.addEventListener('DOMContentLoaded', iniciarPainel);

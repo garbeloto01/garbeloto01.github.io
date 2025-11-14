@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançamento de Remuneração Variável</title>
+    <!-- Carrega o Tailwind CSS para estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo para a fonte Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Classe para esconder a mensagem de feedback */
+        .feedback-hidden {
+            transform: translateY(-20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        /* Classe para mostrar a mensagem de feedback */
+        .feedback-visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: all 0.3s ease;
+        }
+        /* Estilo para o modal */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .modal.hidden .modal-content {
+            transform: translateY(-20px);
+        }
+        /* Estilo para desabilitar o botão */
+        .disabled-button {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Mensagem de Feedback Flutuante -->
+        <div id="feedback-message" class="feedback-hidden fixed top-5 right-5 p-4 rounded-lg shadow-md z-50">
+            <!-- O conteúdo será preenchido via JS -->
+        </div>
+
+        <!-- Cabeçalho -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Ferramenta de Remuneração Variável</h1>
+            <p class="text-gray-600">Preencha os campos abaixo para lançar a pontuação de um colaborador.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Coluna 1: Formulário de Lançamento -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-lg relative">
+                <div class="flex flex-wrap justify-between items-center mb-4 border-b pb-2 gap-2">
+                    <h2 class="text-xl font-semibold">Novo Lançamento</h2>
+                    <!-- Botões de Cadastro -->
+                    <div class="flex space-x-2">
+                        <button id="show-sector-modal" class="text-sm bg-green-100 text-green-700 font-medium py-1 px-3 rounded-lg hover:bg-green-200 transition-colors">
+                            + Cadastrar Setor
+                        </button>
+                        <button id="show-register-modal" class="text-sm bg-blue-100 text-blue-700 font-medium py-1 px-3 rounded-lg hover:bg-blue-200 transition-colors">
+                            + Cadastrar Colaborador
+                        </button>
+                    </div>
+                </div>
+                
+                <form id="score-form" class="space-y-4">
+                    <div>
+                        <label for="month-year" class="block text-sm font-medium text-gray-700">Mês de Referência</label>
+                        <input type="month" id="month-year" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="employee-select" class="block text-sm font-medium text-gray-700">Colaborador</label>
+                        <select id="employee-select" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="" disabled selected>-- Carregando colaboradores... --</option>
+                            <!-- Opções serão preenchidas por JavaScript -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="base-value" class="block text-sm font-medium text-gray-700">Valor Base Variável (R$)</label>
+                        <input type="number" id="base-value" step="0.01" placeholder="Ex: 1000.00" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <hr>
+
+                    <!-- Seção de Pontuações (DINÂMICA) -->
+                    <p class="font-medium text-gray-800">Insira as pontuações</p> <!-- Texto (0 a 100) removido -->
+                    <div id="dynamic-indices-container" class="grid grid-cols-2 gap-4">
+                        <!-- Conteúdo dinâmico será inserido aqui -->
+                        <p class="col-span-2 text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>
+                    </div>
+                    <!-- Fim da Seção Dinâmica -->
+
+                    <hr>
+
+                    <!-- Resultado do Cálculo -->
+                    <div id="result-display" class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg text-center">
+                        <p class="text-sm">Total Variável Calculado:</p>
+                        <p class="text-2xl font-bold">R$ 0,00</p>
+                    </div>
+
+                    <!-- Botão de Salvar -->
+                    <button type="submit" id="save-button" class="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+                        Lançar Remuneração
+                    </button>
+                </form>
+            </div>
+
+            <!-- Coluna 2: Histórico de Lançamentos -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Histórico de Lançamentos</h2>
+                <div class="overflow-x-auto">
+                    <table id="history-table" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mês Ref.</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Colaborador</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Setor</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base (R$)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total (R$)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lançado em</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- Linhas do histórico serão preenchidas por JavaScript -->
+                            <tr>
+                                <td colspan="6" class="p-4 text-center text-gray-500" id="loading-history">Carregando histórico...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro de Colaborador -->
+    <div id="register-modal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Cadastrar Novo Colaborador</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="register-form" class="space-y-4">
+                <div>
+                    <label for="new-employee-name" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                    <input type="text" id="new-employee-name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="new-employee-setor-select" class="block text-sm font-medium text-gray-700">Setor</label>
+                    <select id="new-employee-setor-select" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="" disabled selected>-- Carregando setores... --</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" id="cancel-modal" class="bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-300">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700">
+                        Salvar Colaborador
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro de Setor (MODIFICADO) -->
+    <div id="sector-modal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 overflow-y-auto">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-xl w-full max-w-lg my-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Cadastrar Novo Setor e seus Índices</h3>
+                <button id="close-sector-modal" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="register-sector-form" class="space-y-4">
+                <div>
+                    <label for="new-sector-name" class="block text-sm font-medium text-gray-700">Nome do Setor</label>
+                    <input type="text" id="new-sector-name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="Ex: VENDAS">
+                </div>
+                <hr>
+                
+                <div class="flex justify-between items-center">
+                    <p class="text-sm font-medium text-gray-700">Defina os índices:</p>
+                    <button type="button" id="add-index-button" class="text-sm bg-blue-100 text-blue-700 font-medium py-1 px-3 rounded-lg hover:bg-blue-200 transition-colors">
+                        + Adicionar Índice
+                    </button>
+                </div>
+                
+                <!-- Container para índices dinâmicos -->
+                <div id="sector-indices-list" class="space-y-3 max-h-48 overflow-y-auto pr-2">
+                    <!-- Novos índices serão injetados aqui via JS -->
+                </div>
+
+                <!-- Totalizador -->
+                <div class="pt-2 text-right font-semibold text-gray-800">
+                    Total: <span id="indices-total-perc" class="text-lg">0</span>%
+                </div>
+                
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" id="cancel-sector-modal" class="bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-300">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="save-sector-button" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                        Salvar Setor
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts do Firebase -->
+    <script type="module">
+        // Importações necessárias do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot, 
+            query, 
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- CONFIGURAÇÃO DO FIREBASE ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth, userId;
+        let loadedEmployees = []; // Cache local dos colaboradores carregados
+        let loadedSectors = []; // Cache local dos setores carregados
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('Debug');
+        } catch (e) {
+            console.error("Erro ao inicializar o Firebase: ", e);
+            if(document.getElementById('feedback-message')) {
+                showFeedback("Erro fatal ao conectar. Verifique o console.", true);
+            }
+        }
+
+        // --- DOM Elements ---
+        const employeeSelect = document.getElementById('employee-select');
+        const monthYearInput = document.getElementById('month-year');
+        const baseValueInput = document.getElementById('base-value');
+        
+        const dynamicIndicesContainer = document.getElementById('dynamic-indices-container'); // NOVO
+        
+        const resultDisplay = document.getElementById('result-display');
+        const saveButton = document.getElementById('save-button');
+        const scoreForm = document.getElementById('score-form');
+        const historyTableBody = document.getElementById('history-table')?.querySelector('tbody');
+        const loadingHistory = document.getElementById('loading-history');
+        const feedbackMessage = document.getElementById('feedback-message');
+        
+        // Elementos do Modal (Colaborador)
+        const registerModal = document.getElementById('register-modal');
+        const showRegisterModalBtn = document.getElementById('show-register-modal');
+        const closeRegisterModalBtn = document.getElementById('close-modal');
+        const cancelRegisterModalBtn = document.getElementById('cancel-modal');
+        const registerForm = document.getElementById('register-form');
+        const newEmployeeName = document.getElementById('new-employee-name');
+        const newEmployeeSetorSelect = document.getElementById('new-employee-setor-select');
+        
+        // Elementos do Modal (Setor)
+        const sectorModal = document.getElementById('sector-modal');
+        const showSectorModalBtn = document.getElementById('show-sector-modal');
+        const closeSectorModalBtn = document.getElementById('close-sector-modal');
+        const cancelSectorModalBtn = document.getElementById('cancel-sector-modal');
+        const registerSectorForm = document.getElementById('register-sector-form');
+        const newSectorName = document.getElementById('new-sector-name');
+        
+        // Novos elementos do Modal de Setor
+        const sectorIndicesList = document.getElementById('sector-indices-list');
+        const addIndexButton = document.getElementById('add-index-button');
+        const indicesTotalPerc = document.getElementById('indices-total-perc');
+        const saveSectorButton = document.getElementById('save-sector-button');
+        
+        // --- FUNÇÕES ---
+
+        /**
+         * Exibe uma mensagem de feedback (sucesso ou erro).
+         */
+        function showFeedback(message, isError = false) {
+            if (!feedbackMessage) {
+                console.error("Elemento feedback-message não encontrado. Msg:", message);
+                return;
+            }
+            feedbackMessage.textContent = message;
+            feedbackMessage.className = `feedback-visible fixed top-5 right-5 p-4 rounded-lg shadow-md z-50 ${isError ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`;
+            
+            setTimeout(() => {
+                feedbackMessage.className = `feedback-hidden fixed top-5 right-5 p-4 rounded-lg shadow-md z-50 ${isError ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`;
+            }, 3000);
+        }
+
+        /**
+         * Funções genéricas do Modal
+         */
+        function showModal(modalElement) { 
+            if (modalElement) modalElement.classList.remove('hidden'); 
+        }
+        function hideModal(modalElement) { 
+            if (modalElement) modalElement.classList.add('hidden'); 
+        }
+
+        /**
+         * (NOVO) Adiciona uma nova linha de índice no modal de setor
+         */
+        function renderNewIndexRow() {
+            if (!sectorIndicesList) return;
+
+            const div = document.createElement('div');
+            // Aumentado o grid para col-span-1 para o botão
+            div.className = 'grid grid-cols-7 gap-2 dynamic-index-row items-center';
+            div.innerHTML = `
+                <div class="col-span-4">
+                    <label class="block text-xs text-gray-600">Nome do Índice</label>
+                    <input type="text" class="index-name mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="Ex: Metas">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs text-gray-600">%</label>
+                    <input type="number" class="index-perc mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="Ex: 50" min="0">
+                </div>
+                <div class="col-span-1 text-right pt-5">
+                    <button type="button" class="remove-index-button text-red-500 hover:text-red-700 text-xl font-bold" title="Remover índice">&times;</button>
+                </div>
+            `;
+            sectorIndicesList.appendChild(div);
+        }
+
+        /**
+         * (NOVO) Atualiza o total de porcentagem e valida o botão salvar
+         */
+        function updateIndicesTotal() {
+            if (!sectorIndicesList || !indicesTotalPerc || !saveSectorButton) return;
+
+            const percInputs = sectorIndicesList.querySelectorAll('.index-perc');
+            let total = 0;
+            percInputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+
+            indicesTotalPerc.textContent = total;
+
+            // LÓGICA MODIFICADA
+            if (total === 100) {
+                // Exatamente 100%, fica verde
+                indicesTotalPerc.classList.remove('text-red-500');
+                indicesTotalPerc.classList.add('text-green-600'); // Verde para sucesso
+                saveSectorButton.disabled = false;
+                saveSectorButton.title = "";
+                saveSectorButton.classList.remove('disabled-button');
+            } else {
+                // Diferente de 100% (maior ou menor), fica vermelho e bloqueia
+                indicesTotalPerc.classList.remove('text-green-600');
+                indicesTotalPerc.classList.add('text-red-500'); // Vermelho para erro
+                saveSectorButton.disabled = true;
+                saveSectorButton.title = "A soma dos índices deve ser exatamente 100%"; // Mensagem de erro atualizada
+                saveSectorButton.classList.add('disabled-button');
+            }
+        }
+
+
+        /**
+         * Salva um novo SETOR e seus ÍNDICES no Firestore. (MODIFICADO E CORRIGIDO)
+         */
+        async function handleSaveSector(event) {
+            event.preventDefault();
+            if (!userId) {
+                showFeedback("Erro: Você não está autenticado.", true);
+                return;
+            }
+            if (!newSectorName) {
+                console.error("Elemento new-sector-name não encontrado.");
+                return;
+            }
+            const name = newSectorName.value.trim();
+            if (!name) {
+                showFeedback("Erro: Preencha o Nome do Setor.", true);
+                return;
+            }
+
+            const indices = [];
+            let totalPercentage = 0;
+
+            // NOVO: Loop dinâmico
+            const indexRows = sectorIndicesList.querySelectorAll('.dynamic-index-row');
+            
+            for (const row of indexRows) {
+                const indexNameInput = row.querySelector('.index-name');
+                const indexPercInput = row.querySelector('.index-perc');
+                
+                const indexName = indexNameInput ? indexNameInput.value.trim() : '';
+                const indexPerc = indexPercInput ? (parseFloat(indexPercInput.value) || 0) : 0;
+
+                // Only add if both name and percentage are provided
+                if (indexName && indexPerc > 0) {
+                    indices.push({
+                        name: indexName,
+                        percentage: indexPerc
+                    });
+                    totalPercentage += indexPerc;
+                }
+            }
+            
+            // NOVO: Validação de 100% (MODIFICADA)
+            if (totalPercentage !== 100) { // Alterado de ">" para "!=="
+                showFeedback(`Erro: A soma dos índices (${totalPercentage}%) deve ser exatamente 100%.`, true); // Mensagem de erro atualizada
+                return;
+            }
+
+            if (indices.length === 0) {
+                showFeedback("Erro: Adicione pelo menos um índice com nome e porcentagem.", true);
+                return;
+            }
+            
+            try {
+                // Salva na coleção pública de 'setores'
+                const setoresCollection = collection(db, `/artifacts/${appId}/public/data/setores`);
+                await addDoc(setoresCollection, {
+                    name: name,
+                    indices: indices, // Salva o array de índices
+                    createdAt: new Date().toISOString(),
+                    createdBy: userId
+                });
+                
+                showFeedback("Setor e seus índices salvos com sucesso!", false);
+                // Modificado: Resetar o formulário dinâmico
+                if (registerSectorForm) registerSectorForm.reset();
+                if (sectorIndicesList) sectorIndicesList.innerHTML = ''; // Limpa os campos
+                updateIndicesTotal(); // Reseta o total para 0
+                hideModal(sectorModal);
+
+            } catch (e) {
+                console.error("Erro ao salvar setor: ", e);
+                showFeedback("Erro ao salvar o setor.", true); // <--- LINHA CORRIGIDA
+            }
+        } // <--- CHAVE { } CORRIGIDA
+
+        /**
+         * Salva um novo COLABORADOR no Firestore.
+         */
+        async function handleSaveEmployee(event) {
+            event.preventDefault();
+            if (!userId) {
+                showFeedback("Erro: Você não está autenticado.", true);
+                return;
+            }
+            if (!newEmployeeName || !newEmployeeSetorSelect) {
+                console.error("Elementos do formulário de registro não encontrados.");
+                return;
+            }
+            const name = newEmployeeName.value.trim();
+            const setor = newEmployeeSetorSelect.value; // Pega o valor do select
+
+            if (!name || !setor) {
+                showFeedback("Erro: Preencha Nome e Setor.", true);
+                return;
+            }
+
+            try {
+                const employeesCollection = collection(db, `/artifacts/${appId}/public/data/employees`);
+                await addDoc(employeesCollection, {
+                    name: name,
+                    setor: setor, // Salva o setor selecionado
+                    createdAt: new Date().toISOString(),
+                    createdBy: userId
+                });
+                
+                showFeedback("Colaborador salvo com sucesso!", false);
+                if (registerForm) registerForm.reset();
+                hideModal(registerModal);
+
+            } catch (e) {
+                console.error("Erro ao salvar colaborador: ", e);
+                showFeedback("Erro ao salvar o colaborador.", true);
+            }
+        }
+
+
+        /**
+         * Carrega os SETORES do Firestore.
+         * Agora também preenche o cache 'loadedSectors'.
+         */
+        function loadSectors() {
+            if (!db || !newEmployeeSetorSelect) {
+                console.error("DB or newEmployeeSetorSelect not found for loadSectors");
+                return;
+            }
+            
+            const setoresCollection = collection(db, `/artifacts/${appId}/public/data/setores`);
+            const q = query(setoresCollection); 
+
+            onSnapshot(q, (snapshot) => {
+                newEmployeeSetorSelect.innerHTML = '<option value="" disabled selected>-- Selecione um setor --</option>';
+                loadedSectors = []; // Limpa o cache de setores
+
+                if (snapshot.empty) {
+                    console.log("Nenhum setor cadastrado.");
+                    newEmployeeSetorSelect.innerHTML = '<option value="" disabled selected>Nenhum setor cadastrado</option>';
+                    return;
+                }
+                
+                snapshot.docs.forEach(doc => {
+                    const setor = doc.data();
+                    setor.id = doc.id; // Adiciona o ID do doc ao objeto
+                    loadedSectors.push(setor); // Adiciona ao cache
+
+                    const option = document.createElement('option');
+                    option.value = setor.name; // Salva o nome do setor
+                    option.textContent = setor.name;
+                    newEmployeeSetorSelect.appendChild(option);
+                });
+
+            }, (error) => {
+                console.error("Erro ao carregar setores: ", error);
+                showFeedback("Erro ao carregar lista de setores.", true);
+                newEmployeeSetorSelect.innerHTML = '<option value="" disabled selected>Erro ao carregar</option>';
+            });
+        }
+
+        /**
+         * Carrega os COLABORADORES do Firestore.
+         */
+        function loadEmployees() {
+            if (!db || !employeeSelect) {
+                console.error("DB or employeeSelect not found for loadEmployees");
+                return;
+            }
+            
+            const employeesCollection = collection(db, `/artifacts/${appId}/public/data/employees`);
+            const q = query(employeesCollection); 
+
+            onSnapshot(q, (snapshot) => {
+                loadedEmployees = []; 
+                employeeSelect.innerHTML = '<option value="" disabled selected>-- Selecione um colaborador --</option>';
+
+                if (snapshot.empty) {
+                    console.log("Nenhum colaborador cadastrado.");
+                    employeeSelect.innerHTML = '<option value="" disabled selected>Nenhum colaborador cadastrado</option>';
+                    return;
+                }
+                
+                snapshot.docs.forEach(doc => {
+                    const emp = doc.data();
+                    loadedEmployees.push({ id: doc.id, data: emp }); 
+                    
+                    const option = document.createElement('option');
+                    option.value = doc.id; 
+                    option.textContent = `${emp.name} (${emp.setor})`;
+                    employeeSelect.appendChild(option);
+                });
+
+            }, (error) => {
+                console.error("Erro ao carregar colaboradores: ", error);
+                showFeedback("Erro ao carregar lista de colaboradores.", true);
+                employeeSelect.innerHTML = '<option value="" disabled selected>Erro ao carregar</option>';
+            });
+        }
+
+        /**
+         * (NOVO) Desenha os inputs de pontuação na tela.
+         * (MODIFICADO para usar 'max' e 'placeholder' baseados no percentual)
+         */
+        function renderIndices(sectorName) {
+            if (!dynamicIndicesContainer || !loadedSectors) return;
+
+            // Encontra o setor no cache
+            const sector = loadedSectors.find(s => s.name === sectorName);
+
+            dynamicIndicesContainer.innerHTML = ''; // Limpa os índices antigos
+
+            if (!sector || !sector.indices || sector.indices.length === 0) {
+                dynamicIndicesContainer.innerHTML = '<p class="col-span-2 text-sm text-red-500">Este setor não tem índices de pontuação cadastrados.</p>';
+                calculateTotal(); // Recalcula (para R$ 0,00)
+                return;
+            }
+
+            // Cria os inputs dinamicamente
+            sector.indices.forEach((index, i) => {
+                const inputId = `dynamic-score-${i}`;
+                
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label for="${inputId}" class="block text-sm font-medium text-gray-700">${index.name} (${index.percentage}%)</label>
+                    <input 
+                        type="number" 
+                        id="${inputId}"
+                        min="0" 
+                        max="${index.percentage}"  
+                        placeholder="0-${index.percentage}" 
+                        required 
+                        class="dynamic-score-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm"
+                        data-percentage="${index.percentage}"
+                        data-name="${index.name}"
+                    >
+                `;
+                dynamicIndicesContainer.appendChild(div);
+                
+                // Adiciona o listener de 'input' para o cálculo automático
+                const inputElement = document.getElementById(inputId);
+                
+                // (MODIFICADO) Agora um único listener faz a validação E o cálculo
+                if (inputElement) {
+                    inputElement.addEventListener('input', () => {
+                        // 1. APLICA A TRAVA (VALIDAÇÃO)
+                        const maxValue = parseFloat(inputElement.max);
+                        const minValue = parseFloat(inputElement.min);
+                        let currentValue = parseFloat(inputElement.value);
+
+                        if (currentValue > maxValue) {
+                            inputElement.value = maxValue; // Força o valor para o máximo
+                        }
+                        
+                        if (currentValue < minValue) {
+                             inputElement.value = minValue; // Força o valor para o mínimo (0)
+                        }
+                        
+                        // 2. CHAMA O CÁLCULO (depois de validar)
+                        calculateTotal();
+                    });
+                }
+            });
+        }
+
+        /**
+         * Calcula o valor total da remuneração variável (MODIFICADO)
+         * (MODIFICADO para somar pontos e aplicar Base * (Pontos / 100))
+         */
+        function calculateTotal() {
+            if (!baseValueInput || !resultDisplay) {
+                console.warn("Elementos do formulário de cálculo não encontrados.");
+                return 0;
+            }
+            try {
+                const base = parseFloat(baseValueInput.value) || 0;
+                
+                const dynamicInputs = document.querySelectorAll('.dynamic-score-input');
+                
+                if (dynamicInputs.length === 0) {
+                     resultDisplay.innerHTML = `
+                        <p class="text-sm">Total Variável Calculado:</p>
+                        <p class="text-2xl font-bold">R$ 0,00</p>
+                    `;
+                    return 0;
+                }
+
+                let totalPontos = 0;
+
+                dynamicInputs.forEach(input => {
+                    // Soma direta dos pontos inseridos
+                    totalPontos += (parseFloat(input.value) || 0);
+                });
+
+                // Cálculo: Base * (Total_Pontos / 100)
+                const totalCalculado = base * (totalPontos / 100);
+
+                resultDisplay.innerHTML = `
+                    <p class="text-sm">Total Variável Calculado:</p>
+                    <p class="text-2xl font-bold">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</p>
+                `;
+                return totalCalculado;
+
+            } catch (e) {
+                console.error("Erro no cálculo: ", e);
+                return 0;
+            }
+        }
+
+        /**
+         * Salva o LANÇAMENTO (pontuação) no Firestore. (MODIFICADO)
+         * (Salva o 'score' direto, ex: 25, ao invés de 100)
+         */
+        async function handleSave(event) {
+            event.preventDefault(); 
+            if (!userId) {
+                showFeedback("Erro: Você não está autenticado. Tente recarregar a página.", true);
+                return;
+            }
+
+            if (!monthYearInput || !employeeSelect || !baseValueInput) {
+                showFeedback("Erro: Elementos do formulário não encontrados.", true);
+                return;
+            }
+            if (!monthYearInput.value || !employeeSelect.value || !baseValueInput.value) {
+                showFeedback("Erro: Preencha Mês, Colaborador e Valor Base.", true);
+                return;
+            }
+            
+            if (saveButton) {
+                saveButton.disabled = true;
+                saveButton.textContent = "Salvando...";
+            }
+
+            const selectedEmployeeData = loadedEmployees.find(e => e.id === employeeSelect.value);
+
+            if (!selectedEmployeeData) {
+                 showFeedback("Erro: Colaborador selecionado não encontrado.", true);
+                 if (saveButton) {
+                     saveButton.disabled = false;
+                     saveButton.textContent = "Lançar Remuneração";
+                 }
+                 return;
+            }
+
+            const selectedEmployee = selectedEmployeeData.data;
+            const total = calculateTotal(); // O cálculo já está correto
+
+            // Coleta as pontuações dinâmicas
+            const scores = [];
+            const dynamicInputs = document.querySelectorAll('.dynamic-score-input');
+            dynamicInputs.forEach(input => {
+                scores.push({
+                    name: input.dataset.name,
+                    percentage: parseFloat(input.dataset.percentage) || 0,
+                    score: parseFloat(input.value) || 0 // Salva o score direto (ex: 25)
+                });
+            });
+
+            if (scores.length === 0) {
+                showFeedback("Erro: Não foi possível encontrar os índices para este colaborador.", true);
+                if (saveButton) saveButton.disabled = false;
+                if (saveButton) saveButton.textContent = "Lançar Remuneração";
+                return;
+            }
+
+            const scoreData = {
+                employeeId: selectedEmployeeData.id, 
+                employeeName: selectedEmployee.name,
+                setor: selectedEmployee.setor,
+                monthYear: monthYearInput.value,
+                baseValue: parseFloat(baseValueInput.value) || 0,
+                
+                scores: scores, // Salva o array de scores dinâmicos
+                
+                calculatedTotal: total,
+                launchedBy: userId,
+                launchedAt: new Date().toISOString() 
+            };
+
+            try {
+                const scoresCollection = collection(db, `/artifacts/${appId}/public/data/scores`);
+                await addDoc(scoresCollection, scoreData);
+                
+                showFeedback("Lançamento salvo com sucesso!", false);
+                if (scoreForm) scoreForm.reset(); 
+                // Limpa os índices dinâmicos e reseta o cálculo
+                if(dynamicIndicesContainer) dynamicIndicesContainer.innerHTML = '<p class="col-span-2 text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>';
+                calculateTotal(); 
+
+            } catch (e) {
+                console.error("Erro ao salvar no Firestore: ", e);
+                showFeedback("Erro ao salvar os dados. Tente novamente.", true);
+            } finally {
+                if (saveButton) {
+                    saveButton.disabled = false;
+                    saveButton.textContent = "Lançar Remuneração";
+                }
+            }
+        }
+
+        /**
+         * Carrega e exibe o HISTÓRICO de lançamentos em tempo real.
+         */
+        function loadHistory() {
+            if (!db || !historyTableBody) {
+                console.error("DB ou Tabela de Histórico não encontrados.");
+                if (loadingHistory) loadingHistory.textContent = "Erro ao carregar.";
+                return;
+            }
+            
+            const scoresCollection = collection(db, `/artifacts/${appId}/public/data/scores`);
+            const q = query(scoresCollection);
+
+            onSnapshot(q, (snapshot) => {
+                if (!historyTableBody || !loadingHistory) {
+                     console.error("Elementos da tabela de histórico não encontrados no snapshot.");
+                     return;
+                }
+                
+                if (snapshot.empty) {
+                    loadingHistory.textContent = "Nenhum lançamento encontrado.";
+                    if (!historyTableBody.contains(loadingHistory.parentElement)) {
+                         historyTableBody.innerHTML = '';
+                         historyTableBody.appendChild(loadingHistory.parentElement);
+                    }
+                    return;
+                }
+                
+                historyTableBody.innerHTML = ''; 
+                
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    
+                    const launchDate = new Date(data.launchedAt).toLocaleString('pt-BR', {
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric'
+                    });
+
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${data.monthYear}</td>
+                        <td class="px-4 py-3 whitespace-nowiam text-sm font-medium text-gray-900">${data.employeeName}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${data.setor}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">R$ ${data.baseValue ? data.baseValue.toFixed(2).replace('.', ',') : '0,00'}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-blue-600">R$ ${data.calculatedTotal.toFixed(2).replace('.', ',')}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${launchDate}</td>
+                    `;
+                    historyTableBody.appendChild(row);
+                });
+
+            }, (error) => {
+                console.error("Erro ao carregar histórico: ", error);
+                if (loadingHistory) loadingHistory.textContent = "Erro ao carregar histórico.";
+                showFeedback("Erro ao carregar histórico.", true);
+            });
+        }
+
+
+        // --- INICIALIZAÇÃO ---
+
+        // (NOVO) Adiciona listener para o seletor de colaborador
+        if (employeeSelect) {
+            employeeSelect.addEventListener('change', () => {
+                const selectedEmployeeId = employeeSelect.value;
+                const selectedEmployee = loadedEmployees.find(e => e.id === selectedEmployeeId);
+                
+                if (selectedEmployee) {
+                    renderIndices(selectedEmployee.data.setor); // Desenha os índices corretos
+                    calculateTotal(); // Recalcula (provavelmente para 0)
+                } else {
+                    // Limpa os índices se ninguém for selecionado
+                    if(dynamicIndicesContainer) dynamicIndicesContainer.innerHTML = '<p class="col-span-2 text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>';
+                    calculateTotal();
+                }
+            });
+        }
+
+        // Adiciona listeners para cálculo automático
+        if (baseValueInput) baseValueInput.addEventListener('input', calculateTotal);
+
+        // Adiciona listener para o botão de salvar (lançamento)
+        if (scoreForm) scoreForm.addEventListener('submit', handleSave);
+
+        // Adiciona listeners para o modal de cadastro (Colaborador)
+        if (showRegisterModalBtn) showRegisterModalBtn.addEventListener('click', () => showModal(registerModal));
+        if (closeRegisterModalBtn) closeRegisterModalBtn.addEventListener('click', () => hideModal(registerModal));
+        if (cancelRegisterModalBtn) cancelRegisterModalBtn.addEventListener('click', () => hideModal(registerModal));
+        if (registerForm) registerForm.addEventListener('submit', handleSaveEmployee);
+
+        // Adiciona listeners para o modal de cadastro (Setor)
+        if (showSectorModalBtn) {
+            showSectorModalBtn.addEventListener('click', () => {
+                // Limpa o form e adiciona a primeira linha
+                if (registerSectorForm) registerSectorForm.reset();
+                if (sectorIndicesList) sectorIndicesList.innerHTML = '';
+                renderNewIndexRow(); // Adiciona a primeira linha ao abrir
+                updateIndicesTotal(); // Garante que o botão salvar está ok
+                showModal(sectorModal);
+            });
+        }
+        if (closeSectorModalBtn) closeSectorModalBtn.addEventListener('click', () => hideModal(sectorModal));
+        if (cancelSectorModalBtn) cancelSectorModalBtn.addEventListener('click', () => hideModal(sectorModal));
+        if (registerSectorForm) registerSectorForm.addEventListener('submit', handleSaveSector);
+        
+        // Listener para adicionar nova linha de índice
+        if (addIndexButton) {
+            addIndexButton.addEventListener('click', renderNewIndexRow);
+        }
+
+        // Listeners para remover linha e atualizar total (delegação de eventos)
+        if (sectorIndicesList) {
+            sectorIndicesList.addEventListener('click', (e) => {
+                // Procura pelo botão de remover
+                const removeButton = e.target.closest('.remove-index-button');
+                if (removeButton) {
+                    removeButton.closest('.dynamic-index-row').remove();
+                    updateIndicesTotal();
+                }
+            });
+
+            sectorIndicesList.addEventListener('input', (e) => {
+                // Procura pelo input de porcentagem
+                if (e.target.classList.contains('index-perc')) {
+                    updateIndicesTotal();
+                }
+            });
+        }
+
+
+        // Define o mês atual como padrão
+        if (monthYearInput) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Mês atual
+            monthYearInput.value = `${year}-${month}`;
+        }
+
+        // Autenticação e carregamento de dados
+        if (auth) {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Usuário já está logado
+                    userId = user.uid;
+                    console.log("Usuário autenticado:", userId);
+                    loadHistory(); // Carrega o histórico
+                    loadEmployees(); // Carrega os colaboradores
+                    loadSectors(); // Carrega os setores (e seus índices)
+                } else {
+                    // Usuário não está logado, tenta autenticar
+                    try {
+                        if (initialAuthToken) {
+                            console.log("Autenticando com token customizado...");
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            console.log("Autenticando anonimamente...");
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Erro na autenticação: ", error);
+                        showFeedback("Erro de autenticação. Não será possível salvar ou ver dados.", true);
+                    }
+                }
+            });
+        } else {
+            console.error("Falha na inicialização do Firebase Auth.");
+            showFeedback("Erro crítico: A autenticação não pôde ser iniciada.", true);
+        }
+
+    </script>
+
+</body>
+</html>

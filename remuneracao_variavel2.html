@@ -17,8 +17,8 @@
             --primary-blue: #0f62fe; /* Azul (para "Cadastrar Colaborador") */
             --primary-blue-dark: #0353e9; 
             
-            --primary-green: #198754; /* Verde (para "Salvar Valor Base" e Setor) */
-            --primary-green-dark: #157347;
+            --primary-green: #22c55e; /* Verde (para "Salvar Valor Base" e "Cadastrar Setor") */
+            --primary-green-dark: #16a34a;
 
             --primary-orange: #f97316; /* Laranja (para "Gerenciar Metas") */
             --primary-orange-dark: #ea580c;
@@ -89,8 +89,8 @@
             background-color: #f8fafc; /* Fundo levemente cinza no cabeçalho */
             cursor: pointer; /* Indica que é clicável para ordenar */
             user-select: none; /* Impede seleção de texto */
-            position: sticky; /* Faz o cabeçalho grudar no topo */
-            top: 0;
+            position: sticky;
+            top: 0; /* Para cabeçalho fixo se a tabela rolar (se necessário) */
         }
         #historyTable th:hover {
             background-color: #f1f5f9;
@@ -102,11 +102,6 @@
         }
         #historyTable .sort-arrow.active {
             opacity: 1;
-        }
-        .history-details-row td {
-            background-color: #f9fafb; /* Fundo levemente diferente para detalhes */
-            padding: 12px 16px;
-            border-bottom: 1px solid #e2e8f0;
         }
 
         /* Abas do Painel de Gestão */
@@ -128,26 +123,28 @@
             display: block;
         }
         
-        /* Layout dos campos de pontuação */
+        /* Layout dos campos de índice (2 colunas) */
         #indices-container.grid-layout {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 16px;
+            align-items: start;
         }
-        #indices-container .indice-item {
+        #indices-container.grid-layout .index-item {
             display: flex;
             flex-direction: column;
-            gap: 4px;
         }
-        #indices-container .indice-item label {
+        #indices-container.grid-layout .index-item label {
             font-size: 0.875rem; /* 14px */
             color: #374151; /* gray-700 */
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%; /* Garante que o label não quebre o layout */
         }
-        #indices-container .indice-item input {
+        #indices-container.grid-layout .index-item input {
             width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #D1D5DB; /* gray-300 */
-            border-radius: 6px;
         }
 
     </style>
@@ -197,14 +194,17 @@
                     <h1 class="text-xl font-bold text-gray-800">Ferramenta de Remuneração Variável</h1>
                 </div>
                 <div class="flex items-center gap-4">
+                    <!-- Botão Lançamento (Visão Principal) -->
                     <button id="btn-view-launch" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2-1.343-2-3-2m0 8c-1.11 0-2.08-.402-2.599-1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 15c-1.11 0-2.08-.402-2.599-1M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7v1.522c0 .414.336.75.75.75h14.5a.75.75 0 00.75-.75V7" /></svg>
                         <span>Lançamento</span>
                     </button>
+                    <!-- Botão Painel de Gestão (Apenas Master) -->
                     <button id="btn-view-admin" class="hidden text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span>Painel de Gestão</span>
                     </button>
+                    <!-- Botão Sair -->
                     <button id="btn-logout" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -218,11 +218,14 @@
         <!-- Container Principal -->
         <div class="container mx-auto p-4 max-w-7xl">
 
-            <!-- Painel de Cadastro (Master) -->
+            <!-- Painel de Cadastro (Master/Supervisor) -->
+            <!-- Este painel agora é 'hidden' por padrão e controlado via JS -->
             <div id="admin-controls" class="hidden bg-white p-4 rounded-lg shadow border border-gray-200 mb-6">
-                <!-- Contêiner dos botões -->
-                <div class="flex flex-wrap items-center justify-end gap-3">
-                    <p class="text-sm font-medium text-gray-600 hidden" id="user-id-log">
+                <!-- Contêiner flexível para alinhar botões à direita -->
+                <div class="flex flex-wrap justify-end items-center gap-3">
+                    
+                    <!-- ID de Log (Oculto por padrão) -->
+                    <p id="user-id-log" class="hidden text-sm font-medium text-gray-600 mr-auto">
                         Seu ID de Usuário (para log): <span class="font-mono bg-gray-200 text-gray-800 px-2 py-0.5 rounded-md" id="current-user-id-display">Carregando...</span>
                     </p>
                     
@@ -232,9 +235,11 @@
                         <span>+ Cadastrar Gestão</span>
                     </button>
                     <button id="btn-open-sector-modal" class="hidden flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">
-                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
+                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
                         <span>+ Cadastrar Setor</span>
                     </button>
+
+                    <!-- Botão do Supervisor/Master -->
                     <button id="btn-open-employee-modal" class="hidden flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition duration-150">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                         <span>+ Cadastrar Colaborador</span>
@@ -247,6 +252,7 @@
                     </button>
                 </div>
             </div>
+
 
             <!-- Visão: Lançamento -->
             <div id="view-launch" class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -274,7 +280,8 @@
                             <div>
                                 <label for="base-value" class="block text-sm font-medium text-gray-700">Valor Base Variável (R$)</label>
                                 <div class="mt-1 flex gap-2">
-                                    <input type="number" id="base-value" placeholder="Ex: 1000.00" class="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" readonly>
+                                    <!-- O atributo 'readonly' é controlado via JS -->
+                                    <input type="number" id="base-value" placeholder="Ex: 1000.00" class="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
                                     <button type="button" id="btn-save-base-value" class="hidden bg-green-600 text-white px-5 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">
                                         Salvar
                                     </button>
@@ -295,6 +302,7 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Insira as pontuações</label>
+                                    <!-- Layout em Grid (2 colunas) -->
                                     <div id="indices-container" class="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-md min-h-[100px] flex items-center justify-center">
                                         <p class="text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>
                                     </div>
@@ -444,12 +452,11 @@
                     </div>
                     <div>
                         <label for="supervisor-sector" class="block text-sm font-medium text-gray-700">Setor do Supervisor</label>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 items-center">
                             <select id="supervisor-sector" class="flex-1 mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white" required>
                                 <option value="">-- Selecione um setor --</option>
                                 <!-- Opções carregadas via JS -->
                             </select>
-                            <!-- O botão "+ Novo Setor" foi REMOVIDO daqui -->
                         </div>
                     </div>
                     <div>
@@ -460,19 +467,19 @@
                         <label for="supervisor-password" class="block text-sm font-medium text-gray-700">Senha (para login)</label>
                         <input type="password" id="supervisor-password" placeholder="Mínimo 6 caracteres" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
                         <div class="flex items-center mt-2">
-                             <input type="checkbox" id="show-password-supervisor" class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
-                             <label for="show-password-supervisor" class="ml-2 block text-sm text-gray-900">Mostrar senha</label>
+                            <input type="checkbox" id="show-password" class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
+                            <label for="show-password" class="ml-2 block text-sm text-gray-900">Mostrar senha</label>
                         </div>
                     </div>
                 </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="btn-cancel bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300" data-modal="supervisor-modal">Cancelar</button>
-                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700">Salvar Supervisor</button>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-supervisor-modal" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Salvar Supervisor</button>
                 </div>
             </form>
         </div>
     </div>
-
+    
     <!-- Modal: Cadastrar/Editar Setor (Master) -->
     <div id="sector-modal" class="modal">
         <div class="modal-content">
@@ -480,52 +487,55 @@
             <h2 class="text-xl font-bold mb-6" id="sector-modal-title">Cadastrar Novo Setor</h2>
             <form id="sector-form">
                 <input type="hidden" id="edit-sector-id">
-                <div>
-                    <label for="sector-name" class="block text-sm font-medium text-gray-700">Nome do Setor</label>
-                    <input type="text" id="sector-name" placeholder="Ex: Vendas" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
+                <div class="space-y-4">
+                    <div>
+                        <label for="sector-name" class="block text-sm font-medium text-gray-700">Nome do Setor</label>
+                        <input type="text" id="sector-name" placeholder="Ex: Vendas" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
+                    </div>
+                    
+                    <!-- ADMIN MASTER: Apenas cadastra o nome. Índices foram removidos. -->
                 </div>
-                
-                <!-- A definição de índices foi REMOVIDA para o Master -->
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-sector-modal" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                    <!-- O botão é re-habilitado via JS após remover a validação de 100% -->
+                    <button type="submit" id="btn-submit-sector-form" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Salvar Setor</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="btn-cancel bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300" data-modal="sector-modal">Cancelar</button>
-                    <button type="submit" id="btn-save-sector" class="bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700">Salvar Setor</button>
+    <!-- Modal: Gerenciar Metas (Índices) do Setor (Supervisor) -->
+    <div id="sector-indices-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-sector-indices-modal">&times;</span>
+            <h2 class="text-xl font-bold mb-6">Gerenciar Metas (Índices)</h2>
+            <form id="sector-indices-form">
+                <input type="hidden" id="edit-indices-sector-id">
+                <div class="space-y-4">
+                    <div>
+                        <label for="sector-indices-name" class="block text-sm font-medium text-gray-700">Setor</label>
+                        <input type="text" id="sector-indices-name" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100" readonly>
+                    </div>
+                    
+                    <hr>
+                    <label class="block text-sm font-medium text-gray-700">Defina os Índices:</label>
+                    <div id="indices-list" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                        <!-- Campos de índice dinâmicos -->
+                    </div>
+                    <button type="button" id="add-index-field" class="text-sm text-red-600 font-semibold hover:text-red-800">+ Adicionar Índice</button>
+                
+                    <div class="flex justify-end items-center mt-4 pt-4 border-t">
+                        <span id="indices-total-percentage" class="text-lg font-bold text-gray-800">Total: 0%</span>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-sector-indices-modal" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                    <button type="submit" id="btn-submit-indices-form" class.disabled="true" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Salvar Índices</button>
                 </div>
             </form>
         </div>
     </div>
     
-    <!-- Modal: Gerenciar Metas (Supervisor) -->
-    <div id="indices-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="close-indices-modal">&times;</span>
-            <h2 class="text-xl font-bold mb-6">Gerenciar Metas (Índices)</h2>
-            <form id="indices-form">
-                <input type="hidden" id="edit-indices-sector-id">
-                <div class="space-y-4">
-                    <div>
-                        <label for="indices-sector-name" class="block text-sm font-medium text-gray-700">Setor</label>
-                        <input type="text" id="indices-sector-name" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Defina os Índices:</label>
-                        <div id="indices-list" class="mt-2 space-y-3">
-                            <!-- Índices dinâmicos serão inseridos aqui -->
-                        </div>
-                        <button type="button" id="btn-add-indice" class="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium">+ Adicionar Índice</button>
-                    </div>
-                    <div class="pt-2 text-right">
-                        <span class="text-lg font-bold" id="indices-total-percent">Total: 0%</span>
-                    </div>
-                </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="btn-cancel bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300" data-modal="indices-modal">Cancelar</button>
-                    <button type="submit" id="btn-save-indices" class="bg-orange-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-orange-600">Salvar Índices</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Modal: Cadastrar/Editar Colaborador -->
     <div id="employee-modal" class="modal">
         <div class="modal-content">
@@ -540,16 +550,16 @@
                     </div>
                     <div>
                         <label for="employee-sector" class="block text-sm font-medium text-gray-700">Setor do Colaborador</label>
-                        <!-- O Supervisor (não-master) verá este campo desabilitado e preenchido com seu setor -->
+                        <!-- O select é populado e travado (se for supervisor) via JS -->
                         <select id="employee-sector" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white" required>
                             <option value="">-- Selecione um setor --</option>
                             <!-- Opções carregadas via JS -->
                         </select>
                     </div>
                 </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="btn-cancel bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300" data-modal="employee-modal">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700">Salvar Colaborador</button>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-employee-modal" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Salvar Colaborador</button>
                 </div>
             </form>
         </div>
@@ -558,39 +568,52 @@
     <!-- Modal: Confirmação de Exclusão -->
     <div id="delete-confirm-modal" class="modal">
         <div class="modal-content">
-            <h2 class="text-xl font-bold mb-4">Confirmar Exclusão</h2>
-            <p id="delete-confirm-message">Você tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
-            <div class="mt-6 flex justify-end gap-3">
-                <button type="button" class="btn-cancel bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300" data-modal="delete-confirm-modal">Cancelar</button>
-                <button id="btn-delete-confirm" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700">Excluir</button>
+            <h2 class="text-xl font-bold text-gray-900">Confirmar Exclusão</h2>
+            <p class="text-gray-600 mt-4 mb-6" id="delete-confirm-message">Você tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="btn-cancel-delete" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                <button type="button" id="btn-confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Excluir</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Aviso (para erros de validação, etc) -->
+    <!-- Modal: Aviso Genérico -->
     <div id="alert-modal" class="modal">
         <div class="modal-content">
-            <h2 class="text-xl font-bold mb-4" id="alert-modal-title">Aviso</h2>
-            <p id="alert-modal-message">Mensagem de aviso.</p>
-            <div class="mt-6 flex justify-end">
-                <button id="btn-alert-ok" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700">OK</button>
+            <h2 class="text-xl font-bold text-gray-900" id="alert-title">Aviso</h2>
+            <p class="text-gray-600 mt-4 mb-6" id="alert-message">Mensagem de aviso.</p>
+            <div class="flex justify-end">
+                <button type="button" id="btn-close-alert" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmação de Férias -->
+    <div id="vacation-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold text-gray-900">Status do Colaborador</h2>
+            <p class="text-gray-600 mt-4 mb-6" id="vacation-message">O colaborador [Nome] está ou esteve de férias neste mês de referência?</p>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="btn-vacation-no" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Não (Lançar Notas)</button>
+                <button type="button" id="btn-vacation-yes" class="bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition duration-150">Sim (Lançar Férias R$ 0,00)</button>
             </div>
         </div>
     </div>
 
 
-    <!-- Firebase SDK -->
+    <!-- Script principal (Firebase e Lógica) -->
     <script type="module">
-        // Importações do Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // --- IMPORTS DO FIREBASE ---
+        // ATENÇÃO: Os imports DEVEM ficar no topo do script, fora de qualquer função.
+        import { initializeApp, } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
-            getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, 
-            onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp
+            getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, 
+            onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp,
+            increment, orderBy
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-         // --- IDs Globais ---
+      // --- IDs Globais ---
         
         // ATENÇÃO: Cole seu 'firebaseConfig' (da Etapa 3 do guia) AQUI EMBAIXO:
         const firebaseConfig = {
@@ -603,51 +626,58 @@
         };
  // Este é o "caminho" no banco de dados. NÃO use espaços.
         const appId = 'remuneracao';
+
         // --- Variáveis Globais de Estado ---
         let db, auth;
-        let currentUserId = null; // ID do Firebase (Anônimo)
-        let currentSupervisor = null; // Objeto do supervisor logado
+        let currentUserId = null; // ID anônimo do Firebase
+        let currentSupervisorId = null; // ID do supervisor logado (se for o caso)
+        let currentSupervisorSectorId = null;
         let isMaster = false;
         let isSupervisor = false;
         let isRhUser = false;
-        
-        let globalSectors = []; // Armazena os setores carregados
-        let globalEmployees = []; // Armazena os colaboradores carregados
-        let globalHistory = []; // Armazena o histórico para o CSV e ordenação
-        
-        let currentSort = { column: 'createdAt', direction: 'desc' }; // Ordenação padrão
-        let currentEditingLaunchId = null; // ID do lançamento sendo editado
+        let currentEditingLaunchId = null; // Guarda o ID do lançamento sendo editado
 
-        // --- Elementos da UI: Login ---
+        // Listas locais para validação e filtros
+        let globalSectors = [];
+        let globalEmployees = [];
+        let globalSupervisors = [];
+        let globalHistory = []; // Para CSV e ordenação
+
+        // Estado da Tabela de Histórico
+        let currentHistorySort = { column: 'createdAt', direction: 'desc' };
+        
+        // --- Elementos da UI (Login) ---
         const loginScreen = document.getElementById('login-screen');
         const appContent = document.getElementById('app-content');
         const loginForm = document.getElementById('login-form');
+        const loginUsername = document.getElementById('login-username');
+        const loginPassword = document.getElementById('login-password');
         const loginError = document.getElementById('login-error');
-
-        // --- Elementos da UI: Cabeçalho ---
-        const btnViewLaunch = document.getElementById('btn-view-launch');
-        const btnViewAdmin = document.getElementById('btn-view-admin');
         const btnLogout = document.getElementById('btn-logout');
 
-        // --- Elementos da UI: Painel de Botões ---
-        const adminControls = document.getElementById('admin-controls');
+        // --- Elementos da UI (Conteúdo Principal) ---
         const userIdLog = document.getElementById('user-id-log');
         const currentUserIdDisplay = document.getElementById('current-user-id-display');
-        const btnOpenSupervisorModal = document.getElementById('btn-open-supervisor-modal');
-        const btnOpenSectorModal = document.getElementById('btn-open-sector-modal');
-        const btnOpenEmployeeModal = document.getElementById('btn-open-employee-modal');
-        const btnManageSectorIndices = document.getElementById('btn-manage-sector-indices');
-        const masterButtons = document.getElementById('master-buttons'); // Contêiner dos botões Master
-
-        // --- Elementos da UI: Visões (Telas) ---
+        const adminControls = document.getElementById('admin-controls');
+        
+        // Botões de navegação
+        const btnViewLaunch = document.getElementById('btn-view-launch');
+        const btnViewAdmin = document.getElementById('btn-view-admin');
+        
+        // Vistas (Telas)
         const viewLaunch = document.getElementById('view-launch');
         const viewAdmin = document.getElementById('view-admin');
 
-        // --- Elementos da UI: Abas (Painel de Gestão) ---
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
+        // Botões de Ação (Master)
+        const masterButtons = document.getElementById('master-buttons');
+        const btnOpenSupervisorModal = document.getElementById('btn-open-supervisor-modal');
+        const btnOpenSectorModal = document.getElementById('btn-open-sector-modal');
+        
+        // Botões de Ação (Supervisor)
+        const btnOpenEmployeeModal = document.getElementById('btn-open-employee-modal');
+        const btnManageSectorIndices = document.getElementById('btn-manage-sector-indices');
 
-        // --- Elementos da UI: Formulário de Lançamento ---
+        // Formulário de Lançamento
         const launchForm = document.getElementById('launch-form');
         const monthRefInput = document.getElementById('month-ref');
         const sectorFilterContainer = document.getElementById('sector-filter-container');
@@ -655,81 +685,203 @@
         const baseValueInput = document.getElementById('base-value');
         const btnSaveBaseValue = document.getElementById('btn-save-base-value');
         const baseValueLoading = document.getElementById('base-value-loading');
+        
+        // Campos de Lançamento (Supervisor)
         const supervisorLaunchFields = document.getElementById('supervisor-launch-fields');
         const employeeSelect = document.getElementById('employee-select');
         const indicesContainer = document.getElementById('indices-container');
         const totalCalculated = document.getElementById('total-calculated');
         const btnSubmitLaunch = document.getElementById('btn-submit-launch');
         const btnCancelEdit = document.getElementById('btn-cancel-edit');
-        
-        // --- Elementos da UI: Histórico ---
+
+        // Histórico de Lançamentos
         const historyTable = document.getElementById('historyTable');
         const historyTableBody = document.getElementById('history-table-body');
         const historyLoading = document.getElementById('history-loading');
         const btnDownloadCSV = document.getElementById('btn-download-csv');
         const historyActionHeader = document.getElementById('history-action-header');
+        
+        // Painel de Gestão (Abas)
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const supervisorsTableBody = document.getElementById('supervisors-table-body');
+        const sectorsTableBody = document.getElementById('sectors-table-body');
+        const employeesTableBody = document.getElementById('employees-table-body');
 
-        // --- Elementos da UI: Modais ---
+        // --- Elementos da UI (Modais) ---
+
+        // Modal Supervisor (Gestão)
         const supervisorModal = document.getElementById('supervisor-modal');
         const supervisorForm = document.getElementById('supervisor-form');
         const supervisorModalTitle = document.getElementById('supervisor-modal-title');
-        const supervisorSectorSelect = document.getElementById('supervisor-sector');
-        const showPasswordSupervisor = document.getElementById('show-password-supervisor');
-
+        const editSupervisorId = document.getElementById('edit-supervisor-id');
+        const supervisorName = document.getElementById('supervisor-name');
+        const supervisorSector = document.getElementById('supervisor-sector');
+        const supervisorUsername = document.getElementById('supervisor-username');
+        const supervisorPassword = document.getElementById('supervisor-password');
+        const showPassword = document.getElementById('show-password');
+        const closeSupervisorModal = document.getElementById('close-supervisor-modal');
+        const cancelSupervisorModal = document.getElementById('cancel-supervisor-modal');
+        
+        // Modal Setor (Master)
         const sectorModal = document.getElementById('sector-modal');
         const sectorForm = document.getElementById('sector-form');
         const sectorModalTitle = document.getElementById('sector-modal-title');
-        const sectorNameInput = document.getElementById('sector-name');
-        const btnSaveSector = document.getElementById('btn-save-sector');
+        const editSectorId = document.getElementById('edit-sector-id');
+        const sectorName = document.getElementById('sector-name');
+        const closeSectorModal = document.getElementById('close-sector-modal');
+        const cancelSectorModal = document.getElementById('cancel-sector-modal');
+        const btnSubmitSectorForm = document.getElementById('btn-submit-sector-form');
 
-        const indicesModal = document.getElementById('indices-modal');
-        const indicesForm = document.getElementById('indices-form');
-        const indicesSectorName = document.getElementById('indices-sector-name');
+        // Modal Gerenciar Metas (Supervisor)
+        const sectorIndicesModal = document.getElementById('sector-indices-modal');
+        const sectorIndicesForm = document.getElementById('sector-indices-form');
+        const editIndicesSectorId = document.getElementById('edit-indices-sector-id');
+        const sectorIndicesName = document.getElementById('sector-indices-name');
         const indicesList = document.getElementById('indices-list');
-        const btnAddIndice = document.getElementById('btn-add-indice');
-        const indicesTotalPercent = document.getElementById('indices-total-percent');
-        const btnSaveIndices = document.getElementById('btn-save-indices');
+        const addIndexField = document.getElementById('add-index-field');
+        const indicesTotalPercentage = document.getElementById('indices-total-percentage');
+        const btnSubmitIndicesForm = document.getElementById('btn-submit-indices-form');
+        const closeSectorIndicesModal = document.getElementById('close-sector-indices-modal');
+        const cancelSectorIndicesModal = document.getElementById('cancel-sector-indices-modal');
 
+        // Modal Colaborador
         const employeeModal = document.getElementById('employee-modal');
         const employeeForm = document.getElementById('employee-form');
         const employeeModalTitle = document.getElementById('employee-modal-title');
-        const employeeSectorSelect = document.getElementById('employee-sector');
-        
+        const editEmployeeId = document.getElementById('edit-employee-id');
+        const employeeName = document.getElementById('employee-name');
+        const employeeSector = document.getElementById('employee-sector');
+        const closeEmployeeModal = document.getElementById('close-employee-modal');
+        const cancelEmployeeModal = document.getElementById('cancel-employee-modal');
+
+        // Modal Confirmação Exclusão
         const deleteConfirmModal = document.getElementById('delete-confirm-modal');
         const deleteConfirmMessage = document.getElementById('delete-confirm-message');
-        const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
-
+        const btnCancelDelete = document.getElementById('btn-cancel-delete');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+        
+        // Modal Aviso
         const alertModal = document.getElementById('alert-modal');
-        const alertModalTitle = document.getElementById('alert-modal-title');
-        const alertModalMessage = document.getElementById('alert-modal-message');
-        const btnAlertOk = document.getElementById('btn-alert-ok');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMessage = document.getElementById('alert-message');
+        const btnCloseAlert = document.getElementById('btn-close-alert');
 
-        // --- Caminhos do Firestore ---
-        const getSupervisorsCollection = () => collection(db, 'artifacts', appId, 'supervisors');
-        const getSectorsCollection = () => collection(db, 'artifacts', appId, 'sectors');
-        const getEmployeesCollection = () => collection(db, 'artifacts', appId, 'employees');
-        const getHistoryCollection = () => collection(db, 'artifacts', appId, 'lancamentos');
-        const getBaseValueDoc = (monthYear) => doc(db, 'artifacts', appId, 'baseValues', monthYear);
+        // Modal Férias
+        const vacationModal = document.getElementById('vacation-modal');
+        const vacationMessage = document.getElementById('vacation-message');
+        const btnVacationNo = document.getElementById('btn-vacation-no');
+        const btnVacationYes = document.getElementById('btn-vacation-yes');
+        let vacationEmployee = null; // Guarda o funcionário selecionado para o modal de férias
 
-        // --- Inicialização ---
+
+        // --- CAMINHO DO BANCO DE DADOS (Firestore) ---
+        // Todos os dados são aninhados sob um único documento para segurança e organização.
+        
+        // Caminho base para todos os dados da aplicação
+        const getBasePath = () => doc(db, 'artifacts', appId);
+        
+        // Caminhos para as coleções
+        const getSupervisorsCollection = () => collection(getBasePath(), 'supervisors');
+        const getSectorsCollection = () => collection(getBasePath(), 'sectors');
+        const getEmployeesCollection = () => collection(getBasePath(), 'employees');
+        const getLaunchesCollection = () => collection(getBasePath(), 'launches');
+        const getBaseValuesCollection = () => collection(getBasePath(), 'baseValues');
+
+        // --- FUNÇÕES DE UTILIDADE (Modais) ---
+
+        // Função genérica para mostrar modal
+        const showModal = (modalElement) => {
+            if (modalElement) modalElement.style.display = 'block';
+        };
+
+        // Função genérica para esconder modal
+        const hideModal = (modalElement) => {
+            if (modalElement) modalElement.style.display = 'none';
+        };
 
         // Função para mostrar aviso
         const showMessage = (title, message) => {
-            alertModalTitle.textContent = title;
-            alertModalMessage.textContent = message;
-            alertModal.style.display = 'block';
+            if(alertTitle) alertTitle.textContent = title;
+            if(alertMessage) alertMessage.textContent = message;
+            showModal(alertModal);
         };
         
-        btnAlertOk.addEventListener('click', () => {
-            alertModal.style.display = 'none';
-        });
+        // Fechar modal de aviso
+        if(btnCloseAlert) btnCloseAlert.addEventListener('click', () => hideModal(alertModal));
 
-        // Inicializa o Firebase
-        async function startFirebase() {
+        // Função genérica para fechar modais clicando fora
+        window.onclick = (event) => {
+            if (event.target == supervisorModal) hideModal(supervisorModal);
+            if (event.target == sectorModal) hideModal(sectorModal);
+            if (event.target == employeeModal) hideModal(employeeModal);
+            if (event.target == deleteConfirmModal) hideModal(deleteConfirmModal);
+            if (event.target == alertModal) hideModal(alertModal);
+            if (event.target == sectorIndicesModal) hideModal(sectorIndicesModal);
+            if (event.target == vacationModal) hideModal(vacationModal);
+        };
+
+        // --- NAVEGAÇÃO ENTRE VISÕES (Lançamento / Gestão) ---
+
+        const switchView = (viewName) => {
+            // Elementos das visões
+            const launchView = document.getElementById('view-launch');
+            const adminView = document.getElementById('view-admin');
+            
+            // Botões de navegação
+            const launchBtn = document.getElementById('btn-view-launch');
+            const adminBtn = document.getElementById('btn-view-admin');
+
+            if (viewName === 'admin') {
+                if(launchView) launchView.style.display = 'none';
+                if(adminView) adminView.style.display = 'block';
+                if(launchBtn) {
+                    launchBtn.classList.remove('text-red-600', 'font-semibold', 'bg-red-50');
+                    launchBtn.classList.add('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
+                }
+                if(adminBtn) {
+                    adminBtn.classList.add('text-red-600', 'font-semibold', 'bg-red-50');
+                    adminBtn.classList.remove('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
+                }
+                
+                // CORREÇÃO: Carrega a tabela de supervisores ao mudar para a visão admin
+                renderSupervisorsTable();
+
+            } else { // 'launch'
+                if(launchView) launchView.style.display = 'grid'; // 'grid' para o layout de colunas
+                if(adminView) adminView.style.display = 'none';
+                if(launchBtn) {
+                    launchBtn.classList.add('text-red-600', 'font-semibold', 'bg-red-50');
+                    launchBtn.classList.remove('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
+                }
+                if(adminBtn) {
+                    adminBtn.classList.remove('text-red-600', 'font-semibold', 'bg-red-50');
+                    adminBtn.classList.add('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
+                }
+            }
+        };
+
+        if(btnViewLaunch) btnViewLaunch.addEventListener('click', () => switchView('launch'));
+        if(btnViewAdmin) btnViewAdmin.addEventListener('click', () => switchView('admin'));
+
+        // --- INICIALIZAÇÃO E AUTENTICAÇÃO ---
+
+        // Define o mês atual no input de mês/ano
+        const setDefaultMonth = () => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            if(monthRefInput) monthRefInput.value = `${year}-${month}`;
+        };
+
+        // Inicia o Firebase
+        const startFirebase = async () => {
             // Verifica se a config foi colada
-            if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("COLE_SUA_API_KEY_AQUI")) {
-                showMessage("Erro Crítico", "A 'firebaseConfig' não foi colada no arquivo index.html. Siga a 'Parte 4' do Guia de Publicação.");
+            if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("COLE_SUA_API_KEY_AQUI")) {
                 console.error("Configuração do Firebase ausente no index.html.");
+                // Mostra um erro crítico na tela de login
+                loginError.textContent = "Erro Crítico: A 'firebaseConfig' não foi colada no arquivo index.html. Siga a 'Parte 4' do Guia de Publicação.";
+                loginError.classList.remove('hidden');
                 return;
             }
 
@@ -737,459 +889,744 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                setLogLevel('error'); // Reduz o spam no console
-
-                // Tenta fazer login anônimo para obter um UID para logs
-                await signInAnonymously(auth);
                 
+                // Inicia o login anônimo (para log de ID)
+                await signInAnonymously(auth);
+
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         currentUserId = user.uid;
-                        if(currentUserIdDisplay) {
-                            currentUserIdDisplay.textContent = currentUserId;
-                        }
+                        if(currentUserIdDisplay) currentUserIdDisplay.textContent = currentUserId;
+                        console.log("Firebase Auth (Anônimo) OK. ID de Log:", currentUserId);
                     } else {
-                        console.warn("Usuário anônimo não autenticado.");
+                        console.error("Falha no login anônimo.");
+                        currentUserId = null;
+                        if(currentUserIdDisplay) currentUserIdDisplay.textContent = "Erro de conexão";
                     }
                 });
 
             } catch (error) {
                 console.error("Erro ao inicializar o Firebase:", error);
-                showMessage("Erro de Conexão", `Não foi possível conectar ao banco de dados: ${error.message}`);
+                loginError.textContent = `Erro de Conexão com Firebase. Verifique o console. (${error.message})`;
+                loginError.classList.remove('hidden');
             }
-        }
+        };
 
-        // --- Funções de Login e Permissões ---
-
-        // Listener do formulário de login
+        // --- LÓGICA DE LOGIN (Usuário/Senha) ---
+        
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            loginError.classList.add('hidden');
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value;
             let loggedIn = false;
-            let supervisorData = null;
 
             // 1. Verificar se é o Admin Master
             if (username === 'admin' && password === '12345678') {
-                loggedIn = true;
                 isMaster = true;
-                isSupervisor = false; // Master não é supervisor
+                isSupervisor = false; // Master não é um supervisor comum
                 isRhUser = false;
-                currentSupervisor = { name: 'Admin Master', sectorId: null, sectorName: 'Master' }; // Objeto genérico
+                currentSupervisorId = 'master';
+                loggedIn = true;
             } else {
-                // 2. Se não for Master, verificar no banco de dados de supervisores
+                // 2. Verificar se é um Supervisor cadastrado
                 try {
-                    const q = query(getSupervisorsCollection(), where("username", "==", username));
+                    const q = query(getSupervisorsCollection(), where("username", "==", username), where("password", "==", password));
                     const querySnapshot = await getDocs(q);
                     
                     if (!querySnapshot.empty) {
                         const supervisorDoc = querySnapshot.docs[0];
-                        supervisorData = supervisorDoc.data();
+                        const supervisorData = supervisorDoc.data();
                         
-                        // 3. Verificar a senha
-                        if (supervisorData.password === password) {
-                            loggedIn = true;
-                            isMaster = false;
-                            isSupervisor = true;
-                            currentSupervisor = { id: supervisorDoc.id, ...supervisorData };
-                            
-                            // 4. Verificar se é RH
-                            if (supervisorData.sectorName.toLowerCase() === 'rh') {
-                                isRhUser = true;
-                                isSupervisor = false; // RH é um perfil separado
-                            } else {
-                                isRhUser = false;
-                            }
+                        isMaster = false;
+                        isSupervisor = true;
+                        currentSupervisorId = supervisorDoc.id;
+                        currentSupervisorSectorId = supervisorData.sectorId;
+                        
+                        // 2b. Verificar se é um usuário do RH
+                        const sectorDoc = await getDoc(doc(getSectorsCollection(), currentSupervisorSectorId));
+                        if (sectorDoc.exists() && sectorDoc.data().name.toUpperCase() === 'RH') {
+                            isRhUser = true;
+                            isSupervisor = false; // RH não é um supervisor comum
+                        } else {
+                            isRhUser = false;
                         }
+                        
+                        loggedIn = true;
                     }
                 } catch (error) {
                     console.error("Erro ao verificar supervisor:", error);
-                    showMessage("Erro de Login", "Erro ao conectar ao banco de dados para verificar credenciais.");
+                    loginError.textContent = "Erro ao conectar ao banco. Tente novamente.";
+                    loginError.classList.remove('hidden');
                     return;
                 }
             }
 
-            // 5. Finalizar o login
+            // 3. Finalizar o login
             if (loggedIn) {
                 finalizeLogin();
             } else {
+                loginError.textContent = "Usuário ou senha inválidos.";
                 loginError.classList.remove('hidden');
             }
         });
-        
-        function finalizeLogin() {
-            loginScreen.style.display = 'none';
-            appContent.style.display = 'block';
+
+        // O que acontece após o login ser validado
+        const finalizeLogin = () => {
+            // CORREÇÃO: Esconde a tela de login IMEDIATAMENTE
+            loginScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
             
-            // Sempre reseta para a visão de lançamento ao logar
+            // CORREÇÃO: Redefine a visão padrão para "Lançamento"
             switchView('launch'); 
 
-            // Carrega os dados essenciais
-            loadSectors();
-            loadEmployees();
+            // Define o mês padrão e carrega os dados
+            setDefaultMonth();
+            loadAllData();
             
-            // Define o mês padrão e carrega o histórico
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const defaultMonth = `${year}-${month}`;
-            monthRefInput.value = defaultMonth;
-            
-            loadBaseValue(defaultMonth); // Carrega o valor base para o mês padrão
-            loadHistory(defaultMonth); // Carrega o histórico para o mês padrão
-            
-            // Aplica as permissões (agora que o login está completo)
-            // Esta função NÃO depende mais do loadSectors
+            // CORREÇÃO: Aplica as permissões IMEDIATAMENTE após o login
             applyPermissions();
-        }
+        };
 
-        // Aplica as permissões visuais com base no perfil
-        function applyPermissions() {
-            if (!adminControls || !btnViewAdmin) {
-                console.error("Elementos de UI faltando, não é possível aplicar permissões.");
-                return; // Impede o erro de 'null'
-            }
-
-            // Esconde tudo por padrão
-            adminControls.classList.add('hidden');
-            btnViewAdmin.classList.add('hidden');
-            btnOpenSupervisorModal.classList.add('hidden');
-            btnOpenSectorModal.classList.add('hidden');
-            btnOpenEmployeeModal.classList.add('hidden');
-            btnManageSectorIndices.classList.add('hidden');
-            supervisorLaunchFields.classList.add('hidden');
-            btnSaveBaseValue.classList.add('hidden');
-            sectorFilterContainer.classList.add('hidden');
-            if (historyActionHeader) historyActionHeader.classList.add('hidden');
-            
-            // Esconde a coluna Ação (segurança extra)
-            document.querySelectorAll('.history-action-cell').forEach(cell => cell.classList.add('hidden'));
-
-
-            if (isMaster) {
-                adminControls.classList.remove('hidden');
-                btnViewAdmin.classList.remove('hidden');
-                btnOpenSupervisorModal.classList.remove('hidden');
-                btnOpenSectorModal.classList.remove('hidden');
-                btnOpenEmployeeModal.classList.remove('hidden'); // Master pode cadastrar colaborador em qualquer setor
-                
-                // Master pode definir valor base
-                baseValueInput.readOnly = false;
-                btnSaveBaseValue.classList.remove('hidden');
-                
-                // Master pode filtrar por setor
-                sectorFilterContainer.classList.remove('hidden');
-                
-                // Limpa o formulário de lançamento (Master não lança)
-                supervisorLaunchFields.style.display = 'none';
-
-            } else if (isSupervisor) {
-                adminControls.classList.remove('hidden');
-                btnOpenEmployeeModal.classList.remove('hidden');
-                btnManageSectorIndices.classList.remove('hidden');
-                supervisorLaunchFields.classList.remove('hidden');
-                if (historyActionHeader) historyActionHeader.classList.remove('hidden');
-                
-                document.querySelectorAll('.history-action-cell').forEach(cell => cell.classList.remove('hidden'));
-
-            } else if (isRhUser) {
-                adminControls.classList.remove('hidden'); // Mostra o painel, mas sem botões
-                // RH pode filtrar por setor
-                sectorFilterContainer.classList.remove('hidden');
-                // RH não lança
-                supervisorLaunchFields.style.display = 'none';
-            }
-        }
-        
         // Botão de Sair
         btnLogout.addEventListener('click', () => {
-            // Recarrega a página para forçar o login
-            window.location.reload();
+            // Limpa o estado
+            isMaster = false;
+            isSupervisor = false;
+            isRhUser = false;
+            currentSupervisorId = null;
+            currentSupervisorSectorId = null;
+
+            // Limpa os campos de login
+            loginUsername.value = '';
+            loginPassword.value = '';
+            loginError.classList.add('hidden');
+
+            // Troca as telas
+            appContent.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            
+            // CORREÇÃO: Garante que a tela de login não fique na visão de gestão
+            switchView('launch'); 
         });
 
-        // --- Funções de Navegação (Abas e Visões) ---
-        
-        // Alterna entre "Lançamento" e "Painel de Gestão"
-        function switchView(viewName) {
-            if (viewName === 'admin') {
-                viewLaunch.style.display = 'none';
-                viewAdmin.style.display = 'block';
-                btnViewAdmin.classList.add('text-red-600', 'font-semibold');
-                btnViewLaunch.classList.remove('text-red-600', 'font-semibold');
-                
-                // Carrega (ou recarrega) as tabelas do admin
-                loadAdminTables();
 
-            } else { // 'launch'
-                viewLaunch.style.display = 'grid'; // 'grid' para layout lado a lado
-                viewAdmin.style.display = 'none';
-                btnViewLaunch.classList.add('text-red-600', 'font-semibold');
-                btnViewAdmin.classList.remove('text-red-600', 'font-semibold');
+        // --- APLICAÇÃO DE PERMISSÕES (O que cada um vê) ---
+        // CORREÇÃO: Esta função é chamada DEPOIS do login (em finalizeLogin)
+        // e também é chamada DEPOIS que os dados são carregados (em loadAllData)
+        // para garantir que os botões que dependem de dados (como "Gerenciar Metas") apareçam.
+        const applyPermissions = () => {
+            
+            // Painel de botões de cadastro
+            if (adminControls) {
+                // CORREÇÃO: Verifica se o elemento existe antes de mexer
+                if (isMaster || isSupervisor || isRhUser) {
+                    adminControls.classList.remove('hidden');
+                } else {
+                    adminControls.classList.add('hidden');
+                }
             }
-        }
 
-        btnViewLaunch.addEventListener('click', () => switchView('launch'));
-        btnViewAdmin.addEventListener('click', () => switchView('admin'));
-
-        // Alterna as abas no Painel de Gestão
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.getAttribute('data-tab');
-                
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                tabContents.forEach(content => content.classList.remove('active'));
-                document.getElementById(`tab-${tabId}`).classList.add('active');
+            // Botões do Master
+            const masterEls = [btnOpenSupervisorModal, btnOpenSectorModal, btnViewAdmin];
+            masterEls.forEach(el => {
+                if (el) isMaster ? el.classList.remove('hidden') : el.classList.add('hidden');
             });
-        });
+            // O Master também vê o botão de Colaborador (agora Verde)
+            if (btnOpenEmployeeModal && isMaster) {
+                btnOpenEmployeeModal.classList.remove('hidden');
+            }
+            
+            // Botões do Supervisor (Não-RH)
+            const supervisorEls = [btnManageSectorIndices];
+             supervisorEls.forEach(el => {
+                if (el) isSupervisor ? el.classList.remove('hidden') : el.classList.add('hidden');
+            });
+            // O Supervisor também vê o botão de Colaborador (Azul)
+            if (btnOpenEmployeeModal && isSupervisor) {
+                btnOpenEmployeeModal.classList.remove('hidden');
+            }
+
+            // Painel de Lançamento (Formulário)
+            const masterLaunchFields = [supervisorLaunchFields];
+            
+            if (isMaster || isRhUser) {
+                // Master e RH NÃO podem lançar
+                if(supervisorLaunchFields) supervisorLaunchFields.classList.add('hidden');
+                // Master e RH PODEM ver o filtro de setor
+                if(sectorFilterContainer) sectorFilterContainer.classList.remove('hidden');
+                // Master PODE editar o valor base, RH não
+                if (baseValueInput) baseValueInput.readOnly = !isMaster;
+                if (btnSaveBaseValue) isMaster ? btnSaveBaseValue.classList.remove('hidden') : btnSaveBaseValue.classList.add('hidden');
+                
+            } else if (isSupervisor) {
+                // Supervisor PODE lançar
+                if(supervisorLaunchFields) supervisorLaunchFields.classList.remove('hidden');
+                // Supervisor NÃO PODE ver o filtro de setor
+                if(sectorFilterContainer) sectorFilterContainer.classList.add('hidden');
+                // Supervisor NÃO PODE editar o valor base
+                if(baseValueInput) baseValueInput.readOnly = true;
+                if(btnSaveBaseValue) btnSaveBaseValue.classList.add('hidden');
+            }
+            
+            // Histórico (Coluna Ação)
+            // Esconde a coluna Ação para Master e RH
+            const actionCells = document.querySelectorAll('#history-action-header, [data-cell-type="action"]');
+            actionCells.forEach(cell => {
+                if (cell) (isMaster || isRhUser) ? cell.classList.add('hidden') : cell.classList.remove('hidden');
+            });
+        };
+
+
+        // --- CARREGAMENTO DE DADOS (Listeners do Firestore) ---
         
-        function loadAdminTables() {
-            // Carrega os dados das 3 tabelas do painel
-            renderSupervisorsTable();
-            renderSectorsTable();
-            renderEmployeesTable();
-        }
-
-        // --- Funções de Carregamento de Dados (Firestore Listeners) ---
-
-        // Carrega (e ouve) SETORES
-        function loadSectors() {
-            try {
-                onSnapshot(getSectorsCollection(), (snapshot) => {
-                    globalSectors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    globalSectors.sort((a, b) => a.name.localeCompare(b.name));
-                    
-                    // Atualiza todos os <select> de setor
-                    updateSectorSelects();
-                    
-                }, (error) => {
-                    console.error("Erro ao carregar setores: ", error);
-                    showMessage("Erro de Leitura", "Não foi possível carregar os setores.");
-                    // IMPORTANTE: Aplicar permissões mesmo se o load falhar,
-                    // caso contrário o Admin Master não vê os botões para CRIAR o primeiro setor.
-                    applyPermissions();
-                });
-            } catch(e) {
-                console.error("Erro crítico no listener de setores:", e);
-                applyPermissions(); // Garante que os botões apareçam mesmo em erro
-            }
-        }
-
-        // Carrega (e ouve) COLABORADORES
-        function loadEmployees() {
-            let q = getEmployeesCollection();
-            
-            // Se for Supervisor (não-RH), filtra colaboradores pelo setor dele
-            if (isSupervisor && !isRhUser && currentSupervisor.sectorId) {
-                q = query(getEmployeesCollection(), where("sectorId", "==", currentSupervisor.sectorId));
-            }
-            
-            onSnapshot(q, (snapshot) => {
-                globalEmployees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                globalEmployees.sort((a, b) => a.name.localeCompare(b.name));
+        // Função principal que carrega todos os dados
+        const loadAllData = () => {
+            // Ouvinte dos Setores (necessário para todos os perfis)
+            const qSectors = query(getSectorsCollection());
+            onSnapshot(qSectors, (snapshot) => {
+                globalSectors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                // Atualiza o <select> de colaborador (no formulário de lançamento)
-                updateEmployeeSelect();
+                // Popula os selects que dependem de setores (no Painel de Gestão e no formulário de Colaborador)
+                populateSectorSelects(globalSectors);
                 
+                // Carrega os outros dados que dependem dos setores (ex: Colaboradores)
+                loadEmployees();
+                loadHistory(); // O histórico depende dos nomes dos setores
+                renderSectorsTable(); // Desenha a tabela de setores no painel de gestão
+
             }, (error) => {
-                console.error("Erro ao carregar colaboradores: ", error);
-                showMessage("Erro de Leitura", "Não foi possível carregar os colaboradores.");
+                console.error("Erro ao carregar setores:", error);
+                // CORREÇÃO: Mesmo com erro, aplica permissões para os botões aparecerem
+                applyPermissions(); 
             });
-        }
-        
-        // Carrega (e ouve) o VALOR BASE do mês
-        function loadBaseValue(monthYear) {
-            if (!monthYear) {
-                baseValueInput.value = '';
-                return;
-            }
-            baseValueLoading.classList.remove('hidden');
-            baseValueInput.classList.add('hidden');
             
-            try {
-                const docRef = getBaseValueDoc(monthYear);
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        baseValueInput.value = docSnap.data().value;
-                    } else {
-                        baseValueInput.value = ''; // Limpa se não houver valor salvo
-                    }
-                    baseValueLoading.classList.add('hidden');
-                    baseValueInput.classList.remove('hidden');
-                }, (error) => {
-                    console.error("Erro ao carregar valor base: ", error);
-                    baseValueLoading.classList.add('hidden');
-                    baseValueInput.classList.remove('hidden');
-                });
-            } catch (error) {
-                 console.error("Erro crítico no listener do valor base: ", error);
-                 baseValueLoading.classList.add('hidden');
-                 baseValueInput.classList.remove('hidden');
-            }
-        }
-
-        // Carrega (e ouve) o HISTÓRICO
-        let unsubscribeHistory = null; // Variável para guardar a função de "parar de ouvir"
-        
-        function loadHistory(monthYear, sectorId = 'all') {
-            // 1. Para de "ouvir" o histórico anterior (se houver)
-            if (unsubscribeHistory) {
-                unsubscribeHistory();
-            }
-
-            historyTableBody.innerHTML = ''; // Limpa a tabela
-            historyLoading.classList.remove('hidden'); // Mostra "Carregando..."
-            globalHistory = []; // Limpa o array global
-
-            if (!monthYear) {
-                historyLoading.innerHTML = '<td colspan="8" class="text-center py-6 text-gray-500">Selecione um mês para ver o histórico.</td>';
-                return;
-            }
-            
-            try {
-                // 2. Cria a nova query (consulta)
-                let constraints = [where("monthRef", "==", monthYear)];
-                
-                // Se for Supervisor (não-RH), filtra pelo setor dele
-                if (isSupervisor && !isRhUser) {
-                    constraints.push(where("sectorId", "==", currentSupervisor.sectorId));
-                } 
-                // Se for Master/RH e selecionou um setor específico
-                else if ((isMaster || isRhUser) && sectorId !== 'all') {
-                    constraints.push(where("sectorId", "==", sectorId));
+            // Carrega os supervisores (para validação e Painel de Gestão)
+            const qSupervisors = query(getSupervisorsCollection());
+            onSnapshot(qSupervisors, (snapshot) => {
+                globalSupervisors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Desenha a tabela de supervisores (apenas se a visão admin estiver ativa)
+                if (viewAdmin.style.display === 'block') {
+                    renderSupervisorsTable();
                 }
-                
-                const q = query(getHistoryCollection(), ...constraints);
+            });
 
-                // 3. Começa a "ouvir" a nova consulta
-                unsubscribeHistory = onSnapshot(q, (snapshot) => {
-                    globalHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    
-                    // Aplica a ordenação atual
-                    sortHistory();
-                    renderHistoryTable(); // Desenha a tabela
-                    
-                }, (error) => {
-                    console.error("Erro ao carregar histórico: ", error);
-                    historyLoading.innerHTML = '<td colspan="8" class="text-center py-6 text-red-500">Erro ao carregar histórico.</td>';
-                });
+            // Carrega o valor base do mês selecionado
+            loadBaseValue();
+        };
 
-            } catch(e) {
-                 console.error("Erro crítico no listener de histórico: ", e);
-                 historyLoading.innerHTML = '<td colspan="8" class="text-center py-6 text-red-500">Erro crítico ao buscar dados.</td>';
-            }
-        }
-        
-        // --- Funções de Renderização (Desenhar na Tela) ---
-
-        // (Re)Desenha o <select> de setores
-        function updateSectorSelects() {
-            const selects = [supervisorSectorSelect, employeeSectorSelect, sectorFilterSelect];
-            
-            // Guarda o valor que estava selecionado (para não perder ao atualizar)
-            const oldValues = selects.map(s => s ? s.value : null);
-
-            // Limpa as opções (mantendo a primeira)
+        // Popula os dropdowns de setor
+        const populateSectorSelects = (sectors) => {
+            const selects = [supervisorSector, employeeSector, sectorFilterSelect];
             selects.forEach(select => {
-                if (select) {
-                    while (select.options.length > 1) {
-                        select.remove(1);
-                    }
-                }
-            });
-
-            // Adiciona os setores carregados
-            globalSectors.forEach(sector => {
-                const option = new Option(sector.name, sector.id);
-                const option2 = new Option(sector.name, sector.id);
-                const option3 = new Option(sector.name, sector.id);
+                if (!select) return;
                 
-                if (supervisorSectorSelect) supervisorSectorSelect.add(option);
-                if (employeeSectorSelect) employeeSectorSelect.add(option2);
-                if (sectorFilterSelect) sectorFilterSelect.add(option3);
-            });
-            
-            // Restaura os valores antigos (se ainda existirem)
-            selects.forEach((select, index) => {
-                if(select && oldValues[index]) {
-                    select.value = oldValues[index];
+                // Guarda o valor selecionado (se houver)
+                const currentValue = select.value;
+                
+                // Limpa (exceto o primeiro item no filtro)
+                if (select.id === 'sector-filter') {
+                    select.innerHTML = '<option value="all">Todos os Setores</option>';
+                } else {
+                    select.innerHTML = '<option value="">-- Selecione um setor --</option>';
                 }
+
+                // Popula
+                sectors.forEach(sector => {
+                    const option = document.createElement('option');
+                    option.value = sector.id;
+                    option.textContent = sector.name;
+                    select.appendChild(option);
+                });
+                
+                // Restaura o valor selecionado
+                select.value = currentValue;
             });
-        }
+        };
+
+        // Carrega Colaboradores (filtrados por setor, se for supervisor)
+        const loadEmployees = () => {
+            let qEmployees;
+            
+            if (isSupervisor) {
+                // Supervisor: Carrega apenas colaboradores do seu setor
+                qEmployees = query(getEmployeesCollection(), where("sectorId", "==", currentSupervisorSectorId));
+            } else {
+                // Master/RH: Carrega todos
+                qEmployees = query(getEmployeesCollection());
+            }
+
+            onSnapshot(qEmployees, (snapshot) => {
+                globalEmployees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Popula o select de colaborador no formulário de lançamento
+                if(employeeSelect) {
+                    employeeSelect.innerHTML = '<option value="">-- Selecione um colaborador --</option>';
+                    globalEmployees.forEach(emp => {
+                        const option = document.createElement('option');
+                        option.value = emp.id;
+                        option.textContent = emp.name;
+                        employeeSelect.appendChild(option);
+                    });
+                }
+                
+                renderEmployeesTable(); // Atualiza a tabela no painel de gestão
+            }, (error) => {
+                console.error("Erro ao carregar colaboradores:", error);
+            });
+        };
+
+        // Carrega o Valor Base (depende do Mês de Referência)
+        const loadBaseValue = async () => {
+            const month = monthRefInput.value; // Formato "YYYY-MM"
+            if (!month) {
+                if(baseValueInput) baseValueInput.value = '';
+                return;
+            }
+
+            if(baseValueLoading) baseValueLoading.classList.remove('hidden');
+            if(baseValueInput) baseValueInput.classList.add('hidden');
+            
+            try {
+                const docRef = doc(getBaseValuesCollection(), month);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    if(baseValueInput) baseValueInput.value = docSnap.data().value;
+                } else {
+                    if(baseValueInput) baseValueInput.value = ''; // Nenhum valor salvo para este mês
+                }
+            } catch (error) {
+                console.error("Erro ao carregar valor base:", error);
+                if(baseValueInput) baseValueInput.value = '';
+            } finally {
+                if(baseValueLoading) baseValueLoading.classList.add('hidden');
+                if(baseValueInput) baseValueInput.classList.remove('hidden');
+            }
+        };
         
-        // (Re)Desenha o <select> de colaboradores
-        function updateEmployeeSelect() {
-            const oldValue = employeeSelect.value;
-            while (employeeSelect.options.length > 1) {
-                employeeSelect.remove(1);
+        // Salva o Valor Base (Apenas Master)
+        if(btnSaveBaseValue) btnSaveBaseValue.addEventListener('click', async () => {
+            const month = monthRefInput.value;
+            const value = parseFloat(baseValueInput.value);
+
+            if (!month) {
+                showMessage("Erro", "Selecione um Mês de Referência primeiro.");
+                return;
+            }
+            if (isNaN(value) || value < 0) {
+                 showMessage("Erro", "Insira um valor base válido.");
+                return;
+            }
+
+            try {
+                const docRef = doc(getBaseValuesCollection(), month);
+                await setDoc(docRef, { value: value });
+                showMessage("Sucesso", `Valor base de R$ ${value.toFixed(2)} salvo para ${month}.`);
+            } catch (error) {
+                console.error("Erro ao salvar valor base:", error);
+                showMessage("Erro", "Não foi possível salvar o valor base.");
+            }
+        });
+
+        // --- LÓGICA DO HISTÓRICO (Carregar, Ordenar, CSV) ---
+
+        // Carrega Histórico (filtrado por Mês e Setor)
+        const loadHistory = () => {
+            const month = monthRefInput.value; // "YYYY-MM"
+            const sectorFilter = sectorFilterSelect.value; // ID do setor ou "all"
+
+            if (!month) {
+                if(historyLoading) historyLoading.classList.remove('hidden');
+                if(historyLoading) historyLoading.textContent = "Selecione um mês para ver o histórico.";
+                return;
+            }
+
+            if(historyLoading) historyLoading.classList.remove('hidden');
+            if(historyLoading) historyLoading.textContent = "Carregando histórico...";
+            
+            let qHistory;
+            
+            if (isSupervisor) {
+                // Supervisor: Filtra por mês E pelo seu setor
+                qHistory = query(getLaunchesCollection(), 
+                    where("monthRef", "==", month), 
+                    where("sectorId", "==", currentSupervisorSectorId)
+                );
+            } else {
+                // Master/RH: Filtra por mês E (opcionalmente) por setor
+                if (sectorFilter === 'all') {
+                    qHistory = query(getLaunchesCollection(), where("monthRef", "==", month));
+                } else {
+                    qHistory = query(getLaunchesCollection(), 
+                        where("monthRef", "==", month), 
+                        where("sectorId", "==", sectorFilter)
+                    );
+                }
             }
             
-            globalEmployees.forEach(emp => {
-                // Adiciona o nome do setor ao lado do nome (se não for óbvio)
-                const empName = (isMaster || isRhUser) ? `${emp.name} (${emp.sectorName})` : emp.name;
-                const option = new Option(empName, emp.id);
-                employeeSelect.add(option);
+            // Ouvinte do Histórico
+            onSnapshot(qHistory, (snapshot) => {
+                globalHistory = []; // Limpa o array global
+                
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    const sector = globalSectors.find(s => s.id === data.sectorId);
+                    
+                    globalHistory.push({
+                        id: doc.id,
+                        ...data,
+                        // Adiciona dados resolvidos para ordenação
+                        sectorName: sector ? sector.name : 'Desconhecido',
+                        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(0) // Converte Timestamp
+                    });
+                });
+                
+                renderHistoryTable(); // Desenha a tabela com os dados novos
+
+            }, (error) => {
+                console.error("Erro ao carregar histórico: ", error);
+                if(historyLoading) historyLoading.textContent = "Erro ao carregar histórico.";
+                globalHistory = [];
+                renderHistoryTable();
+            });
+        };
+        
+        // Desenha o Histórico na tela (com ordenação)
+        const renderHistoryTable = () => {
+            // Limpa a tabela (mantendo o cabeçalho)
+            if(historyTableBody) historyTableBody.innerHTML = ''; 
+
+            if (globalHistory.length === 0) {
+                if(historyLoading) historyLoading.classList.remove('hidden');
+                historyLoading.textContent = "Nenhum lançamento encontrado para este mês.";
+                // Adiciona a linha de "Nenhum lançamento" de volta
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="8" class="text-center py-6 text-gray-500">Nenhum lançamento encontrado para este mês.</td>`;
+                if(historyTableBody) historyTableBody.appendChild(tr);
+                return;
+            }
+            
+            if(historyLoading) historyLoading.classList.add('hidden');
+
+            // 1. Ordenar os dados
+            const sortedHistory = [...globalHistory].sort((a, b) => {
+                const col = currentHistorySort.column;
+                const dir = currentHistorySort.direction === 'asc' ? 1 : -1;
+                
+                let valA = a[col];
+                let valB = b[col];
+
+                // Tratamento para valores nulos ou indefinidos
+                if (valA == null) valA = col === 'totalValue' || col === 'baseValue' ? -Infinity : '';
+                if (valB == null) valB = col === 'totalValue' || col === 'baseValue' ? -Infinity : '';
+
+                if (col === 'totalValue' || col === 'baseValue') {
+                    return (valA - valB) * dir;
+                }
+                if (col === 'createdAt') {
+                    return (valA.getTime() - valB.getTime()) * dir;
+                }
+                return valA.toString().localeCompare(valB.toString()) * dir;
             });
             
-            employeeSelect.value = oldValue;
-        }
-        
-        // Desenha os campos de pontuação (índices)
-        function renderIndices(employeeId) {
-            indicesContainer.innerHTML = ''; // Limpa
-            indicesContainer.classList.remove('grid-layout');
+            // 2. Atualizar setas de ordenação no cabeçalho
+            document.querySelectorAll('#historyTable th[data-sort]').forEach(th => {
+                const arrow = th.querySelector('.sort-arrow');
+                if (!arrow) return;
+                
+                if (th.dataset.sort === currentHistorySort.column) {
+                    arrow.classList.add('active');
+                    arrow.textContent = currentHistorySort.direction === 'asc' ? '▲' : '▼';
+                } else {
+                    arrow.classList.remove('active');
+                    arrow.textContent = '';
+                }
+            });
 
+            // 3. Desenhar linhas
+            sortedHistory.forEach(launch => {
+                const tr = document.createElement('tr');
+                tr.classList.add('hover:bg-gray-50');
+                
+                // Formata a data de lançamento
+                const launchedAt = launch.createdAt instanceof Date ? 
+                    launch.createdAt.toLocaleString('pt-BR', { 
+                        day: '2-digit', month: '2-digit', year: 'numeric', 
+                        hour: '2-digit', minute: '2-digit' 
+                    }) : 'Data inválida';
+
+                // Formata valores monetários
+                const baseValueBRL = `R$ ${launch.baseValue.toFixed(2).replace('.', ',')}`;
+                const totalValueBRL = `R$ ${launch.totalValue.toFixed(2).replace('.', ',')}`;
+                
+                // Coluna Detalhes
+                let detailsHtml = '';
+                if (launch.status === 'FÉRIAS') {
+                    detailsHtml = `<span class="font-medium text-blue-600">FÉRIAS</span>`;
+                } else {
+                    detailsHtml = `<button class="text-red-600 hover:text-red-800 font-medium" data-launch-id="${launch.id}">Ver +</button>`;
+                }
+
+                // Coluna Ação (Editar/Excluir)
+                // data-cell-type é usado pela função applyPermissions para esconder a célula
+                let actionHtml = '';
+                if (launch.status === 'FÉRIAS') {
+                    actionHtml = '---';
+                } else {
+                     actionHtml = `
+                        <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${launch.id}">Editar</button>
+                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${launch.id}">Excluir</button>
+                    `;
+                }
+                
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${launch.monthRef}</td>
+                    <td class="px-4 py-3">${launch.employeeName}</td>
+                    <td class="px-4 py-3">${launch.sectorName}</td>
+                    <td class="px-4 py-3">${baseValueBRL}</td>
+                    <td class="px-4 py-3 font-bold ${launch.status === 'FÉRIAS' ? 'text-blue-600' : 'text-red-600'}">${totalValueBRL}</td>
+                    <td class="px-4 py-3 text-sm text-gray-600">${launchedAt}</td>
+                    <td class="px-4 py-3 details-cell">${detailsHtml}</td>
+                    <td class="px-4 py-3 action-cell" data-cell-type="action">${actionHtml}</td>
+                `;
+
+                // Sub-linha de Detalhes (Scores)
+                const trDetails = document.createElement('tr');
+                trDetails.id = `details-${launch.id}`;
+                trDetails.classList.add('hidden', 'bg-gray-50');
+                
+                const scoresHtml = launch.scores.map(s => 
+                    `<li class="text-sm text-gray-700">${s.name}: <span class="font-medium">${s.score} / ${s.max}</span></li>`
+                ).join('');
+                
+                trDetails.innerHTML = `<td colspan="8" class="px-8 py-4"><ul class="list-disc list-inside">${scoresHtml}</ul></td>`;
+                
+                if(historyTableBody) {
+                    historyTableBody.appendChild(tr);
+                    historyTableBody.appendChild(trDetails);
+                }
+            });
+            
+            // CORREÇÃO: Aplica permissões DEPOIS de desenhar a tabela,
+            // para garantir que a coluna "Ação" seja escondida se necessário.
+            applyPermissions();
+        };
+        
+        // Lógica de Ordenação do Histórico
+        document.querySelectorAll('#historyTable th[data-sort]').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.dataset.sort;
+                if (!column || ['details', 'action'].includes(column)) return; // Não ordena por detalhes ou ação
+
+                if (currentHistorySort.column === column) {
+                    // Inverte a direção
+                    currentHistorySort.direction = currentHistorySort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    // Nova coluna, padrão ascendente
+                    currentHistorySort.column = column;
+                    currentHistorySort.direction = 'asc';
+                }
+                renderHistoryTable(); // Redesenha a tabela com a nova ordenação
+            });
+        });
+        
+        // Lógica para Download CSV
+        if(btnDownloadCSV) btnDownloadCSV.addEventListener('click', () => {
+            if (globalHistory.length === 0) {
+                showMessage("Aviso", "Não há dados no histórico para exportar.");
+                return;
+            }
+            
+            let csvContent = "";
+            
+            // Cabeçalho (dinâmico baseado nos índices)
+            // Pega o primeiro lançamento para descobrir os nomes dos índices
+            const firstLaunchScores = globalHistory[0].scores;
+            let headers = ["MesRef", "Colaborador", "Setor", "ValorBase", "ValorTotal", "LancadoEm", "Status"];
+            
+            // Adiciona cabeçalhos dinâmicos para os índices
+            if (firstLaunchScores) {
+                firstLaunchScores.forEach(s => {
+                    headers.push(`Indice_${s.name}`);
+                    headers.push(`Score_${s.name}`);
+                    headers.push(`Max_${s.name}`);
+                });
+            }
+            
+            // CORREÇÃO: Usar Ponto e Vírgula (;) para o Excel (Brasil)
+            csvContent += headers.join(';') + '\r\n';
+
+            // Linhas
+            globalHistory.forEach(launch => {
+                const createdAt = launch.createdAt instanceof Date ? launch.createdAt.toISOString() : 'Data inválida';
+                let row = [
+                    launch.monthRef,
+                    `"${launch.employeeName}"`, // Aspas para nomes
+                    `"${launch.sectorName}"`,
+                    launch.baseValue.toFixed(2),
+                    launch.totalValue.toFixed(2),
+                    createdAt,
+                    launch.status || '' // Adiciona status (ex: "FÉRIAS")
+                ];
+                
+                // Adiciona scores dinâmicos
+                if (launch.scores) {
+                    launch.scores.forEach(s => {
+                        row.push(`"${s.name}"`);
+                        row.push(s.score);
+                        row.push(s.max);
+                    });
+                }
+                
+                csvContent += row.join(';') + '\r\n';
+            });
+
+            // Cria e baixa o arquivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            const fileName = `Historico_RV_${monthRefInput.value || 'completo'}.csv`;
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // --- LÓGICA DO FORMULÁRIO DE LANÇAMENTO ---
+        
+        // Atualiza os filtros de histórico quando os campos mudam
+        if(monthRefInput) monthRefInput.addEventListener('change', () => {
+            loadHistory();
+            loadBaseValue(); // Carrega o novo valor base ao mudar o mês
+        });
+        if(sectorFilterSelect) sectorFilterSelect.addEventListener('change', loadHistory);
+
+        // Lógica do Modal de Férias
+        if(employeeSelect) employeeSelect.addEventListener('change', (e) => {
+            const employeeId = e.target.value;
             if (!employeeId) {
-                indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>';
+                renderIndices([]); // Limpa os índices se des-selecionar
+                return;
+            }
+            
+            const employee = globalEmployees.find(emp => emp.id === employeeId);
+            if (!employee) return;
+
+            // Guarda o funcionário selecionado
+            vacationEmployee = employee;
+            
+            // Pergunta sobre férias
+            if(vacationMessage) vacationMessage.textContent = `O colaborador ${employee.name} está ou esteve de férias neste mês de referência?`;
+            showModal(vacationModal);
+        });
+        
+        // Botão "Não" (Férias) - Carrega os índices
+        if(btnVacationNo) btnVacationNo.addEventListener('click', () => {
+            if (!vacationEmployee) return;
+            
+            const sector = globalSectors.find(s => s.id === vacationEmployee.sectorId);
+            if (sector && sector.indices) {
+                renderIndices(sector.indices);
+            } else {
+                renderIndices([]); // Limpa se o setor não tiver índices
+            }
+            
+            // Limpa o estado e fecha o modal
+            vacationEmployee = null;
+            hideModal(vacationModal);
+        });
+
+        // Botão "Sim" (Férias) - Lança R$ 0,00
+        if(btnVacationYes) btnVacationYes.addEventListener('click', async () => {
+            if (!vacationEmployee) return;
+            
+            const month = monthRefInput.value;
+            if (!month) {
+                showMessage("Erro", "Selecione um Mês de Referência primeiro.");
+                return;
+            }
+            
+            // Pega o Valor Base atual (só para registro)
+            const baseValue = parseFloat(baseValueInput.value) || 0;
+
+            const launchData = {
+                monthRef: month,
+                employeeId: vacationEmployee.id,
+                employeeName: vacationEmployee.name,
+                sectorId: vacationEmployee.sectorId,
+                launchedBy: currentUserId, // ID Anônimo (Log)
+                launchedBySupervisor: currentSupervisorId, // ID do Supervisor (Permissão)
+                baseValue: baseValue,
+                totalValue: 0,
+                scores: [], // Sem pontuação
+                status: "FÉRIAS", // Status de Férias
+                createdAt: serverTimestamp()
+            };
+            
+            try {
+                await addDoc(getLaunchesCollection(), launchData);
+                showMessage("Sucesso", `Lançamento de FÉRIAS (R$ 0,00) registrado para ${vacationEmployee.name}.`);
+                
+                // Limpa o formulário
+                launchForm.reset();
+                setDefaultMonth();
+                renderIndices([]);
+                totalCalculated.textContent = "R$ 0,00";
+                
+            } catch (error) {
+                console.error("Erro ao lançar férias:", error);
+                showMessage("Erro", "Não foi possível registrar as férias.");
+            } finally {
+                vacationEmployee = null;
+                hideModal(vacationModal);
+            }
+        });
+        
+        // Desenha os campos de índice (metas)
+        const renderIndices = (indices) => {
+            if(indicesContainer) indicesContainer.innerHTML = ''; // Limpa o contêiner
+            
+            if (!indices || indices.length === 0) {
+                indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Nenhum índice definido para este setor. Peça ao Admin Master ou Supervisor para cadastrá-los.</p>';
+                indicesContainer.classList.remove('grid-layout');
                 calculateTotal();
                 return;
             }
 
-            const employee = globalEmployees.find(e => e.id === employeeId);
-            if (!employee) {
-                indicesContainer.innerHTML = '<p class="text-sm text-red-500">Erro: Colaborador não encontrado.</p>';
-                return;
-            }
-            
-            const sector = globalSectors.find(s => s.id === employee.sectorId);
-            if (!sector || !sector.indices || sector.indices.length === 0) {
-                indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Setor sem índices definidos. Peça ao seu supervisor para cadastrá-los.</p>';
-                return;
-            }
-
-            // Adiciona layout em grid
+            // CORREÇÃO: Adiciona classe para layout em grid
             indicesContainer.classList.add('grid-layout');
-            
-            sector.indices.forEach((indice, index) => {
+
+            indices.forEach(index => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'indice-item';
+                itemDiv.classList.add('index-item');
                 
                 const label = document.createElement('label');
-                label.htmlFor = `indice-${index}`;
-                label.textContent = `${indice.name} (Max: ${indice.percent}%)`;
+                label.setAttribute('for', `index-${index.name}`);
+                label.textContent = `${index.name} (Max: ${index.perc}%)`;
                 
                 const input = document.createElement('input');
                 input.type = 'number';
-                input.id = `indice-${index}`;
-                input.className = 'indice-input';
-                input.placeholder = `0 - ${indice.percent}`;
-                input.setAttribute('data-max', indice.percent);
-                input.setAttribute('data-name', indice.name); // Guarda o nome
-                
-                // Trava para não passar do máximo
+                input.id = `index-${index.name}`;
+                input.dataset.max = index.perc; // Guarda o máximo
+                input.dataset.name = index.name; // Guarda o nome
+                input.placeholder = `0 - ${index.perc}`;
+                input.min = "0";
+                input.max = index.perc; // Define o max (para as setinhas)
+                input.classList.add("score-input", "w-full", "px-3", "py-2", "border", "border-gray-300", "rounded-md", "shadow-sm", "focus:outline-none", "focus:ring-red-500", "focus:border-red-500");
+
+                // Trava de valor máximo (em tempo real)
                 input.addEventListener('input', (e) => {
                     let value = parseFloat(e.target.value);
-                    const max = parseFloat(e.target.getAttribute('data-max'));
+                    const max = parseFloat(e.target.dataset.max);
                     if (value > max) {
                         e.target.value = max;
                     }
                     if (value < 0) {
                         e.target.value = 0;
                     }
-                    calculateTotal();
+                    calculateTotal(); // Recalcula ao digitar
                 });
 
                 itemDiv.appendChild(label);
@@ -1197,1110 +1634,793 @@
                 indicesContainer.appendChild(itemDiv);
             });
             
-            calculateTotal(); // Calcula o total (que será 0)
-        }
-        
-        // Desenha a tabela do Histórico (com dados já carregados e ordenados)
-        function renderHistoryTable() {
-            // Limpa a tabela (mantendo o cabeçalho)
-            historyTableBody.innerHTML = ''; 
-            
-            if (globalHistory.length === 0) {
-                historyLoading.classList.remove('hidden');
-                historyLoading.innerHTML = `<td colspan="8" class="text-center py-6 text-gray-500">Nenhum lançamento encontrado para este mês.</td>`;
-            } else {
-                historyLoading.classList.add('hidden');
-                
-                globalHistory.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
-                    
-                    const totalVal = parseFloat(item.totalValue || 0);
-                    const baseVal = parseFloat(item.baseValue || 0);
+            calculateTotal(); // Calcula uma vez ao renderizar
+        };
 
-                    // Formata a data (se existir)
-                    let formattedDate = 'Data inválida';
-                    if (item.createdAt && typeof item.createdAt.toDate === 'function') {
-                         formattedDate = item.createdAt.toDate().toLocaleString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                    }
-                    
-                    row.innerHTML = `
-                        <td class="px-4 py-3 text-sm text-gray-700">${item.monthRef}</td>
-                        <td class="px-4 py-3 text-sm font-medium text-gray-900">${item.employeeName}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${item.sectorName}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">R$ ${baseVal.toFixed(2)}</td>
-                        <td class="px-4 py-3 text-sm font-bold ${totalVal < (baseVal * 0.9) ? 'text-red-600' : 'text-green-600'}">R$ ${totalVal.toFixed(2)}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${formattedDate}</td>
-                        <td class="px-4 py-3 text-sm">
-                            <button class="btn-toggle-details text-blue-600 hover:text-blue-800 font-medium" data-id="${item.id}">Ver +</button>
-                        </td>
-                        <td class="history-action-cell px-4 py-3 text-sm text-center">
-                            <button class="btn-edit-launch text-blue-600 hover:text-blue-800 font-medium mr-3" data-id="${item.id}">Editar</button>
-                            <button class="btn-delete-launch text-red-600 hover:text-red-800 font-medium" data-id="${item.id}">Excluir</button>
-                        </td>
-                    `;
-                    historyTableBody.appendChild(row);
-                    
-                    // Linha de Detalhes (oculta)
-                    const detailsRow = document.createElement('tr');
-                    detailsRow.id = `details-${item.id}`;
-                    detailsRow.className = 'history-details-row hidden'; // Oculta por padrão
-                    
-                    const detailsCell = document.createElement('td');
-                    detailsCell.colSpan = 8; // Ocupa todas as colunas
-                    
-                    const scoresHtml = item.scores.map(s => `
-                        <li class="text-sm">
-                            <span class="font-medium">${s.name}:</span> 
-                            <span>${s.score} / ${s.max}</span>
-                        </li>
-                    `).join('');
-                    
-                    detailsCell.innerHTML = `
-                        <div>
-                            <p class="font-semibold mb-1">Pontuações Detalhadas:</p>
-                            <ul class="list-disc list-inside space-y-1">${scoresHtml}</ul>
-                        </div>
-                    `;
-                    
-                    detailsRow.appendChild(detailsCell);
-                    historyTableBody.appendChild(detailsRow);
-                });
-            }
-            
-            // Aplica as permissões de visualização (para esconder a coluna Ação se necessário)
-            applyPermissions();
-        }
-
-        // --- Funções de Ordenação (Tabela de Histórico) ---
-        
-        // Adiciona listeners aos cabeçalhos da tabela
-        historyTable.querySelectorAll('thead th[data-sort]').forEach(header => {
-            header.addEventListener('click', () => {
-                const column = header.getAttribute('data-sort');
-                if (column === 'details' || column === 'action') return; // Não ordena por detalhes/ação
-
-                if (currentSort.column === column) {
-                    // Inverte a direção
-                    currentSort.direction = (currentSort.direction === 'asc') ? 'desc' : 'asc';
-                } else {
-                    // Nova coluna
-                    currentSort.column = column;
-                    currentSort.direction = 'asc';
-                }
-                
-                // Atualiza setas
-                historyTable.querySelectorAll('thead .sort-arrow').forEach(arrow => {
-                    arrow.classList.remove('active', 'asc', 'desc');
-                    arrow.innerHTML = '';
-                });
-                const currentArrow = header.querySelector('.sort-arrow');
-                currentArrow.classList.add('active', currentSort.direction);
-                currentArrow.innerHTML = (currentSort.direction === 'asc') ? '&#9650;' : '&#9660;'; // ▲ ou ▼
-
-                sortHistory();
-                renderHistoryTable();
-            });
-        });
-
-        // Ordena o array global `globalHistory`
-        function sortHistory() {
-            globalHistory.sort((a, b) => {
-                let valA = a[currentSort.column];
-                let valB = b[currentSort.column];
-                
-                // Converte tipos para ordenação correta
-                if (currentSort.column === 'baseValue' || currentSort.column === 'totalValue') {
-                    valA = parseFloat(valA || 0);
-                    valB = parseFloat(valB || 0);
-                } else if (currentSort.column === 'createdAt') {
-                    valA = a.createdAt ? a.createdAt.toMillis() : 0;
-                    valB = b.createdAt ? b.createdAt.toMillis() : 0;
-                } else {
-                    valA = (valA || '').toString().toLowerCase();
-                    valB = (valB || '').toString().toLowerCase();
-                }
-
-                if (valA < valB) {
-                    return currentSort.direction === 'asc' ? -1 : 1;
-                }
-                if (valA > valB) {
-                    return currentSort.direction === 'asc' ? 1 : -1;
-                }
-                return 0;
-            });
-        }
-        
-        // --- Funções de Interação (Formulários, Botões) ---
-        
-        // Calcula o total da remuneração no formulário
-        function calculateTotal() {
+        // Calcula o Total Variável
+        const calculateTotal = () => {
             const baseValue = parseFloat(baseValueInput.value) || 0;
-            let totalScore = 0;
+            const scoreInputs = document.querySelectorAll('.score-input');
             
-            const inputs = indicesContainer.querySelectorAll('.indice-input');
-            if (inputs.length === 0) {
-                totalCalculated.textContent = "R$ 0,00";
-                return 0;
+            if (scoreInputs.length === 0) {
+                if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
+                return;
             }
 
-            inputs.forEach(input => {
-                totalScore += parseFloat(input.value) || 0;
+            let totalPoints = 0;
+            scoreInputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                totalPoints += value;
             });
 
-            // A pontuação total (soma dos scores) é aplicada como percentual do valor base
-            const totalVariable = baseValue * (totalScore / 100);
+            // Lógica: ValorBase * (Soma dos Pontos / 100)
+            const totalValue = baseValue * (totalPoints / 100);
             
-            totalCalculated.textContent = `R$ ${totalVariable.toFixed(2)}`;
-            return totalVariable;
-        }
+            if(totalCalculated) totalCalculated.textContent = `R$ ${totalValue.toFixed(2).replace('.', ',')}`;
+        };
+        
+        // Recalcula o total se o Valor Base mudar
+        if(baseValueInput) baseValueInput.addEventListener('input', calculateTotal);
 
-        // Salva (ou atualiza) um lançamento
-        async function handleSave(e) {
+        // Salva o Lançamento (ou Edição)
+        if(launchForm) launchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!isSupervisor || isRhUser) {
-                showMessage("Acesso Negado", "Apenas supervisores podem lançar remunerações.");
-                return;
-            }
-
-            // Validação
-            const monthRef = monthRefInput.value;
-            const employeeId = employeeSelect.value;
-            const baseValue = parseFloat(baseValueInput.value);
             
-            if (!monthRef) {
-                showMessage("Campo Obrigatório", "Por favor, selecione o Mês de Referência.");
-                return;
-            }
-            if (!employeeId) {
-                showMessage("Campo Obrigatório", "Por favor, selecione um Colaborador.");
+            const month = monthRefInput.value;
+            const baseValue = parseFloat(baseValueInput.value);
+            const employeeId = employeeSelect.value;
+            
+            // Validações
+            if (!month) {
+                showMessage("Erro de Validação", "O campo 'Mês de Referência' é obrigatório.");
                 return;
             }
             if (isNaN(baseValue) || baseValue <= 0) {
-                showMessage("Valor Inválido", "O Valor Base para este mês é inválido ou não foi definido pelo Master.");
+                showMessage("Erro de Validação", "O 'Valor Base Variável' parece inválido ou não foi definido pelo Master para este mês.");
+                return;
+            }
+            if (!employeeId) {
+                showMessage("Erro de Validação", "Selecione um 'Colaborador' para fazer o lançamento.");
                 return;
             }
             
-            const employee = globalEmployees.find(e => e.id === employeeId);
-            const sector = globalSectors.find(s => s.id === employee.sectorId);
-            
-            if (!employee || !sector) {
-                 showMessage("Erro de Dados", "Colaborador ou Setor não encontrado.");
-                 return;
+            const employee = globalEmployees.find(emp => emp.id === employeeId);
+            if (!employee) {
+                showMessage("Erro", "Colaborador selecionado não encontrado.");
+                return;
             }
 
-            // Coleta as pontuações
+            // Coleta os scores
             const scores = [];
-            const inputs = indicesContainer.querySelectorAll('.indice-input');
-            if (inputs.length === 0) {
-                 showMessage("Erro de Índices", "Este setor não possui índices de pontuação definidos.");
-                 return;
-            }
+            const scoreInputs = document.querySelectorAll('.score-input');
+            let totalPoints = 0;
             
-            inputs.forEach(input => {
+            scoreInputs.forEach(input => {
+                const scoreValue = parseFloat(input.value) || 0;
                 scores.push({
-                    name: input.getAttribute('data-name'),
-                    score: parseFloat(input.value) || 0,
-                    max: parseFloat(input.getAttribute('data-max'))
+                    name: input.dataset.name,
+                    score: scoreValue,
+                    max: parseFloat(input.dataset.max)
                 });
+                totalPoints += scoreValue;
             });
             
-            const totalValue = calculateTotal();
-            
+            if (scores.length === 0) {
+                 showMessage("Erro de Validação", "Os índices de pontuação não foram carregados. Tente selecionar o colaborador novamente.");
+                return;
+            }
+
+            // Calcula o valor final
+            const totalValue = baseValue * (totalPoints / 100);
+
+            // Prepara os dados
             const launchData = {
-                monthRef: monthRef,
+                monthRef: month,
                 employeeId: employeeId,
                 employeeName: employee.name,
-                sectorId: sector.id,
-                sectorName: sector.name,
+                sectorId: employee.sectorId,
+                launchedBy: currentUserId, // ID Anônimo (Log)
+                launchedBySupervisor: currentSupervisorId, // ID do Supervisor (Permissão)
                 baseValue: baseValue,
                 totalValue: totalValue,
                 scores: scores,
-                launchedBy: currentUserId, // Log do usuário anônimo
-                launchedBySupervisor: currentSupervisor.name, // Nome do supervisor
-                createdAt: serverTimestamp() // Data/hora do servidor
+                status: "", // Status normal
+                createdAt: serverTimestamp() // Sempre define a data de criação/atualização
             };
-            
-            btnSubmitLaunch.disabled = true;
-            btnSubmitLaunch.textContent = "Salvando...";
-            
+
             try {
                 if (currentEditingLaunchId) {
-                    // Atualiza um lançamento existente
-                    const docRef = doc(db, 'artifacts', appId, 'lancamentos', currentEditingLaunchId);
-                    // Remove 'createdAt' para não sobrescrever a data original
+                    // --- MODO EDIÇÃO ---
+                    const docRef = doc(getLaunchesCollection(), currentEditingLaunchId);
+                    // Em edição, não sobrescrevemos o 'createdAt' original,
+                    // mas podemos adicionar um 'updatedAt' se quisermos (opcional).
+                    // Por simplicidade, vamos apenas atualizar os dados.
+                    // (Removendo createdAt para não sobrescrever o original)
                     delete launchData.createdAt; 
                     
                     await updateDoc(docRef, launchData);
-                    showMessage("Sucesso!", "Lançamento atualizado com sucesso!");
+                    showMessage("Sucesso", "Lançamento atualizado com sucesso!");
+                    
                 } else {
-                    // Salva um novo lançamento
-                    await addDoc(getHistoryCollection(), launchData);
-                    showMessage("Sucesso!", "Remuneração lançada com sucesso!");
+                    // --- MODO CRIAÇÃO ---
+                    await addDoc(getLaunchesCollection(), launchData);
+                    showMessage("Sucesso", "Remuneração lançada com sucesso!");
                 }
                 
                 // Limpa o formulário
                 launchForm.reset();
-                indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>';
-                indicesContainer.classList.remove('grid-layout');
-                totalCalculated.textContent = "R$ 0,00";
+                setDefaultMonth();
+                renderIndices([]); // Limpa os campos de índice
+                if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
                 
-                // Reseta o modo de edição
-                cancelEditMode();
+                // Volta o botão para o estado padrão (se estava editando)
+                resetLaunchFormToCreateMode();
 
             } catch (error) {
-                console.error("Erro ao salvar lançamento: ", error);
-                showMessage("Erro no Banco", `Não foi possível salvar: ${error.message}`);
-            } finally {
-                btnSubmitLaunch.disabled = false;
-                btnSubmitLaunch.textContent = "Lançar Remuneração";
+                console.error("Erro ao salvar lançamento:", error);
+                showMessage("Erro", "Não foi possível salvar o lançamento. Tente novamente.");
             }
-        }
-        
-        launchForm.addEventListener('submit', handleSave);
-        
-        // Salva o Valor Base (Admin Master)
-        btnSaveBaseValue.addEventListener('click', async () => {
-            if (!isMaster) return;
-            
-            const monthYear = monthRefInput.value;
-            const value = parseFloat(baseValueInput.value);
+        });
 
-            if (!monthYear) {
-                showMessage("Mês Inválido", "Por favor, selecione um Mês de Referência para salvar o valor.");
-                return;
-            }
-             if (isNaN(value) || value < 0) {
-                showMessage("Valor Inválido", "Por favor, insira um valor numérico válido.");
-                return;
-            }
-            
+        // Entra no modo de edição (preenche o formulário)
+        const loadLaunchForEdit = async (launchId) => {
             try {
-                const docRef = getBaseValueDoc(monthYear);
-                await setDoc(docRef, { value: value });
-                showMessage("Sucesso", `Valor Base (R$ ${value.toFixed(2)}) salvo para ${monthYear}.`);
-            } catch (error) {
-                console.error("Erro ao salvar Valor Base: ", error);
-                showMessage("Erro no Banco", `Não foi possível salvar: ${error.message}`);
-            }
-        });
+                const docRef = doc(getLaunchesCollection(), launchId);
+                const docSnap = await getDoc(docRef);
 
-        // --- Funções de Edição/Exclusão do Histórico ---
-
-        // Delega eventos na tabela de histórico
-        historyTableBody.addEventListener('click', (e) => {
-            // Botão "Ver +" (Detalhes)
-            if (e.target.classList.contains('btn-toggle-details')) {
-                const id = e.target.getAttribute('data-id');
-                const detailsRow = document.getElementById(`details-${id}`);
-                if (detailsRow) {
-                    detailsRow.classList.toggle('hidden');
-                    e.target.textContent = detailsRow.classList.contains('hidden') ? 'Ver +' : 'Ocultar';
-                }
-            }
-            
-            // Botão "Editar"
-            if (e.target.classList.contains('btn-edit-launch')) {
-                const id = e.target.getAttribute('data-id');
-                loadLaunchForEdit(id);
-            }
-            
-            // Botão "Excluir"
-            if (e.target.classList.contains('btn-delete-launch')) {
-                const id = e.target.getAttribute('data-id');
-                const launch = globalHistory.find(item => item.id === id);
-                if (launch) {
-                    openDeleteModal('launch', id, `o lançamento de ${launch.employeeName} (R$ ${launch.totalValue.toFixed(2)})`);
-                }
-            }
-        });
-        
-        // Carrega um lançamento no formulário para edição
-        function loadLaunchForEdit(launchId) {
-            const launch = globalHistory.find(item => item.id === launchId);
-            if (!launch) {
-                showMessage("Erro", "Lançamento não encontrado.");
-                return;
-            }
-            
-            // Entra no modo de edição
-            currentEditingLaunchId = launchId;
-            btnSubmitLaunch.textContent = "Salvar Alterações";
-            btnSubmitLaunch.classList.replace('bg-red-600', 'bg-yellow-500');
-            btnSubmitLaunch.classList.replace('hover:bg-red-700', 'hover:bg-yellow-600');
-            btnCancelEdit.classList.remove('hidden');
-            
-            // Preenche o formulário
-            monthRefInput.value = launch.monthRef;
-            baseValueInput.value = launch.baseValue;
-            
-            // Seleciona o colaborador (e espera os índices renderizarem)
-            employeeSelect.value = launch.employeeId;
-            renderIndices(launch.employeeId);
-            
-            // Atraso para garantir que os inputs de índice existam
-            setTimeout(() => {
-                // Preenche as pontuações
-                const inputs = indicesContainer.querySelectorAll('.indice-input');
-                inputs.forEach(input => {
-                    const inputName = input.getAttribute('data-name');
-                    const scoreData = launch.scores.find(s => s.name === inputName);
-                    if (scoreData) {
-                        input.value = scoreData.score;
-                    }
-                });
-                // Recalcula o total
-                calculateTotal();
-            }, 100); // 100ms de espera
-            
-            // Rola a tela para o topo
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        // Cancela o modo de edição
-        function cancelEditMode() {
-            currentEditingLaunchId = null;
-            btnSubmitLaunch.textContent = "Lançar Remuneração";
-            btnSubmitLaunch.classList.replace('bg-yellow-500', 'bg-red-600');
-            btnSubmitLaunch.classList.replace('hover:bg-yellow-600', 'hover:bg-red-700');
-            btnCancelEdit.classList.add('hidden');
-            
-            // Limpa o formulário
-            launchForm.reset();
-            indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>';
-            indicesContainer.classList.remove('grid-layout');
-            totalCalculated.textContent = "R$ 0,00";
-            
-            // Reseta o mês para o padrão (pode ter sido alterado na edição)
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            monthRefInput.value = `${year}-${month}`;
-            loadBaseValue(monthRefInput.value);
-        }
-        btnCancelEdit.addEventListener('click', cancelEditMode);
-
-
-        // --- Listeners de Eventos (Filtros) ---
-        
-        // Filtra histórico e valor base ao mudar o MÊS
-        monthRefInput.addEventListener('change', () => {
-            const newMonth = monthRefInput.value;
-            const currentSectorFilter = sectorFilterSelect.value;
-            loadHistory(newMonth, currentSectorFilter);
-            loadBaseValue(newMonth);
-        });
-        
-        // Filtra histórico ao mudar o SETOR (Master/RH)
-        sectorFilterSelect.addEventListener('change', () => {
-            const newMonth = monthRefInput.value;
-            const currentSectorFilter = sectorFilterSelect.value;
-            loadHistory(newMonth, currentSectorFilter);
-        });
-
-        // Carrega índices ao mudar o COLABORADOR
-        employeeSelect.addEventListener('change', () => {
-            renderIndices(employeeSelect.value);
-        });
-        
-        // Recalcula total ao digitar no Valor Base (Master)
-        baseValueInput.addEventListener('input', () => {
-            if (isMaster) {
-                calculateTotal();
-            }
-        });
-        
-        // --- Funções do Painel de Gestão (Master) ---
-
-        // Renderiza Tabela de SUPERVISORES
-        function renderSupervisorsTable() {
-            const tableBody = document.getElementById('supervisors-table-body');
-            tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-500">Carregando...</td></tr>';
-            
-            try {
-                onSnapshot(getSupervisorsCollection(), (snapshot) => {
-                    const supervisors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    tableBody.innerHTML = '';
-                    
-                    if (supervisors.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-500">Nenhum supervisor cadastrado.</td></tr>';
-                        return;
-                    }
-                    
-                    supervisors.sort((a,b) => a.name.localeCompare(b.name));
-                    
-                    supervisors.forEach(sup => {
-                        const row = document.createElement('tr');
-                        row.className = 'hover:bg-gray-50';
-                        row.innerHTML = `
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900">${sup.name}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">${sup.username}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">${sup.sectorName}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <button class="btn-edit-supervisor text-blue-600 hover:text-blue-800 font-medium mr-3" data-id="${sup.id}">Editar</button>
-                                <button class="btn-delete-supervisor text-red-600 hover:text-red-800 font-medium" data-id="${sup.id}">Excluir</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                }, (error) => {
-                    console.error("Erro ao carregar supervisores: ", error);
-                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-red-500">Erro ao carregar supervisores: ${error.message}</td></tr>`;
-                });
-            } catch (e) {
-                 console.error("Erro crítico no listener de supervisores: ", e);
-                 tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-red-500">Erro crítico: ${e.message}</td></tr>`;
-            }
-        }
-        
-        // Renderiza Tabela de SETORES
-        function renderSectorsTable() {
-            const tableBody = document.getElementById('sectors-table-body');
-            tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Carregando...</td></tr>';
-            
-            try {
-                // Usa o globalSectors que já está sendo ouvido
-                tableBody.innerHTML = '';
-                
-                if (globalSectors.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Nenhum setor cadastrado.</td></tr>';
+                if (!docSnap.exists()) {
+                    showMessage("Erro", "Lançamento não encontrado. Pode ter sido excluído.");
                     return;
                 }
+
+                const launch = docSnap.data();
+
+                // 1. Define o Mês (e carrega o valor base)
+                monthRefInput.value = launch.monthRef;
+                await loadBaseValue(); // Espera o valor base carregar
+
+                // 2. Seleciona o Colaborador
+                employeeSelect.value = launch.employeeId;
                 
-                globalSectors.forEach(sector => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
-                    const indicesCount = sector.indices ? sector.indices.length : 0;
-                    
-                    row.innerHTML = `
-                        <td class="px-4 py-3 text-sm font-medium text-gray-900">${sector.name}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${indicesCount} índice(s) definido(s)</td>
-                        <td class="px-4 py-3 text-sm">
-                            <button class="btn-delete-sector text-red-600 hover:text-red-800 font-medium" data-id="${sector.id}">Excluir</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } catch (e) {
-                 console.error("Erro ao renderizar setores: ", e);
-                 tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-red-500">Erro crítico: ${e.message}</td></tr>`;
-            }
-        }
-        
-        // Renderiza Tabela de COLABORADORES
-        function renderEmployeesTable() {
-            const tableBody = document.getElementById('employees-table-body');
-            tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Carregando...</td></tr>';
-            
-            try {
-                // Usa o globalEmployees que já está sendo ouvido (se for Master/RH)
-                // Se for Supervisor, precisamos carregar TODOS para o painel de gestão
-                let querySource = getEmployeesCollection();
+                // 3. Carrega os Índices (precisa simular a seleção)
+                const employee = globalEmployees.find(emp => emp.id === launch.employeeId);
+                const sector = globalSectors.find(s => s.id === employee.sectorId);
                 
-                onSnapshot(querySource, (snapshot) => {
-                    const employees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    tableBody.innerHTML = '';
-                    
-                    if (employees.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Nenhum colaborador cadastrado.</td></tr>';
-                        return;
-                    }
-                    
-                    employees.sort((a,b) => a.name.localeCompare(b.name));
-                    
-                    employees.forEach(emp => {
-                        const row = document.createElement('tr');
-                        row.className = 'hover:bg-gray-50';
-                        row.innerHTML = `
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900">${emp.name}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">${emp.sectorName}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <button class="btn-edit-employee text-blue-600 hover:text-blue-800 font-medium mr-3" data-id="${emp.id}">Editar</button>
-                                <button class="btn-delete-employee text-red-600 hover:text-red-800 font-medium" data-id="${emp.id}">Excluir</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                }, (error) => {
-                     console.error("Erro ao carregar colaboradores (Admin): ", error);
-                     tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-red-500">Erro ao carregar colaboradores: ${error.message}</td></tr>`;
-                });
-            } catch (e) {
-                 console.error("Erro crítico no listener de colaboradores (Admin): ", e);
-                 tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-red-500">Erro crítico: ${e.message}</td></tr>`;
-            }
-        }
-
-
-        // --- Funções de Abertura/Fechamento de Modais ---
-        
-        const openModal = (modalElement) => modalElement.style.display = 'block';
-        const closeModal = (modalElement) => modalElement.style.display = 'none';
-
-        // Fechar modais (botões 'x' e 'cancelar')
-        document.querySelectorAll('.close, .btn-cancel').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const modalId = btn.getAttribute('data-modal');
-                if (modalId) {
-                    closeModal(document.getElementById(modalId));
+                if (sector && sector.indices) {
+                    renderIndices(sector.indices);
+                } else {
+                    renderIndices([]);
                 }
-            });
-        });
-        
-        // Fechar modal clicando fora
-        window.onclick = (event) => {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
+                
+                // 4. Preenche as Pontuações (precisa esperar os campos serem renderizados)
+                // Usamos um pequeno timeout para garantir que os campos existem no DOM
+                setTimeout(() => {
+                    launch.scores.forEach(score => {
+                        const input = document.getElementById(`index-${score.name}`);
+                        if (input) {
+                            input.value = score.score;
+                        }
+                    });
+                    // Recalcula o total com os valores preenchidos
+                    calculateTotal();
+                }, 100);
+
+                // 5. Muda o estado do formulário para "Edição"
+                currentEditingLaunchId = launchId;
+                if(btnSubmitLaunch) btnSubmitLaunch.textContent = "Salvar Alterações";
+                if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('bg-red-600', 'bg-orange-500'); // Muda cor para Laranja
+                if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('hover:bg-red-700', 'hover:bg-orange-600');
+                if(btnCancelEdit) btnCancelEdit.classList.remove('hidden');
+
+                // Rola a tela para o topo
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (error) {
+                console.error("Erro ao carregar lançamento para edição:", error);
+                showMessage("Erro", "Não foi possível carregar os dados para edição.");
             }
         };
 
-        // Abrir Modal SUPERVISOR
-        btnOpenSupervisorModal.addEventListener('click', () => {
-            supervisorForm.reset();
-            supervisorModalTitle.textContent = "Cadastrar Novo Supervisor";
-            document.getElementById('edit-supervisor-id').value = '';
-            document.getElementById('supervisor-password').required = true;
-            openModal(supervisorModal);
-        });
-        
-        // Abrir Modal SETOR (Master)
-        btnOpenSectorModal.addEventListener('click', () => {
-            sectorForm.reset();
-            sectorModalTitle.textContent = "Cadastrar Novo Setor";
-            document.getElementById('edit-sector-id').value = '';
-            btnSaveSector.disabled = false;
-            openModal(sectorModal);
-        });
+        // Reseta o formulário do modo "Edição" para o modo "Criação"
+        const resetLaunchFormToCreateMode = () => {
+            currentEditingLaunchId = null;
+            if(btnSubmitLaunch) btnSubmitLaunch.textContent = "Lançar Remuneração";
+            if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('bg-orange-500', 'bg-red-600');
+            if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('hover:bg-orange-600', 'hover:bg-red-700');
+            if(btnCancelEdit) btnCancelEdit.classList.add('hidden');
+            if(launchForm) launchForm.reset();
+            setDefaultMonth();
+            renderIndices([]);
+            if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
+        };
 
-        // Abrir Modal METAS (Supervisor)
-        btnManageSectorIndices.addEventListener('click', () => {
-            const sector = globalSectors.find(s => s.id === currentSupervisor.sectorId);
+        if(btnCancelEdit) btnCancelEdit.addEventListener('click', resetLaunchFormToCreateMode);
+
+        // --- PAINEL DE GESTÃO (Tabelas) ---
+
+        // Desenha a tabela de Supervisores
+        const renderSupervisorsTable = () => {
+            if (!supervisorsTableBody) return;
+            supervisorsTableBody.innerHTML = '';
+            
+            if (globalSupervisors.length === 0) {
+                 supervisorsTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-500">Nenhum supervisor cadastrado.</td></tr>';
+                 return;
+            }
+            
+            globalSupervisors.forEach(sup => {
+                const tr = document.createElement('tr');
+                const sector = globalSectors.find(s => s.id === sup.sectorId);
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${sup.name}</td>
+                    <td class="px-4 py-3">${sup.username}</td>
+                    <td class="px-4 py-3">${sector ? sector.name : 'Setor não definido'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${sup.id}">Editar</button>
+                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${sup.id}" data-delete-type="supervisor">Excluir</button>
+                    </td>
+                `;
+                supervisorsTableBody.appendChild(tr);
+            });
+        };
+        
+        // Desenha a tabela de Setores
+        const renderSectorsTable = () => {
+            if (!sectorsTableBody) return;
+            sectorsTableBody.innerHTML = '';
+            
+            if (globalSectors.length === 0) {
+                 sectorsTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Nenhum setor cadastrado.</td></tr>';
+                 return;
+            }
+            
+            globalSectors.forEach(sec => {
+                const tr = document.createElement('tr');
+                const indicesCount = sec.indices ? sec.indices.length : 0;
+                const indicesText = indicesCount === 0 ? 
+                    '<span class="text-yellow-600">Pendente (Supervisor)</span>' : 
+                    `${indicesCount} índices definidos`;
+                
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${sec.name}</td>
+                    <td class="px-4 py-3">${indicesText}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <!-- Editar Setor (Nome) está desabilitado por enquanto -->
+                        <!-- <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${sec.id}">Editar</button> -->
+                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${sec.id}" data-delete-type="sector">Excluir</button>
+                    </td>
+                `;
+                sectorsTableBody.appendChild(tr);
+            });
+        };
+        
+        // Desenha a tabela de Colaboradores
+        const renderEmployeesTable = () => {
+            if (!employeesTableBody) return;
+            employeesTableBody.innerHTML = '';
+            
+            if (globalEmployees.length === 0) {
+                 employeesTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Nenhum colaborador cadastrado.</td></tr>';
+                 return;
+            }
+            
+            globalEmployees.forEach(emp => {
+                const tr = document.createElement('tr');
+                const sector = globalSectors.find(s => s.id === emp.sectorId);
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${emp.name}</td>
+                    <td class="px-4 py-3">${sector ? sector.name : 'Setor não definido'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${emp.id}" data-edit-type="employee">Editar</button>
+                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${emp.id}" data-delete-type="employee">Excluir</button>
+                    </td>
+                `;
+                employeesTableBody.appendChild(tr);
+            });
+        };
+        
+        // --- LÓGICA DOS MODAIS DE CADASTRO / EDIÇÃO ---
+
+        // Abre Modal: Supervisor
+        if(btnOpenSupervisorModal) btnOpenSupervisorModal.addEventListener('click', () => {
+            if(supervisorForm) supervisorForm.reset();
+            if(supervisorModalTitle) supervisorModalTitle.textContent = "Cadastrar Novo Supervisor";
+            if(editSupervisorId) editSupervisorId.value = '';
+            if(supervisorPassword) supervisorPassword.required = true; // Senha obrigatória ao criar
+            showModal(supervisorModal);
+        });
+        if(cancelSupervisorModal) cancelSupervisorModal.addEventListener('click', () => hideModal(supervisorModal));
+        if(closeSupervisorModal) closeSupervisorModal.addEventListener('click', () => hideModal(supervisorModal));
+        
+        // Abre Modal: Setor
+        if(btnOpenSectorModal) btnOpenSectorModal.addEventListener('click', () => {
+            if(sectorForm) sectorForm.reset();
+            if(sectorModalTitle) sectorModalTitle.textContent = "Cadastrar Novo Setor";
+            if(editSectorId) editSectorId.value = '';
+            
+            // CORREÇÃO: Habilita o botão de salvar (que ficava travado pela validação de 100%)
+            if(btnSubmitSectorForm) {
+                btnSubmitSectorForm.disabled = false;
+                btnSubmitSectorForm.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+            }
+            showModal(sectorModal);
+        });
+        if(cancelSectorModal) cancelSectorModal.addEventListener('click', () => hideModal(sectorModal));
+        if(closeSectorModal) closeSectorModal.addEventListener('click', () => hideModal(sectorModal));
+        
+        // Abre Modal: Colaborador
+        if(btnOpenEmployeeModal) btnOpenEmployeeModal.addEventListener('click', () => {
+            if(employeeForm) employeeForm.reset();
+            if(employeeModalTitle) employeeModalTitle.textContent = "Cadastrar Novo Colaborador";
+            if(editEmployeeId) editEmployeeId.value = '';
+
+            // Lógica de Permissão (Supervisor vs Master)
+            if (isSupervisor) {
+                // É Supervisor: Trava o setor no setor dele
+                if(employeeSector) employeeSector.value = currentSupervisorSectorId;
+                if(employeeSector) employeeSector.disabled = true;
+            } else {
+                // É Master: Libera o select
+                if(employeeSector) employeeSector.disabled = false;
+            }
+            showModal(employeeModal);
+        });
+        if(cancelEmployeeModal) cancelEmployeeModal.addEventListener('click', () => hideModal(employeeModal));
+        if(closeEmployeeModal) closeEmployeeModal.addEventListener('click', () => hideModal(employeeModal));
+
+        // Abre Modal: Gerenciar Metas (Supervisor)
+        if(btnManageSectorIndices) btnManageSectorIndices.addEventListener('click', () => {
+            if (!currentSupervisorSectorId) return;
+            
+            const sector = globalSectors.find(s => s.id === currentSupervisorSectorId);
             if (!sector) {
                 showMessage("Erro", "Setor do supervisor não encontrado.");
                 return;
             }
             
-            indicesForm.reset();
-            indicesList.innerHTML = '';
-            document.getElementById('edit-indices-sector-id').value = sector.id;
-            indicesSectorName.value = sector.name;
-
-            // Preenche os índices existentes
-            let total = 0;
+            if(sectorIndicesForm) sectorIndicesForm.reset();
+            if(editIndicesSectorId) editIndicesSectorId.value = sector.id;
+            if(sectorIndicesName) sectorIndicesName.value = sector.name;
+            
+            // Limpa e recria os campos de índice
+            if(indicesList) indicesList.innerHTML = '';
             if (sector.indices && sector.indices.length > 0) {
-                sector.indices.forEach(indice => {
-                    addIndiceRow(indice.name, indice.percent);
-                    total += parseFloat(indice.percent) || 0;
-                });
+                sector.indices.forEach(index => createIndexField(index.name, index.perc));
             } else {
-                addIndiceRow(); // Adiciona uma linha em branco
+                createIndexField(); // Cria um campo vazio
             }
-            updateIndicesTotal();
-            openModal(indicesModal);
+            
+            updateIndicesTotal(); // Calcula o total
+            showModal(sectorIndicesModal);
         });
-
-        // Abrir Modal COLABORADOR
-        btnOpenEmployeeModal.addEventListener('click', () => {
-            employeeForm.reset();
-            employeeModalTitle.textContent = "Cadastrar Novo Colaborador";
-            document.getElementById('edit-employee-id').value = '';
-            
-            // Lógica para Supervisor (trava o setor)
-            if (isSupervisor && !isRhUser) {
-                employeeSectorSelect.value = currentSupervisor.sectorId;
-                employeeSectorSelect.disabled = true;
-            } else {
-                employeeSectorSelect.disabled = false;
-            }
-            
-            openModal(employeeModal);
-        });
-
-        // Abrir Modal de EXCLUSÃO (genérico)
-        let deleteCallback = null;
-        function openDeleteModal(type, id, name) {
-            deleteConfirmMessage.textContent = `Você tem certeza que deseja excluir "${name}"? Esta ação não pode ser desfeita.`;
-            
-            deleteCallback = async () => {
-                try {
-                    let docRef;
-                    if (type === 'supervisor') {
-                        docRef = doc(db, 'artifacts', appId, 'supervisors', id);
-                    } else if (type === 'sector') {
-                        docRef = doc(db, 'artifacts', appId, 'sectors', id);
-                        await checkAndDeleteSector(id, name); // Função especial para setor
-                        return; // checkAndDeleteSector já lida com a exclusão
-                    } else if (type === 'employee') {
-                        docRef = doc(db, 'artifacts', appId, 'employees', id);
-                    } else if (type === 'launch') {
-                         docRef = doc(db, 'artifacts', appId, 'lancamentos', id);
-                    } else {
-                        throw new Error("Tipo de exclusão desconhecido.");
-                    }
-                    
-                    await deleteDoc(docRef);
-                    showMessage("Sucesso", `"${name}" foi excluído.`);
-                
-                } catch (error) {
-                    console.error("Erro ao excluir: ", error);
-                    showMessage("Erro", `Não foi possível excluir: ${error.message}`);
-                } finally {
-                    closeModal(deleteConfirmModal);
-                    deleteCallback = null;
-                }
-            };
-            
-            openModal(deleteConfirmModal);
-        }
+        if(cancelSectorIndicesModal) cancelSectorIndicesModal.addEventListener('click', () => hideModal(sectorIndicesModal));
+        if(closeSectorIndicesModal) closeSectorIndicesModal.addEventListener('click', () => hideModal(sectorIndicesModal));
         
-        btnDeleteConfirm.addEventListener('click', () => {
-            if (deleteCallback) {
-                deleteCallback();
-            }
-        });
-        
-        // Verifica se um setor pode ser excluído (se não há supervisores ou colaboradores nele)
-        async function checkAndDeleteSector(sectorId, sectorName) {
-            try {
-                // 1. Verifica supervisores
-                const supQuery = query(getSupervisorsCollection(), where("sectorId", "==", sectorId));
-                const supSnapshot = await getDocs(supQuery);
-                if (!supSnapshot.empty) {
-                    showMessage("Ação Bloqueada", `Não é possível excluir o setor "${sectorName}" pois ele está atribuído a um supervisor. Remova o supervisor do setor primeiro.`);
-                    closeModal(deleteConfirmModal);
-                    return;
-                }
-                
-                // 2. Verifica colaboradores
-                const empQuery = query(getEmployeesCollection(), where("sectorId", "==", sectorId));
-                const empSnapshot = await getDocs(empQuery);
-                if (!empSnapshot.empty) {
-                     showMessage("Ação Bloqueada", `Não é possível excluir o setor "${sectorName}" pois ele contém colaboradores. Remova os colaboradores do setor primeiro.`);
-                     closeModal(deleteConfirmModal);
-                    return;
-                }
-                
-                // 3. Exclui os lançamentos (em lote)
-                const launchQuery = query(getHistoryCollection(), where("sectorId", "==", sectorId));
-                const launchSnapshot = await getDocs(launchQuery);
-                if (!launchSnapshot.empty) {
-                    const batch = writeBatch(db);
-                    launchSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-                    await batch.commit();
-                }
-                
-                // 4. Exclui o setor
-                const docRef = doc(db, 'artifacts', appId, 'sectors', sectorId);
-                await deleteDoc(docRef);
-                
-                showMessage("Sucesso", `Setor "${sectorName}" e ${launchSnapshot.size} lançamento(s) associado(s) foram excluídos.`);
+        // Lógica do Modal "Gerenciar Metas"
+        if(addIndexField) addIndexField.addEventListener('click', () => createIndexField());
 
-            } catch (error) {
-                 console.error("Erro ao excluir setor: ", error);
-                 showMessage("Erro", `Não foi possível excluir o setor: ${error.message}`);
-            } finally {
-                closeModal(deleteConfirmModal);
-                deleteCallback = null;
-            }
-        }
-        
-        // --- Funções de Abertura (Edição) ---
-        
-        // Delega eventos nas tabelas do Admin
-        document.getElementById('view-admin').addEventListener('click', async (e) => {
-            const target = e.target;
-            
-            // Editar Supervisor
-            if (target.classList.contains('btn-edit-supervisor')) {
-                const id = target.getAttribute('data-id');
-                const docRef = doc(db, 'artifacts', appId, 'supervisors', id);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const sup = docSnap.data();
-                    supervisorModalTitle.textContent = "Editar Supervisor";
-                    document.getElementById('edit-supervisor-id').value = id;
-                    document.getElementById('supervisor-name').value = sup.name;
-                    document.getElementById('supervisor-sector').value = sup.sectorId;
-                    document.getElementById('supervisor-username').value = sup.username;
-                    // Senha é opcional na edição
-                    document.getElementById('supervisor-password').value = '';
-                    document.getElementById('supervisor-password').required = false; 
-                    openModal(supervisorModal);
-                }
-            }
-            
-            // Excluir Supervisor
-            if (target.classList.contains('btn-delete-supervisor')) {
-                const id = target.getAttribute('data-id');
-                const name = target.closest('tr').querySelector('td:first-child').textContent;
-                openDeleteModal('supervisor', id, name);
-            }
-            
-            // Excluir Setor
-            if (target.classList.contains('btn-delete-sector')) {
-                const id = target.getAttribute('data-id');
-                const name = target.closest('tr').querySelector('td:first-child').textContent;
-                openDeleteModal('sector', id, name);
-            }
-            
-            // Editar Colaborador
-            if (target.classList.contains('btn-edit-employee')) {
-                const id = target.getAttribute('data-id');
-                const docRef = doc(db, 'artifacts', appId, 'employees', id);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const emp = docSnap.data();
-                    employeeModalTitle.textContent = "Editar Colaborador";
-                    document.getElementById('edit-employee-id').value = id;
-                    document.getElementById('employee-name').value = emp.name;
-                    document.getElementById('employee-sector').value = emp.sectorId;
-                    
-                    // Lógica para Supervisor (trava o setor)
-                    if (isSupervisor && !isRhUser) {
-                        employeeSectorSelect.disabled = true;
-                    } else {
-                        employeeSectorSelect.disabled = false;
-                    }
-                    
-                    openModal(employeeModal);
-                }
-            }
-            
-            // Excluir Colaborador
-            if (target.classList.contains('btn-delete-employee')) {
-                const id = target.getAttribute('data-id');
-                const name = target.closest('tr').querySelector('td:first-child').textContent;
-                openDeleteModal('employee', id, name);
-            }
-        });
-
-        
-        // --- Funções de Salvamento (Formulários) ---
-        
-        // Salvar SUPERVISOR
-        supervisorForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-supervisor-id').value;
-            const name = document.getElementById('supervisor-name').value;
-            const sectorId = document.getElementById('supervisor-sector').value;
-            const username = document.getElementById('supervisor-username').value;
-            const password = document.getElementById('supervisor-password').value;
-            
-            if (!sectorId) {
-                showMessage("Erro de Validação", "Por favor, selecione um setor.");
-                return;
-            }
-            
-            const sectorName = supervisorSectorSelect.options[supervisorSectorSelect.selectedIndex].text;
-            
-            // Validação de duplicados
-            try {
-                // 1. Verifica se o setor já está em uso (exceto por ele mesmo)
-                const qSector = query(getSupervisorsCollection(), where("sectorId", "==", sectorId));
-                const sectorSnapshot = await getDocs(qSector);
-                if (!sectorSnapshot.empty) {
-                    const existing = sectorSnapshot.docs[0];
-                    if (existing.id !== id) { // Se achou um e NÃO é ele mesmo
-                         showMessage("Erro de Validação", `O setor "${sectorName}" já está atribuído ao supervisor "${existing.data().name}".`);
-                         return;
-                    }
-                }
-                
-                // 2. Verifica se o username já está em uso (exceto por ele mesmo)
-                const qUser = query(getSupervisorsCollection(), where("username", "==", username));
-                const userSnapshot = await getDocs(qUser);
-                 if (!userSnapshot.empty) {
-                    const existing = userSnapshot.docs[0];
-                    if (existing.id !== id) {
-                         showMessage("Erro de Validação", `O usuário "${username}" já está em uso.`);
-                         return;
-                    }
-                }
-
-                // 3. Prepara os dados
-                let data = { name, sectorId, sectorName, username };
-                if (password) { // Só atualiza a senha se ela for preenchida
-                    data.password = password;
-                }
-                
-                if (id) {
-                    // Atualizar
-                    const docRef = doc(db, 'artifacts', appId, 'supervisors', id);
-                    await updateDoc(docRef, data);
-                    showMessage("Sucesso", "Supervisor atualizado.");
-                } else {
-                    // Criar
-                    if (!password) { // Senha é obrigatória na criação
-                        showMessage("Erro de Validação", "O campo 'Senha' é obrigatório ao criar um novo supervisor.");
-                        return;
-                    }
-                    await addDoc(getSupervisorsCollection(), data);
-                    showMessage("Sucesso", "Supervisor cadastrado.");
-                }
-                
-                closeModal(supervisorModal);
-                
-            } catch (error) {
-                console.error("Erro ao salvar supervisor: ", error);
-                showMessage("Erro no Banco", `Não foi possível salvar: ${error.message}`);
-            }
-        });
-
-        // Salvar SETOR (Master)
-        sectorForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-sector-id').value; // Master não edita, mas deixamos por segurança
-            const name = sectorNameInput.value;
-            
-            if (id) {
-                 showMessage("Erro", "A edição de setor é feita pelo supervisor em 'Gerenciar Metas'.");
-                 return;
-            }
-
-            // Validação de duplicados (Ignora case)
-            try {
-                const q = query(getSectorsCollection(), where("nameLower", "==", name.toLowerCase()));
-                const snapshot = await getDocs(q);
-                
-                if (!snapshot.empty) {
-                    showMessage("Erro de Validação", `O setor "${name}" já existe.`);
-                    return;
-                }
-                
-                const data = {
-                    name: name,
-                    nameLower: name.toLowerCase(), // Campo para busca
-                    indices: [] // Master só cria o nome, supervisor define índices
-                };
-                
-                await addDoc(getSectorsCollection(), data);
-                showMessage("Sucesso", `Setor "${name}" cadastrado. O supervisor deste setor deve agora definir os índices.`);
-                closeModal(sectorModal);
-
-            } catch (error) {
-                 console.error("Erro ao salvar setor: ", error);
-                 showMessage("Erro no Banco", `Não foi possível salvar: ${error.message}`);
-            }
-        });
-        
-        // Salvar METAS (Supervisor)
-        indicesForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const sectorId = document.getElementById('edit-indices-sector-id').value;
-            
-            const indicesInputs = indicesList.querySelectorAll('.indice-row');
-            const newIndices = [];
-            let total = 0;
-            
-            indicesInputs.forEach(row => {
-                const name = row.querySelector('.indice-name').value;
-                const percent = parseFloat(row.querySelector('.indice-percent').value) || 0;
-                
-                if (name && percent > 0) {
-                    newIndices.push({ name, percent });
-                    total += percent;
-                }
-            });
-            
-            if (total !== 100) {
-                showMessage("Erro de Validação", `A soma dos índices deve ser exatamente 100%. O total atual é: ${total}%.`);
-                return;
-            }
-            
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'sectors', sectorId);
-                await updateDoc(docRef, { indices: newIndices });
-                
-                showMessage("Sucesso", "Índices (metas) atualizados com sucesso!");
-                closeModal(indicesModal);
-                
-                // Força o recarregamento dos índices na tela principal
-                renderIndices(employeeSelect.value);
-
-            } catch (error) {
-                 console.error("Erro ao salvar índices: ", error);
-                 showMessage("Erro no Banco", `Não foi possível salvar: ${error.message}`);
-            }
-        });
-
-        // Salvar COLABORADOR
-        employeeForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-employee-id').value;
-            const name = document.getElementById('employee-name').value;
-            const sectorId = document.getElementById('employee-sector').value;
-            
-            if (!sectorId) {
-                showMessage("Erro de Validação", "Por favor, selecione um setor.");
-                return;
-            }
-            
-            const sectorName = employeeSectorSelect.options[employeeSectorSelect.selectedIndex].text;
-            
-            try {
-                // Validação de duplicados
-                const q = query(getEmployeesCollection(), where("name", "==", name));
-                const snapshot = await getDocs(q);
-                if (!snapshot.empty) {
-                    const existing = snapshot.docs[0];
-                    if (existing.id !== id) {
-                         showMessage("Erro de Validação", `Um colaborador com o nome "${name}" já existe.`);
-                         return;
-                    }
-                }
-                
-                const data = { name, sectorId, sectorName };
-                
-                if (id) {
-                    // Atualizar
-                    const docRef = doc(db, 'artifacts', appId, 'employees', id);
-                    await updateDoc(docRef, data);
-                    showMessage("Sucesso", "Colaborador atualizado.");
-                } else {
-                    // Criar
-                    await addDoc(getEmployeesCollection(), data);
-                    showMessage("Sucesso", "Colaborador cadastrado.");
-                }
-                
-                closeModal(employeeModal);
-                
-            } catch (error) {
-                 console.error("Erro ao salvar colaborador: ", error);
-                 showMessage("Erro no Banco", `Não foi possível salvar: ${error.message}`);
-            }
-        });
-
-
-        // --- Funções Auxiliares (Modal de Índices) ---
-        
-        // Adiciona uma linha de índice (nome/percentual) no modal
-        function addIndiceRow(name = '', percent = '') {
+        const createIndexField = (name = '', perc = '') => {
             const div = document.createElement('div');
-            div.className = 'indice-row flex gap-2 items-center';
+            div.classList.add('flex', 'items-center', 'gap-2');
             div.innerHTML = `
-                <input type="text" class="indice-name mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Nome do Índice" value="${name}" required>
-                <input type="number" class="indice-percent mt-1 w-24 px-3 py-2 border border-gray-300 rounded-md" placeholder="%" value="${percent}" required>
-                <button type="button" class="btn-remove-indice text-red-500 hover:text-red-700 font-bold text-2xl">&times;</button>
+                <div class="flex-1">
+                    <label class="text-xs text-gray-500">Nome do Índice</label>
+                    <input type="text" value="${name}" placeholder="Ex: Metas" class="index-name w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                </div>
+                <div class="w-24">
+                    <label class="text-xs text-gray-500">% do Índice</label>
+                    <input type="number" value="${perc}" placeholder="Ex: 50" class="index-perc w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" min="1" max="100" required>
+                </div>
+                <button type="button" class="remove-index-field text-red-500 hover:text-red-700 mt-5">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </button>
             `;
             
-            div.querySelector('.btn-remove-indice').addEventListener('click', () => {
-                div.remove();
+            div.querySelector('.remove-index-field').addEventListener('click', (e) => {
+                e.target.closest('.flex').remove();
                 updateIndicesTotal();
             });
             
-            div.querySelector('.indice-percent').addEventListener('input', updateIndicesTotal);
+            div.querySelector('.index-perc').addEventListener('input', updateIndicesTotal);
             
-            indicesList.appendChild(div);
-        }
+            if(indicesList) indicesList.appendChild(div);
+        };
         
-        btnAddIndice.addEventListener('click', () => addIndiceRow());
-        
-        // Calcula o total dos índices no modal
-        function updateIndicesTotal() {
+        // Atualiza o total de % no modal de metas e trava/libera o botão salvar
+        const updateIndicesTotal = () => {
+            const percentages = document.querySelectorAll('#indices-list .index-perc');
             let total = 0;
-            indicesList.querySelectorAll('.indice-percent').forEach(input => {
+            percentages.forEach(input => {
                 total += parseFloat(input.value) || 0;
             });
-            indicesTotalPercent.textContent = `Total: ${total}%`;
             
-            // Validação visual
+            if(indicesTotalPercentage) indicesTotalPercentage.textContent = `Total: ${total}%`;
+            
             if (total === 100) {
-                indicesTotalPercent.classList.remove('text-red-600');
-                indicesTotalPercent.classList.add('text-green-600');
-                btnSaveIndices.disabled = false;
+                if(indicesTotalPercentage) indicesTotalPercentage.classList.add('text-green-600');
+                if(indicesTotalPercentage) indicesTotalPercentage.classList.remove('text-red-600');
+                if(btnSubmitIndicesForm) btnSubmitIndicesForm.disabled = false;
+                if(btnSubmitIndicesForm) btnSubmitIndicesForm.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
             } else {
-                indicesTotalPercent.classList.add('text-red-600');
-                indicesTotalPercent.classList.remove('text-green-600');
-                btnSaveIndices.disabled = true;
+                if(indicesTotalPercentage) indicesTotalPercentage.classList.add('text-red-600');
+                if(indicesTotalPercentage) indicesTotalPercentage.classList.remove('text-green-600');
+                if(btnSubmitIndicesForm) btnSubmitIndicesForm.disabled = true;
+                if(btnSubmitIndicesForm) btnSubmitIndicesForm.classList.add('disabled:opacity-50', 'disabled:cursor-not-allowed');
             }
-        }
-        
-        // Mostrar/Esconder senha no modal de supervisor
-        showPasswordSupervisor.addEventListener('change', () => {
-            const passInput = document.getElementById('supervisor-password');
-            passInput.type = showPasswordSupervisor.checked ? 'text' : 'password';
+        };
+
+        // Salvar Metas (Índices) do Supervisor
+        if(sectorIndicesForm) sectorIndicesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const sectorId = editIndicesSectorId.value;
+            if (!sectorId) return;
+
+            const indices = [];
+            const indexFields = document.querySelectorAll('#indices-list .flex');
+            let total = 0;
+            
+            indexFields.forEach(field => {
+                const name = field.querySelector('.index-name').value.trim();
+                const perc = parseFloat(field.querySelector('.index-perc').value);
+                
+                if (name && perc > 0) {
+                    indices.push({ name, perc });
+                    total += perc;
+                }
+            });
+
+            if (total !== 100) {
+                showMessage("Erro", "A soma dos índices deve ser exatamente 100%.");
+                return;
+            }
+            if (indices.length === 0) {
+                showMessage("Erro", "Adicione pelo menos um índice.");
+                return;
+            }
+            
+            try {
+                const docRef = doc(getSectorsCollection(), sectorId);
+                await updateDoc(docRef, { indices: indices });
+                
+                showMessage("Sucesso", "Metas (índices) do setor atualizadas com sucesso!");
+                hideModal(sectorIndicesModal);
+                
+                // CORREÇÃO: Força o recarregamento dos índices na tela principal
+                // 1. Atualiza o globalSectors localmente
+                const sectorIndex = globalSectors.findIndex(s => s.id === sectorId);
+                if (sectorIndex > -1) {
+                    globalSectors[sectorIndex].indices = indices;
+                }
+                // 2. Recarrega os índices se o colaborador selecionado for deste setor
+                const employeeId = employeeSelect.value;
+                if (employeeId) {
+                    const employee = globalEmployees.find(e => e.id === employeeId);
+                    if (employee && employee.sectorId === sectorId) {
+                        renderIndices(indices);
+                    }
+                }
+                
+            } catch (error) {
+                console.error("Erro ao salvar índices:", error);
+                showMessage("Erro", "Não foi possível salvar os índices.");
+            }
         });
+
+        // --- LÓGICA DE SALVAR (Formulários de Gestão) ---
         
-        // --- Função de Exportação (CSV) ---
-        
-        btnDownloadCSV.addEventListener('click', () => {
-            if (globalHistory.length === 0) {
-                showMessage("Aviso", "Não há dados no histórico para exportar.");
+        // Salvar Supervisor
+        if(supervisorForm) supervisorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = editSupervisorId.value;
+            const name = supervisorName.value;
+            const sectorId = supervisorSector.value;
+            const username = supervisorUsername.value.trim().toLowerCase();
+            const password = supervisorPassword.value;
+
+            // Validações de Duplicidade
+            // 1. Username já existe?
+            const userExists = globalSupervisors.find(s => s.username === username && s.id !== id);
+            if (userExists) {
+                showMessage("Erro", "Este nome de 'Usuário (para login)' já está em uso.");
+                return;
+            }
+            
+            // 2. Setor já tem supervisor?
+            const sectorTaken = globalSupervisors.find(s => s.sectorId === sectorId && s.id !== id);
+            if (sectorTaken) {
+                showMessage("Erro", "Este setor já possui um supervisor cadastrado.");
                 return;
             }
 
-            let csvContent = "data:text/csv;charset=utf-8,";
+            const data = { name, sectorId, username, password };
             
-            // Cabeçalho Principal
-            let headers = [
-                "MesRef", "Colaborador", "Setor", "ValorBase", "ValorTotal", "LancadoEm"
-            ];
-            
-            // Cabeçalhos Dinâmicos (Índices)
-            // Pega todos os nomes de índices de todos os lançamentos
-            const allIndicesNames = new Set();
-            globalHistory.forEach(item => {
-                item.scores.forEach(score => {
-                    allIndicesNames.add(`Indice_${score.name.replace(/[^a-zA-Z0-9]/g, '')}`); // Nome limpo
-                    allIndicesNames.add(`Score_${score.name.replace(/[^a-zA-Z0-9]/g, '')}`); // Nome limpo
-                });
-            });
-            
-            const dynamicHeaders = Array.from(allIndicesNames);
-            headers = [...headers, ...dynamicHeaders];
-            
-            csvContent += headers.join(";") + "\r\n"; // Usa PONTO E VÍRGULA
+            // Lógica de Edição: não atualizar senha se o campo estiver vazio
+            if (id && !password) {
+                delete data.password; // Não atualiza a senha
+            } else if (password.length < 6) {
+                 showMessage("Erro", "A senha deve ter no mínimo 6 caracteres.");
+                return;
+            }
 
-            // Linhas
-            globalHistory.forEach(item => {
-                let row = [
-                    item.monthRef,
-                    item.employeeName,
-                    item.sectorName,
-                    item.baseValue.toFixed(2),
-                    item.totalValue.toFixed(2),
-                    item.createdAt ? item.createdAt.toDate().toLocaleString('pt-BR') : ''
-                ];
-                
-                // Adiciona os valores dos índices dinâmicos
-                const scoreMap = new Map();
-                item.scores.forEach(score => {
-                    scoreMap.set(`Indice_${score.name.replace(/[^a-zA-Z0-9]/g, '')}`, score.max);
-                    scoreMap.set(`Score_${score.name.replace(/[^a-zA-Z0-9]/g, '')}`, score.score);
-                });
-                
-                dynamicHeaders.forEach(headerName => {
-                    row.push(scoreMap.get(headerName) || '0'); // Adiciona 0 se o índice não existir nesse lançamento
-                });
-                
-                csvContent += row.join(";") + "\r\n"; // Usa PONTO E VÍRGULA
-            });
+            try {
+                if (id) {
+                    // Editando
+                    const docRef = doc(getSupervisorsCollection(), id);
+                    await updateDoc(docRef, data);
+                    showMessage("Sucesso", "Supervisor atualizado com sucesso!");
+                } else {
+                    // Criando
+                    await addDoc(getSupervisorsCollection(), data);
+                    showMessage("Sucesso", "Supervisor cadastrado com sucesso!");
+                }
+                hideModal(supervisorModal);
+            } catch (error) {
+                console.error("Erro ao salvar supervisor:", error);
+                showMessage("Erro", "Não foi possível salvar o supervisor.");
+            }
+        });
+        
+        // Salvar Setor
+        if(sectorForm) sectorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = editSectorId.value;
+            const name = sectorName.value.trim();
+            
+            // Validação de Duplicidade (ignorando case)
+            const nameExists = globalSectors.find(s => s.name.toLowerCase() === name.toLowerCase() && s.id !== id);
+            if (nameExists) {
+                showMessage("Erro", "Já existe um setor com este nome.");
+                return;
+            }
+            
+            // Admin Master só cria o nome. Índices são adicionados pelo Supervisor.
+            const data = { 
+                name: name,
+                indices: [] // Supervisor define isso depois
+            };
 
-            // Cria e baixa o arquivo
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `historico_remuneracao_${monthRefInput.value}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            try {
+                if (id) {
+                    // Editando (Admin Master não deve editar, mas a lógica está aqui)
+                    // NOTA: Ao editar, não mexemos nos índices.
+                    delete data.indices;
+                    const docRef = doc(getSectorsCollection(), id);
+                    await updateDoc(docRef, { name: name });
+                    showMessage("Sucesso", "Setor atualizado com sucesso!");
+                } else {
+                    // Criando
+                    await addDoc(getSectorsCollection(), data);
+                    showMessage("Sucesso", "Setor cadastrado! O supervisor deste setor deve agora 'Gerenciar Metas' para definir os índices.");
+                }
+                hideModal(sectorModal);
+            } catch (error) {
+                console.error("Erro ao salvar setor:", error);
+                showMessage("Erro", "Não foi possível salvar o setor.");
+            }
         });
 
+        // Salvar Colaborador
+        if(employeeForm) employeeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = editEmployeeId.value;
+            const name = employeeName.value.trim();
+            const sectorId = employeeSector.value;
 
-        // --- Inicialização da Aplicação ---
-        // Garante que o DOM esteja carregado antes de tentar iniciar o Firebase
-        // Correção: Apenas o `startFirebase` deve esperar o DOM.
-        document.addEventListener("DOMContentLoaded", () => {
-             // Inicia o Firebase assim que o DOM estiver pronto
-             startFirebase();
+            if (!sectorId) {
+                showMessage("Erro", "Selecione um setor para o colaborador.");
+                return;
+            }
+
+            // Validação de Duplicidade (mesmo nome)
+            const nameExists = globalEmployees.find(e => e.name.toLowerCase() === name.toLowerCase() && e.id !== id);
+             if (nameExists) {
+                showMessage("Erro", "Já existe um colaborador com este nome.");
+                return;
+            }
+
+            const data = { name, sectorId };
+
+            try {
+                if (id) {
+                    // Editando
+                    const docRef = doc(getEmployeesCollection(), id);
+                    await updateDoc(docRef, data);
+                    showMessage("Sucesso", "Colaborador atualizado com sucesso!");
+                } else {
+                    // Criando
+                    await addDoc(getEmployeesCollection(), data);
+                    showMessage("Sucesso", "Colaborador cadastrado com sucesso!");
+                }
+                hideModal(employeeModal);
+            } catch (error) {
+                console.error("Erro ao salvar colaborador:", error);
+                showMessage("Erro", "Não foi possível salvar o colaborador.");
+            }
         });
+
+        // --- LÓGICA DE EDIÇÃO E EXCLUSÃO (Painel de Gestão e Histórico) ---
+        
+        let itemToDelete = { id: null, type: null, collection: null };
+
+        // Event listener centralizado para cliques em botões dinâmicos (Editar, Excluir, Ver +)
+        document.body.addEventListener('click', async (e) => {
+            const target = e.target.closest('button'); // Pega o botão clicado
+            if (!target) return;
+            
+            // --- Ações do Histórico ---
+            
+            // Ver + (Detalhes)
+            if (target.dataset.launchId) {
+                const detailRow = document.getElementById(`details-${target.dataset.launchId}`);
+                if (detailRow) detailRow.classList.toggle('hidden');
+            }
+            
+            // Editar Lançamento (Supervisor)
+            if (target.dataset.editId && !target.dataset.editType) {
+                loadLaunchForEdit(target.dataset.editId);
+            }
+            
+            // Excluir Lançamento (Supervisor)
+            if (target.dataset.deleteId && !target.dataset.deleteType) {
+                itemToDelete = { 
+                    id: target.dataset.deleteId, 
+                    type: 'lançamento', 
+                    collection: getLaunchesCollection() 
+                };
+                if(deleteConfirmMessage) deleteConfirmMessage.textContent = "Você tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.";
+                showModal(deleteConfirmModal);
+            }
+
+            // --- Ações do Painel de Gestão (Master) ---
+            
+            // Editar (Supervisor ou Colaborador)
+            if (target.dataset.editId && target.dataset.editType === 'supervisor') {
+                openSupervisorModalForEdit(target.dataset.editId);
+            }
+            if (target.dataset.editId && target.dataset.editType === 'employee') {
+                openEmployeeModalForEdit(target.dataset.editId);
+            }
+            
+            // Excluir (Supervisor, Setor ou Colaborador)
+            if (target.dataset.deleteId && target.dataset.deleteType) {
+                const type = target.dataset.deleteType;
+                let collection;
+                if (type === 'supervisor') collection = getSupervisorsCollection();
+                else if (type === 'sector') collection = getSectorsCollection();
+                else if (type === 'employee') collection = getEmployeesCollection();
+                
+                itemToDelete = { id: target.dataset.deleteId, type: type, collection: collection };
+                
+                if(deleteConfirmMessage) deleteConfirmMessage.textContent = `Você tem certeza que deseja excluir este ${type}? Esta ação não pode ser desfeita.`;
+                showModal(deleteConfirmModal);
+            }
+        });
+        
+        // Confirmação da Exclusão (Modal)
+        if(btnConfirmDelete) btnConfirmDelete.addEventListener('click', async () => {
+            const { id, type, collection } = itemToDelete;
+            if (!id || !collection) return;
+            
+            try {
+                // Lógica de exclusão em cascata (se necessário)
+                const batch = writeBatch(db);
+                
+                // 1. Excluir o item principal
+                const itemRef = doc(collection, id);
+                batch.delete(itemRef);
+
+                // 2. Se excluir um SETOR, excluir dependências
+                if (type === 'sector') {
+                    // Exclui colaboradores desse setor
+                    const empQuery = query(getEmployeesCollection(), where("sectorId", "==", id));
+                    const empSnap = await getDocs(empQuery);
+                    empSnap.docs.forEach(d => batch.delete(d.ref));
+                    
+                    // Exclui supervisores desse setor
+                    const supQuery = query(getSupervisorsCollection(), where("sectorId", "==", id));
+                    const supSnap = await getDocs(supQuery);
+                    supSnap.docs.forEach(d => batch.delete(d.ref));
+                    
+                    // Exclui lançamentos desse setor
+                    const launchQuery = query(getLaunchesCollection(), where("sectorId", "==", id));
+                    const launchSnap = await getDocs(launchQuery);
+                    launchSnap.docs.forEach(d => batch.delete(d.ref));
+                }
+                
+                // 3. Se excluir um COLABORADOR, excluir lançamentos dele
+                if (type === 'employee') {
+                    const launchQuery = query(getLaunchesCollection(), where("employeeId", "==", id));
+                    const launchSnap = await getDocs(launchQuery);
+                    launchSnap.docs.forEach(d => batch.delete(d.ref));
+                }
+                
+                // 4. Se excluir um SUPERVISOR (só exclui o supervisor)
+                // (Já está no batch)
+
+                await batch.commit();
+                
+                showMessage("Sucesso", `O item (${type}) foi excluído com sucesso.`);
+            } catch (error) {
+                console.error(`Erro ao excluir ${type}:`, error);
+                showMessage("Erro", `Não foi possível excluir o item.`);
+            } finally {
+                hideModal(deleteConfirmModal);
+                itemToDelete = { id: null, type: null, collection: null };
+            }
+        });
+        
+        if(btnCancelDelete) btnCancelDelete.addEventListener('click', () => {
+            hideModal(deleteConfirmModal);
+            itemToDelete = { id: null, type: null, collection: null };
+        });
+
+        // Abre o modal de Supervisor para Edição
+        const openSupervisorModalForEdit = (id) => {
+            const supervisor = globalSupervisors.find(s => s.id === id);
+            if (!supervisor) return;
+            
+            if(supervisorForm) supervisorForm.reset();
+            if(supervisorModalTitle) supervisorModalTitle.textContent = "Editar Supervisor";
+            if(editSupervisorId) editSupervisorId.value = id;
+            if(supervisorName) supervisorName.value = supervisor.name;
+            if(supervisorSector) supervisorSector.value = supervisor.sectorId;
+            if(supervisorUsername) supervisorUsername.value = supervisor.username;
+            if(supervisorPassword) supervisorPassword.placeholder = "Deixe em branco para não alterar"; // Senha não obrigatória na edição
+            if(supervisorPassword) supervisorPassword.required = false;
+            
+            showModal(supervisorModal);
+        };
+        
+        // Abre o modal de Colaborador para Edição
+        const openEmployeeModalForEdit = (id) => {
+            const employee = globalEmployees.find(e => e.id === id);
+            if (!employee) return;
+            
+            if(employeeForm) employeeForm.reset();
+            if(employeeModalTitle) employeeModalTitle.textContent = "Editar Colaborador";
+            if(editEmployeeId) editEmployeeId.value = id;
+            if(employeeName) employeeName.value = employee.name;
+            if(employeeSector) employeeSector.value = employee.sectorId;
+            if(employeeSector) employeeSector.disabled = false; // Master sempre pode editar
+            
+            showModal(employeeModal);
+        };
+        
+        // --- INICIALIZAÇÃO DA PÁGINA ---
+        
+        // Lógica para mostrar/esconder senha (Modal Supervisor)
+        if(showPassword) showPassword.addEventListener('change', () => {
+            if(supervisorPassword) supervisorPassword.type = showPassword.checked ? 'text' : 'password';
+        });
+        
+        // Lógica das Abas (Painel de Gestão)
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.dataset.tab;
+                
+                tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `tab-${tabId}`);
+                });
+                
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+                
+                // Carrega a tabela respectiva ao clicar na aba
+                if (tabId === 'supervisors') renderSupervisorsTable();
+                if (tabId === 'sectors') renderSectorsTable();
+                if (tabId === 'employees') renderEmployeesTable();
+            });
+        });
+        
+        // Inicia o Firebase ao carregar o script
+        startFirebase();
 
     </script>
+
 </body>
 </html>

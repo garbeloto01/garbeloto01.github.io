@@ -1363,6 +1363,8 @@
                 let detailsHtml = '';
                 if (launch.status === 'FÉRIAS') {
                     detailsHtml = `<span class="font-medium text-blue-600">FÉRIAS</span>`;
+                } else if (launch.status === 'MÉDIA') { // --- NOVO ---
+                    detailsHtml = `<span class="font-medium text-green-600">MÉDIA</span>`;
                 } else {
                     detailsHtml = `<button class="text-red-600 hover:text-red-800 font-medium" data-launch-id="${launch.id}">Ver +</button>`;
                 }
@@ -1370,8 +1372,8 @@
                 // Coluna Ação (Editar/Excluir)
                 // data-cell-type é usado pela função applyPermissions para esconder a célula
                 let actionHtml = '';
-                if (launch.status === 'FÉRIAS') {
-                    actionHtml = '---';
+                if (launch.status === 'FÉRIAS' || launch.status === 'MÉDIA') { // --- NOVO ---
+                    actionHtml = '---'; // Não pode editar/excluir férias ou média
                 } else {
                      actionHtml = `
                         <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${launch.id}">Editar</button>
@@ -1384,7 +1386,7 @@
                     <td class="px-4 py-3">${launch.employeeName}</td>
                     <td class="px-4 py-3">${launch.sectorName}</td>
                     <td class="px-4 py-3">${baseValueBRL}</td>
-                    <td class="px-4 py-3 font-bold ${launch.status === 'FÉRIAS' ? 'text-blue-600' : 'text-red-600'}">${totalValueBRL}</td>
+                    <td class="px-4 py-3 font-bold ${launch.status === 'FÉRIAS' ? 'text-blue-600' : (launch.status === 'MÉDIA' ? 'text-green-600' : 'text-red-600')}">${totalValueBRL}</td>
                     <td class="px-4 py-3 text-sm text-gray-600">${launchedAt}</td>
                     <td class="px-4 py-3 details-cell">${detailsHtml}</td>
                     <td class="px-4 py-3 action-cell" data-cell-type="action">${actionHtml}</td>
@@ -1569,11 +1571,14 @@
                 await addDoc(getLaunchesCollection(), launchData);
                 showMessage("Sucesso", `Lançamento de FÉRIAS (R$ 0,00) registrado para ${vacationEmployee.name}.`);
                 
-                // Limpa o formulário
-                launchForm.reset();
-                setDefaultMonth();
+                // Limpa o formulário (MODIFICADO)
+                // launchForm.reset(); // Removemos o reset completo
+                // setDefaultMonth(); // Removemos o reset do mês
+                
+                // Limpamos manualmente apenas os campos do colaborador
+                if(employeeSelect) employeeSelect.value = ""; // Reset dropdown
                 renderIndices([]);
-                totalCalculated.textContent = "R$ 0,00";
+                if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
                 
             } catch (error) {
                 console.error("Erro ao lançar férias:", error);
@@ -1747,14 +1752,24 @@
                     showMessage("Sucesso", "Remuneração lançada com sucesso!");
                 }
                 
+                // --- NOVO: Atualiza a média do supervisor ---
+                if (isSupervisor) {
+                    const supervisor = globalSupervisors.find(s => s.id === currentSupervisorId);
+                    if (supervisor) {
+                        // Não precisamos 'await' isso, pode rodar em background
+                        updateSupervisorAverage(month, currentSupervisorId, supervisor.name, supervisor.sectorId);
+                    }
+                }
+                // --- FIM NOVO ---
+                
                 // Limpa o formulário
-                launchForm.reset();
-                setDefaultMonth();
-                renderIndices([]); // Limpa os campos de índice
-                if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
+                // launchForm.reset(); // <-- REMOVIDO! Este era o culpado.
+                // setDefaultMonth(); // <-- REMOVIDO! Este também.
+                renderIndices([]); // Limpa os campos de índice (Isto vai ser feito pelo resetLaunchFormToCreateMode)
+                if(totalCalculated) totalCalculated.textContent = "R$ 0,00"; // (Isto também)
                 
                 // Volta o botão para o estado padrão (se estava editando)
-                resetLaunchFormToCreateMode();
+                resetLaunchFormToCreateMode(); // Agora esta função fará a limpeza parcial corretamente.
 
             } catch (error) {
                 console.error("Erro ao salvar lançamento:", error);
@@ -1828,10 +1843,14 @@
             if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('bg-orange-500', 'bg-red-600');
             if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('hover:bg-orange-600', 'hover:bg-red-700');
             if(btnCancelEdit) btnCancelEdit.classList.add('hidden');
-            if(launchForm) launchForm.reset();
-            setDefaultMonth();
-            renderIndices([]);
-            if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
+            
+            // if(launchForm) launchForm.reset(); // REMOVIDO: Limpava o valor base
+            // setDefaultMonth(); // REMOVIDO: Resetava o mês
+            
+            // Limpa manualmente apenas os campos do colaborador
+            if(employeeSelect) employeeSelect.value = ""; // Reset dropdown
+            renderIndices([]); // Limpa os campos de índice
+            if(totalCalculated) totalCalculated.textContent = "R$ 0,00"; // Reset total
         };
 
         if(btnCancelEdit) btnCancelEdit.addEventListener('click', resetLaunchFormToCreateMode);
@@ -2266,10 +2285,17 @@
             
             // Excluir Lançamento (Supervisor)
             if (target.dataset.deleteId && !target.dataset.deleteType) {
+                // --- NOVO: Pega os dados para recalcular a média ---
+                const launchData = globalHistory.find(l => l.id === target.dataset.deleteId);
+                // --- FIM NOVO ---
+                
                 itemToDelete = { 
                     id: target.dataset.deleteId, 
                     type: 'lançamento', 
-                    collection: getLaunchesCollection() 
+                    collection: getLaunchesCollection(),
+                    // --- NOVO: Armazena dados extras ---
+                    extra: launchData 
+                    // --- FIM NOVO ---
                 };
                 if(deleteConfirmMessage) deleteConfirmMessage.textContent = "Você tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.";
                 showModal(deleteConfirmModal);
@@ -2331,17 +2357,23 @@
                     launchSnap.docs.forEach(d => batch.delete(d.ref));
                 }
                 
-                // 3. Se excluir um COLABORADOR, excluir lançamentos dele
-                if (type === 'employee') {
-                    const launchQuery = query(getLaunchesCollection(), where("employeeId", "==", id));
-                    const launchSnap = await getDocs(launchQuery);
-                    launchSnap.docs.forEach(d => batch.delete(d.ref));
-                }
-                
-                // 4. Se excluir um SUPERVISOR (só exclui o supervisor)
-                // (Já está no batch)
-
                 await batch.commit();
+                
+                // --- NOVO: Recalcular média após exclusão ---
+                if (type === 'lançamento' && itemToDelete.extra && isSupervisor) {
+                    const launchData = itemToDelete.extra;
+                    // Verifica se o lançamento excluído era um normal (para recalcular)
+                    // e se quem está excluindo é o supervisor (isSupervisor)
+                    if (launchData.status === "" && launchData.launchedBySupervisor === currentSupervisorId) {
+                         const supervisor = globalSupervisors.find(s => s.id === currentSupervisorId);
+                         if (supervisor) {
+                            console.log("Recalculando média após exclusão...");
+                            // Não 'await', deixa rodar em background
+                            updateSupervisorAverage(launchData.monthRef, currentSupervisorId, supervisor.name, supervisor.sectorId);
+                         }
+                    }
+                }
+                // --- FIM NOVO ---
                 
                 showMessage("Sucesso", `O item (${type}) foi excluído com sucesso.`);
             } catch (error) {
@@ -2390,6 +2422,76 @@
             showModal(employeeModal);
         };
         
+        // --- NOVO: Função para calcular e salvar a média do supervisor ---
+        const updateSupervisorAverage = async (month, supervisorId, supervisorName, sectorId) => {
+            if (!month || !supervisorId || !supervisorName) return;
+
+            try {
+                // 1. Encontra todos os lançamentos NORMAIS (não-férias) deste supervisor neste mês
+                const q = query(getLaunchesCollection(),
+                    where("monthRef", "==", month),
+                    where("launchedBySupervisor", "==", supervisorId),
+                    where("status", "==", "") // Apenas lançamentos normais (não "FÉRIAS")
+                );
+
+                const querySnapshot = await getDocs(q);
+
+                let totalSum = 0;
+                let launchCount = 0;
+                
+                querySnapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    // Filtro local para garantir que não é uma média (embora 'status==""' já deva fazer isso)
+                    if (data.type !== 'average') {
+                        totalSum += data.totalValue;
+                        launchCount++;
+                    }
+                });
+
+                if (launchCount === 0) {
+                    // Se não houver lançamentos, remove a média antiga se existir
+                    console.log("Nenhum lançamento normal encontrado para calcular média.");
+                    const avgLaunchId = `avg_${supervisorId}_${month.replace('-', '')}`;
+                    const avgDocRef = doc(getLaunchesCollection(), avgLaunchId);
+                    const avgDocSnap = await getDoc(avgDocRef);
+                    if (avgDocSnap.exists()) {
+                        await deleteDoc(avgDocRef);
+                        console.log("Média anterior removida pois não há mais lançamentos.");
+                    }
+                    return;
+                }
+
+                const averageValue = totalSum / launchCount;
+                
+                // 2. Define um ID previsível para o lançamento da média
+                const avgLaunchId = `avg_${supervisorId}_${month.replace('-', '')}`;
+                const avgDocRef = doc(getLaunchesCollection(), avgLaunchId);
+
+                const avgLaunchData = {
+                    monthRef: month,
+                    employeeId: `avg_${supervisorId}`, // ID especial
+                    employeeName: `${supervisorName} (Média Equipe)`,
+                    sectorId: sectorId,
+                    launchedBy: 'system',
+                    launchedBySupervisor: supervisorId, // Para filtragem
+                    baseValue: 0, // Média já é o valor final
+                    totalValue: averageValue,
+                    scores: [],
+                    status: "MÉDIA", // Novo status
+                    type: "average", // Para exclusão dos cálculos
+                    createdAt: serverTimestamp() // Atualiza a data a cada recálculo
+                };
+
+                // 3. Salva (cria ou atualiza) o lançamento da média
+                await setDoc(avgDocRef, avgLaunchData, { merge: true }); 
+
+                console.log(`Média do supervisor ${supervisorName} atualizada para ${averageValue}`);
+
+            } catch (error) {
+                console.error("Erro ao atualizar média do supervisor:", error);
+            }
+        };
+
         // --- INICIALIZAÇÃO DA PÁGINA ---
         
         // Lógica para mostrar/esconder senha (Modal Supervisor)

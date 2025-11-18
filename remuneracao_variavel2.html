@@ -176,7 +176,6 @@
                 </button>
 
                 <p id="login-error" class="text-red-500 text-sm text-center mt-4 hidden">Usuário ou senha inválidos.</p>
-                <!-- Dica de senha foi REMOVIDA -->
             </form>
         </div>
     </div>
@@ -231,7 +230,7 @@
                     
                     <!-- Botões do Admin Master -->
                     <button id="btn-open-supervisor-modal" class="hidden flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         <span>+ Cadastrar Gestão</span>
                     </button>
                     <button id="btn-open-sector-modal" class="hidden flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">
@@ -1372,9 +1371,10 @@
                 // Coluna Ação (Editar/Excluir)
                 // data-cell-type é usado pela função applyPermissions para esconder a célula
                 let actionHtml = '';
-                if (launch.status === 'FÉRIAS' || launch.status === 'MÉDIA') { // --- NOVO ---
-                    actionHtml = '---'; // Não pode editar/excluir férias ou média
+                if (launch.status === 'MÉDIA') { // --- MODIFICADO: Só trava Média ---
+                    actionHtml = '---'; // Média continua travada
                 } else {
+                     // Férias e Normal liberados
                      actionHtml = `
                         <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${launch.id}">Editar</button>
                         <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${launch.id}">Excluir</button>
@@ -1549,6 +1549,16 @@
                 showMessage("Erro", "Selecione um Mês de Referência primeiro.");
                 return;
             }
+
+            // --- TRAVA DE DUPLICIDADE (FÉRIAS) ---
+            // Verifica se já existe um lançamento para este colaborador neste mês
+            const alreadyLaunched = globalHistory.find(l => l.employeeId === vacationEmployee.id);
+            if (alreadyLaunched) {
+                showMessage("Bloqueio", "Este colaborador já possui um lançamento neste mês de referência.");
+                hideModal(vacationModal);
+                return;
+            }
+            // -------------------------------------
             
             // Pega o Valor Base atual (só para registro)
             const baseValue = parseFloat(baseValueInput.value) || 0;
@@ -1688,6 +1698,17 @@
                 showMessage("Erro de Validação", "Selecione um 'Colaborador' para fazer o lançamento.");
                 return;
             }
+
+            // --- TRAVA DE DUPLICIDADE (LANÇAMENTO NORMAL) ---
+            if (!currentEditingLaunchId) {
+                // Se não estiver editando (ou seja, é um novo lançamento), verifica duplicidade
+                const alreadyLaunched = globalHistory.find(l => l.employeeId === employeeId);
+                if (alreadyLaunched) {
+                    showMessage("Bloqueio", "Este colaborador já possui um lançamento neste mês de referência.");
+                    return;
+                }
+            }
+            // ------------------------------------------------
             
             const employee = globalEmployees.find(emp => emp.id === employeeId);
             if (!employee) {
@@ -2526,4 +2547,3 @@
 
 </body>
 </html>
-

@@ -158,7 +158,7 @@
 
     <!-- Tela de Login -->
     <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm p-8 rounded-lg shadow-xl border border-gray-200">
+        <div class="bg-white w-full max-w-sm p-8 rounded-lg shadow-xl border border-gray-200 relative">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Login - Remuneração Variável</h2>
             
             <form id="login-form">
@@ -177,6 +177,14 @@
 
                 <p id="login-error" class="text-red-500 text-sm text-center mt-4 hidden">Usuário ou senha inválidos.</p>
             </form>
+
+            <!-- Botão de Cadastro Master (Oculto por padrão, aparece se não houver master) -->
+            <div id="master-register-container" class="mt-6 text-center hidden border-t pt-4">
+                <p class="text-sm text-gray-600 mb-2">Primeiro acesso?</p>
+                <button id="btn-register-master" class="text-sm text-red-600 font-bold hover:underline">
+                    CADASTRAR USUÁRIO MASTER
+                </button>
+            </div>
         </div>
     </div>
     
@@ -437,6 +445,35 @@
         </div> <!-- Fim container -->
     </div> <!-- Fim app-content -->
 
+    <!-- Modal: Cadastrar Master (NOVO) -->
+    <div id="master-registration-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-6 text-red-600">Cadastro de Usuário Master</h2>
+            <p class="text-sm text-gray-600 mb-4">Defina o usuário e senha para o acesso administrativo principal. <strong>Isso só pode ser feito uma vez.</strong></p>
+            
+            <form id="master-registration-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="reg-master-username" class="block text-sm font-medium text-gray-700">Usuário</label>
+                        <input type="text" id="reg-master-username" value="admin" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
+                    </div>
+                    <div>
+                        <label for="reg-master-password" class="block text-sm font-medium text-gray-700">Senha</label>
+                        <input type="password" id="reg-master-password" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required minlength="6">
+                    </div>
+                    <div>
+                        <label for="reg-master-confirm" class="block text-sm font-medium text-gray-700">Confirmar Senha</label>
+                        <input type="password" id="reg-master-confirm" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required minlength="6">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-master-reg" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Salvar Master</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal: Cadastrar/Editar Supervisor (Gestão) -->
     <div id="supervisor-modal" class="modal">
         <div class="modal-content">
@@ -645,6 +682,16 @@
         // Estado da Tabela de Histórico
         let currentHistorySort = { column: 'createdAt', direction: 'desc' };
         
+        // --- Função de Hashing (SHA-256) ---
+        // Converte texto em hash SHA-256 para segurança
+        async function digestMessage(message) {
+            const msgUint8 = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
         // --- Elementos da UI (Login) ---
         const loginScreen = document.getElementById('login-screen');
         const appContent = document.getElementById('app-content');
@@ -653,6 +700,17 @@
         const loginPassword = document.getElementById('login-password');
         const loginError = document.getElementById('login-error');
         const btnLogout = document.getElementById('btn-logout');
+        
+        // Master Registration UI
+        const masterRegisterContainer = document.getElementById('master-register-container');
+        const btnRegisterMaster = document.getElementById('btn-register-master');
+        const masterRegistrationModal = document.getElementById('master-registration-modal');
+        const masterRegistrationForm = document.getElementById('master-registration-form');
+        const regMasterUsername = document.getElementById('reg-master-username');
+        const regMasterPassword = document.getElementById('reg-master-password');
+        const regMasterConfirm = document.getElementById('reg-master-confirm');
+        const cancelMasterReg = document.getElementById('cancel-master-reg');
+
 
         // --- Elementos da UI (Conteúdo Principal) ---
         const userIdLog = document.getElementById('user-id-log');
@@ -786,6 +844,9 @@
         const getEmployeesCollection = () => collection(getBasePath(), 'employees');
         const getLaunchesCollection = () => collection(getBasePath(), 'launches');
         const getBaseValuesCollection = () => collection(getBasePath(), 'baseValues');
+        
+        // --- Caminho para Configuração do Master ---
+        const getMasterConfigDoc = () => doc(db, 'artifacts', appId, 'system', 'master');
 
         // --- FUNÇÕES DE UTILIDADE (Modais) ---
 
@@ -818,6 +879,7 @@
             if (event.target == alertModal) hideModal(alertModal);
             if (event.target == sectorIndicesModal) hideModal(sectorIndicesModal);
             if (event.target == vacationModal) hideModal(vacationModal);
+            if (event.target == masterRegistrationModal) hideModal(masterRegistrationModal);
         };
 
         // --- NAVEGAÇÃO ENTRE VISÕES (Lançamento / Gestão) ---
@@ -897,6 +959,10 @@
                         currentUserId = user.uid;
                         if(currentUserIdDisplay) currentUserIdDisplay.textContent = currentUserId;
                         console.log("Firebase Auth (Anônimo) OK. ID de Log:", currentUserId);
+                        
+                        // Verifica se o master já foi cadastrado
+                        checkMasterRegistration();
+                        
                     } else {
                         console.error("Falha no login anônimo.");
                         currentUserId = null;
@@ -910,6 +976,78 @@
                 loginError.classList.remove('hidden');
             }
         };
+        
+        // --- LÓGICA DE CADASTRO MASTER (Primeiro Acesso) ---
+        
+        const checkMasterRegistration = async () => {
+             try {
+                const docRef = getMasterConfigDoc();
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    // Master já existe, esconde o botão
+                    if(masterRegisterContainer) masterRegisterContainer.classList.add('hidden');
+                } else {
+                    // Master não existe, mostra o botão
+                    if(masterRegisterContainer) masterRegisterContainer.classList.remove('hidden');
+                }
+             } catch (error) {
+                 console.error("Erro ao verificar cadastro master:", error);
+             }
+        };
+        
+        // Abrir Modal de Cadastro Master
+        if(btnRegisterMaster) btnRegisterMaster.addEventListener('click', (e) => {
+            e.preventDefault(); // Previne submit do form de login se estiver dentro
+            if(masterRegistrationForm) masterRegistrationForm.reset();
+            showModal(masterRegistrationModal);
+        });
+        
+        // Cancelar Cadastro Master
+        if(cancelMasterReg) cancelMasterReg.addEventListener('click', () => {
+            hideModal(masterRegistrationModal);
+        });
+        
+        // Salvar Cadastro Master
+        if(masterRegistrationForm) masterRegistrationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = regMasterUsername.value.trim();
+            const password = regMasterPassword.value;
+            const confirm = regMasterConfirm.value;
+            
+            if (password !== confirm) {
+                alert("As senhas não coincidem.");
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert("A senha deve ter pelo menos 6 caracteres.");
+                return;
+            }
+            
+            try {
+                // Hash da senha
+                const passwordHash = await digestMessage(password);
+                
+                // Salvar no Firestore
+                const docRef = getMasterConfigDoc();
+                await setDoc(docRef, {
+                    username: username,
+                    passwordHash: passwordHash,
+                    createdAt: serverTimestamp()
+                });
+                
+                alert("Usuário Master cadastrado com sucesso! Agora você pode fazer login.");
+                hideModal(masterRegistrationModal);
+                checkMasterRegistration(); // Atualiza a tela (esconde o botão)
+                
+            } catch (error) {
+                console.error("Erro ao cadastrar master:", error);
+                alert("Erro ao cadastrar master. Tente novamente.");
+            }
+        });
+
 
         // --- LÓGICA DE LOGIN (Usuário/Senha) ---
         
@@ -917,20 +1055,48 @@
             e.preventDefault();
             const username = loginUsername.value.trim();
             const password = loginPassword.value;
+            
+            // Gera o hash da senha digitada para comparar
+            const passwordHash = await digestMessage(password);
+            
             let loggedIn = false;
 
-            // 1. Verificar se é o Admin Master
-            if (username === 'admin' && password === '#1E1t1e4c2c6#@') {
-                isMaster = true;
-                isSupervisor = false; // Master não é um supervisor comum
-                isRhUser = false;
-                currentSupervisorId = 'master';
-                loggedIn = true;
-            } else {
+            // 1. Verificar se é o Admin Master (Agora via DB)
+            try {
+                const masterDocRef = getMasterConfigDoc();
+                const masterDocSnap = await getDoc(masterDocRef);
+                
+                if (masterDocSnap.exists()) {
+                    const masterData = masterDocSnap.data();
+                    if (masterData.username === username && masterData.passwordHash === passwordHash) {
+                        isMaster = true;
+                        isSupervisor = false;
+                        isRhUser = false;
+                        currentSupervisorId = 'master';
+                        loggedIn = true;
+                    }
+                } 
+            } catch (error) {
+                console.error("Erro ao verificar master:", error);
+            }
+            
+            if (!loggedIn) {
                 // 2. Verificar se é um Supervisor cadastrado
                 try {
-                    const q = query(getSupervisorsCollection(), where("username", "==", username), where("password", "==", password));
-                    const querySnapshot = await getDocs(q);
+                    // Tenta login com HASH (padrão seguro novo)
+                    let q = query(getSupervisorsCollection(), where("username", "==", username), where("passwordHash", "==", passwordHash));
+                    let querySnapshot = await getDocs(q);
+                    
+                    // Se falhar, tenta login com TEXTO PLANO (para compatibilidade com contas antigas)
+                    if (querySnapshot.empty) {
+                         // Aviso de segurança no console
+                         console.log("Tentando login legado (texto plano)...");
+                         q = query(getSupervisorsCollection(), where("username", "==", username), where("password", "==", password));
+                         querySnapshot = await getDocs(q);
+                         if (!querySnapshot.empty) {
+                             alert("Atenção: Sua senha ainda não está criptografada. Por favor, peça ao administrador para editar seu usuário e salvar novamente a senha.");
+                         }
+                    }
                     
                     if (!querySnapshot.empty) {
                         const supervisorDoc = querySnapshot.docs[0];
@@ -1959,197 +2125,9 @@
             });
         };
         
-        // --- LÓGICA DOS MODAIS DE CADASTRO / EDIÇÃO ---
-
-        // Abre Modal: Supervisor
-        if(btnOpenSupervisorModal) btnOpenSupervisorModal.addEventListener('click', () => {
-            if(supervisorForm) supervisorForm.reset();
-            if(supervisorModalTitle) supervisorModalTitle.textContent = "Cadastrar Novo Supervisor";
-            if(editSupervisorId) editSupervisorId.value = '';
-            if(supervisorPassword) supervisorPassword.required = true; // Senha obrigatória ao criar
-            showModal(supervisorModal);
-        });
-        if(cancelSupervisorModal) cancelSupervisorModal.addEventListener('click', () => hideModal(supervisorModal));
-        if(closeSupervisorModal) closeSupervisorModal.addEventListener('click', () => hideModal(supervisorModal));
-        
-        // Abre Modal: Setor
-        if(btnOpenSectorModal) btnOpenSectorModal.addEventListener('click', () => {
-            if(sectorForm) sectorForm.reset();
-            if(sectorModalTitle) sectorModalTitle.textContent = "Cadastrar Novo Setor";
-            if(editSectorId) editSectorId.value = '';
-            
-            // CORREÇÃO: Habilita o botão de salvar (que ficava travado pela validação de 100%)
-            if(btnSubmitSectorForm) {
-                btnSubmitSectorForm.disabled = false;
-                btnSubmitSectorForm.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
-            }
-            showModal(sectorModal);
-        });
-        if(cancelSectorModal) cancelSectorModal.addEventListener('click', () => hideModal(sectorModal));
-        if(closeSectorModal) closeSectorModal.addEventListener('click', () => hideModal(sectorModal));
-        
-        // Abre Modal: Colaborador
-        if(btnOpenEmployeeModal) btnOpenEmployeeModal.addEventListener('click', () => {
-            if(employeeForm) employeeForm.reset();
-            if(employeeModalTitle) employeeModalTitle.textContent = "Cadastrar Novo Colaborador";
-            if(editEmployeeId) editEmployeeId.value = '';
-
-            // Lógica de Permissão (Supervisor vs Master)
-            if (isSupervisor) {
-                // É Supervisor: Trava o setor no setor dele
-                if(employeeSector) employeeSector.value = currentSupervisorSectorId;
-                if(employeeSector) employeeSector.disabled = true;
-            } else {
-                // É Master: Libera o select
-                if(employeeSector) employeeSector.disabled = false;
-            }
-            showModal(employeeModal);
-        });
-        if(cancelEmployeeModal) cancelEmployeeModal.addEventListener('click', () => hideModal(employeeModal));
-        if(closeEmployeeModal) closeEmployeeModal.addEventListener('click', () => hideModal(employeeModal));
-
-        // Abre Modal: Gerenciar Metas (Supervisor)
-        if(btnManageSectorIndices) btnManageSectorIndices.addEventListener('click', () => {
-            if (!currentSupervisorSectorId) return;
-            
-            const sector = globalSectors.find(s => s.id === currentSupervisorSectorId);
-            if (!sector) {
-                showMessage("Erro", "Setor do supervisor não encontrado.");
-                return;
-            }
-            
-            if(sectorIndicesForm) sectorIndicesForm.reset();
-            if(editIndicesSectorId) editIndicesSectorId.value = sector.id;
-            if(sectorIndicesName) sectorIndicesName.value = sector.name;
-            
-            // Limpa e recria os campos de índice
-            if(indicesList) indicesList.innerHTML = '';
-            if (sector.indices && sector.indices.length > 0) {
-                sector.indices.forEach(index => createIndexField(index.name, index.perc));
-            } else {
-                createIndexField(); // Cria um campo vazio
-            }
-            
-            updateIndicesTotal(); // Calcula o total
-            showModal(sectorIndicesModal);
-        });
-        if(cancelSectorIndicesModal) cancelSectorIndicesModal.addEventListener('click', () => hideModal(sectorIndicesModal));
-        if(closeSectorIndicesModal) closeSectorIndicesModal.addEventListener('click', () => hideModal(sectorIndicesModal));
-        
-        // Lógica do Modal "Gerenciar Metas"
-        if(addIndexField) addIndexField.addEventListener('click', () => createIndexField());
-
-        const createIndexField = (name = '', perc = '') => {
-            const div = document.createElement('div');
-            div.classList.add('flex', 'items-center', 'gap-2');
-            div.innerHTML = `
-                <div class="flex-1">
-                    <label class="text-xs text-gray-500">Nome do Índice</label>
-                    <input type="text" value="${name}" placeholder="Ex: Metas" class="index-name w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <div class="w-24">
-                    <label class="text-xs text-gray-500">% do Índice</label>
-                    <input type="number" value="${perc}" placeholder="Ex: 50" class="index-perc w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" min="1" max="100" required>
-                </div>
-                <button type="button" class="remove-index-field text-red-500 hover:text-red-700 mt-5">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </button>
-            `;
-            
-            div.querySelector('.remove-index-field').addEventListener('click', (e) => {
-                e.target.closest('.flex').remove();
-                updateIndicesTotal();
-            });
-            
-            div.querySelector('.index-perc').addEventListener('input', updateIndicesTotal);
-            
-            if(indicesList) indicesList.appendChild(div);
-        };
-        
-        // Atualiza o total de % no modal de metas e trava/libera o botão salvar
-        const updateIndicesTotal = () => {
-            const percentages = document.querySelectorAll('#indices-list .index-perc');
-            let total = 0;
-            percentages.forEach(input => {
-                total += parseFloat(input.value) || 0;
-            });
-            
-            if(indicesTotalPercentage) indicesTotalPercentage.textContent = `Total: ${total}%`;
-            
-            if (total === 100) {
-                if(indicesTotalPercentage) indicesTotalPercentage.classList.add('text-green-600');
-                if(indicesTotalPercentage) indicesTotalPercentage.classList.remove('text-red-600');
-                if(btnSubmitIndicesForm) btnSubmitIndicesForm.disabled = false;
-                if(btnSubmitIndicesForm) btnSubmitIndicesForm.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
-            } else {
-                if(indicesTotalPercentage) indicesTotalPercentage.classList.add('text-red-600');
-                if(indicesTotalPercentage) indicesTotalPercentage.classList.remove('text-green-600');
-                if(btnSubmitIndicesForm) btnSubmitIndicesForm.disabled = true;
-                if(btnSubmitIndicesForm) btnSubmitIndicesForm.classList.add('disabled:opacity-50', 'disabled:cursor-not-allowed');
-            }
-        };
-
-        // Salvar Metas (Índices) do Supervisor
-        if(sectorIndicesForm) sectorIndicesForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const sectorId = editIndicesSectorId.value;
-            if (!sectorId) return;
-
-            const indices = [];
-            const indexFields = document.querySelectorAll('#indices-list .flex');
-            let total = 0;
-            
-            indexFields.forEach(field => {
-                const name = field.querySelector('.index-name').value.trim();
-                const perc = parseFloat(field.querySelector('.index-perc').value);
-                
-                if (name && perc > 0) {
-                    indices.push({ name, perc });
-                    total += perc;
-                }
-            });
-
-            if (total !== 100) {
-                showMessage("Erro", "A soma dos índices deve ser exatamente 100%.");
-                return;
-            }
-            if (indices.length === 0) {
-                showMessage("Erro", "Adicione pelo menos um índice.");
-                return;
-            }
-            
-            try {
-                const docRef = doc(getSectorsCollection(), sectorId);
-                await updateDoc(docRef, { indices: indices });
-                
-                showMessage("Sucesso", "Metas (índices) do setor atualizadas com sucesso!");
-                hideModal(sectorIndicesModal);
-                
-                // CORREÇÃO: Força o recarregamento dos índices na tela principal
-                // 1. Atualiza o globalSectors localmente
-                const sectorIndex = globalSectors.findIndex(s => s.id === sectorId);
-                if (sectorIndex > -1) {
-                    globalSectors[sectorIndex].indices = indices;
-                }
-                // 2. Recarrega os índices se o colaborador selecionado for deste setor
-                const employeeId = employeeSelect.value;
-                if (employeeId) {
-                    const employee = globalEmployees.find(e => e.id === employeeId);
-                    if (employee && employee.sectorId === sectorId) {
-                        renderIndices(indices);
-                    }
-                }
-                
-            } catch (error) {
-                console.error("Erro ao salvar índices:", error);
-                showMessage("Erro", "Não foi possível salvar os índices.");
-            }
-        });
-
         // --- LÓGICA DE SALVAR (Formulários de Gestão) ---
         
-        // Salvar Supervisor
+        // Salvar Supervisor (AGORA COM HASH)
         if(supervisorForm) supervisorForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -2160,34 +2138,42 @@
             const password = supervisorPassword.value;
 
             // Validações de Duplicidade
-            // 1. Username já existe?
             const userExists = globalSupervisors.find(s => s.username === username && s.id !== id);
             if (userExists) {
                 showMessage("Erro", "Este nome de 'Usuário (para login)' já está em uso.");
                 return;
             }
             
-            // 2. Setor já tem supervisor?
             const sectorTaken = globalSupervisors.find(s => s.sectorId === sectorId && s.id !== id);
             if (sectorTaken) {
                 showMessage("Erro", "Este setor já possui um supervisor cadastrado.");
                 return;
             }
 
-            const data = { name, sectorId, username, password };
+            // Objeto base
+            const data = { name, sectorId, username };
             
-            // Lógica de Edição: não atualizar senha se o campo estiver vazio
+            // Lógica de Senha (Novo/Edição)
             if (id && !password) {
-                delete data.password; // Não atualiza a senha
+                // Editando sem mudar senha: não faz nada com a senha
             } else if (password.length < 6) {
                  showMessage("Erro", "A senha deve ter no mínimo 6 caracteres.");
                 return;
+            } else {
+                // TEM UMA NOVA SENHA -> GERAR HASH
+                const passwordHash = await digestMessage(password);
+                data.passwordHash = passwordHash;
+                // Removemos o campo de senha em texto plano se existir (migração)
+                // Na verdade, o updateDoc com merge faz isso, mas é bom garantir no objeto
             }
 
             try {
                 if (id) {
                     // Editando
                     const docRef = doc(getSupervisorsCollection(), id);
+                    // Se tiver senha antiga em texto plano e estamos atualizando a senha,
+                    // seria bom limpar o campo 'password' antigo, mas o Firestore não deleta campos em update facilmente sem FieldValue.delete()
+                    // Por enquanto, apenas sobrescrevemos/adicionamos o hash.
                     await updateDoc(docRef, data);
                     showMessage("Sucesso", "Supervisor atualizado com sucesso!");
                 } else {

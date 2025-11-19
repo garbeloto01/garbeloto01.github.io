@@ -1033,7 +1033,10 @@
                 const baseVal = `R$ ${launch.baseValue.toFixed(2).replace('.', ',')}`;
                 const totalVal = `R$ ${launch.totalValue.toFixed(2).replace('.', ',')}`;
                 const date = launch.createdAt instanceof Date ? launch.createdAt.toLocaleString('pt-BR') : '-';
-                let actionHtml = launch.status === 'MÉDIA' ? '---' : `<button class="text-blue-600 mr-3" data-edit-id="${launch.id}">Editar</button><button class="text-red-600" data-delete-id="${launch.id}">Excluir</button>`;
+                
+                // CORREÇÃO: Adicionando metadados (mês, supervisor, setor) ao botão de excluir para permitir recálculo da média
+                let actionHtml = launch.status === 'MÉDIA' ? '---' : `<button class="text-blue-600 mr-3" data-edit-id="${launch.id}">Editar</button><button class="text-red-600" data-delete-id="${launch.id}" data-month="${launch.monthRef}" data-supervisor="${launch.launchedBySupervisor}" data-sector="${launch.sectorId}">Excluir</button>`;
+                
                 let statusClass = launch.status === 'FÉRIAS' ? 'text-blue-600' : (launch.status === 'MÉDIA' ? 'text-green-600' : 'text-red-600');
                 let detailsHtml = (launch.status === 'FÉRIAS' || launch.status === 'MÉDIA') ? `<span class="${statusClass}">${launch.status}</span>` : `<button class="text-red-600" data-launch-id="${launch.id}">Ver +</button>`;
                 
@@ -1206,7 +1209,15 @@
             if (t.dataset.launchId) document.getElementById(`details-${t.dataset.launchId}`).classList.toggle('hidden');
             if (t.dataset.editId && !t.dataset.editType) loadLaunchForEdit(t.dataset.editId);
             if (t.dataset.deleteId) {
-                itemToDelete = { id: t.dataset.deleteId, type: t.dataset.deleteType || 'lançamento', collection: t.dataset.deleteType ? (t.dataset.deleteType === 'supervisor' ? getSupervisorsCollection() : (t.dataset.deleteType === 'sector' ? getSectorsCollection() : getEmployeesCollection())) : getLaunchesCollection() };
+                // CORREÇÃO: Capturar metadados para recálculo ao clicar em excluir
+                itemToDelete = { 
+                    id: t.dataset.deleteId, 
+                    type: t.dataset.deleteType || 'lançamento', 
+                    collection: t.dataset.deleteType ? (t.dataset.deleteType === 'supervisor' ? getSupervisorsCollection() : (t.dataset.deleteType === 'sector' ? getSectorsCollection() : getEmployeesCollection())) : getLaunchesCollection(),
+                    month: t.dataset.month,
+                    supervisorId: t.dataset.supervisor,
+                    sectorId: t.dataset.sector
+                };
                 showModal(deleteConfirmModal);
             }
             if (t.id === 'btn-open-supervisor-modal') { if(supervisorForm) supervisorForm.reset(); showModal(supervisorModal); }
@@ -1299,7 +1310,18 @@
         let itemToDelete = {};
         if(btnConfirmDelete) btnConfirmDelete.addEventListener('click', async () => {
             if(!itemToDelete.id) return;
-            try { await deleteDoc(doc(itemToDelete.collection, itemToDelete.id)); alert("Excluído."); }
+            try { 
+                await deleteDoc(doc(itemToDelete.collection, itemToDelete.id)); 
+                
+                // CORREÇÃO: Recalcular (ou apagar) média do supervisor após exclusão de um lançamento
+                if (itemToDelete.type === 'lançamento' && itemToDelete.supervisorId && itemToDelete.month) {
+                    const sup = globalSupervisors.find(s => s.id === itemToDelete.supervisorId);
+                    const supName = sup ? sup.name : 'Supervisor';
+                    await updateSupervisorAverage(itemToDelete.month, itemToDelete.supervisorId, supName, itemToDelete.sectorId);
+                }
+                
+                alert("Excluído."); 
+            }
             catch(e){ console.error(e); alert("Erro ao excluir."); }
             hideModal(deleteConfirmModal);
         });

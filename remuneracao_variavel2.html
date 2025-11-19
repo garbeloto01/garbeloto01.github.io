@@ -7,148 +7,66 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            /* Tema ETECC (Vermelho, Preto, Branco) */
-            --primary-red: #d90000; /* Vermelho ETECC principal */
-            --primary-red-dark: #b30000; /* Vermelho mais escuro para hover */
-            
-            --primary-black: #222222; /* Preto/Cinza escuro ETECC */
-            --primary-black-dark: #000000; /* Preto mais escuro para hover */
-
-            --primary-blue: #0f62fe; /* Azul (para "Cadastrar Colaborador") */
-            --primary-blue-dark: #0353e9; 
-            
-            --primary-green: #22c55e; /* Verde (para "Salvar Valor Base" e "Cadastrar Setor") */
+            --primary-red: #d90000;
+            --primary-red-dark: #b30000;
+            --primary-black: #222222;
+            --primary-black-dark: #000000;
+            --primary-blue: #0f62fe;
+            --primary-blue-dark: #0353e9;
+            --primary-green: #22c55e;
             --primary-green-dark: #16a34a;
-
-            --primary-orange: #f97316; /* Laranja (para "Gerenciar Metas") */
+            --primary-orange: #f97316;
             --primary-orange-dark: #ea580c;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        /* Estilos para o Modal */
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
         .modal {
-            display: none; /* Oculto por padrão */
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5); /* Fundo escuro semi-transparente */
-            padding-top: 60px; /* Espaço para o modal não ficar colado no topo */
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            padding-top: 60px; 
         }
         .modal-content {
-            background-color: #ffffff;
-            margin: 5% auto;
-            padding: 24px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 12px;
+            background-color: #ffffff; 
+            margin: 5% auto; 
+            padding: 24px; 
+            border: 1px solid #888; 
+            width: 90%; 
+            max-width: 500px; 
+            border-radius: 12px; 
             animation: slideDown 0.3s ease-out;
         }
         @keyframes slideDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; }
         
-        /* Estilo Login */
-        #login-screen {
-            background-color: var(--primary-black); /* Fundo preto */
-        }
+        #login-screen { background-color: var(--primary-black); }
         
-        /* Estilos Tabela de Histórico */
-        #historyTable th, #historyTable td {
-            border: 1px solid #e2e8f0; /* Borda cinza clara */
-            padding: 8px 12px;
-            white-space: nowrap; /* Impede quebra de linha */
-        }
-        #historyTable th {
-            background-color: #f8fafc; /* Fundo levemente cinza no cabeçalho */
-            cursor: pointer; /* Indica que é clicável para ordenar */
-            user-select: none; /* Impede seleção de texto */
-            position: sticky;
-            top: 0; /* Para cabeçalho fixo se a tabela rolar (se necessário) */
-        }
-        #historyTable th:hover {
-            background-color: #f1f5f9;
-        }
-        #historyTable .sort-arrow {
-            display: inline-block;
-            margin-left: 5px;
-            opacity: 0.3;
-        }
-        #historyTable .sort-arrow.active {
-            opacity: 1;
-        }
+        #historyTable th, #historyTable td { border: 1px solid #e2e8f0; padding: 8px 12px; white-space: nowrap; }
+        #historyTable th { background-color: #f8fafc; cursor: pointer; user-select: none; position: sticky; top: 0; }
+        #historyTable th:hover { background-color: #f1f5f9; }
+        #historyTable .sort-arrow { display: inline-block; margin-left: 5px; opacity: 0.3; }
+        #historyTable .sort-arrow.active { opacity: 1; }
 
-        /* Abas do Painel de Gestão */
-        .tab-button {
-            padding: 8px 16px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            color: #6b7280; /* Cinza */
-        }
-        .tab-button.active {
-            border-bottom: 2px solid var(--primary-red);
-            color: var(--primary-red);
-            font-weight: 600;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-button { padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; color: #6b7280; }
+        .tab-button.active { border-bottom: 2px solid var(--primary-red); color: var(--primary-red); font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         
-        /* Layout dos campos de índice (2 colunas) */
-        #indices-container.grid-layout {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            align-items: start;
-        }
-        #indices-container.grid-layout .index-item {
-            display: flex;
-            flex-direction: column;
-        }
-        #indices-container.grid-layout .index-item label {
-            font-size: 0.875rem; /* 14px */
-            color: #374151; /* gray-700 */
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%; /* Garante que o label não quebre o layout */
-        }
-        #indices-container.grid-layout .index-item input {
-            width: 100%;
-        }
-
+        #indices-container.grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; align-items: start; }
+        #indices-container.grid-layout .index-item { display: flex; flex-direction: column; }
+        #indices-container.grid-layout .index-item label { font-size: 0.875rem; color: #374151; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        #indices-container.grid-layout .index-item input { width: 100%; }
     </style>
-    <!-- Fonte Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -170,168 +88,116 @@
                     <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
                     <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
                 </div>
-                
-                <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150">
-                    Entrar
-                </button>
-
+                <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150">Entrar</button>
                 <p id="login-error" class="text-red-500 text-sm text-center mt-4 hidden">Usuário ou senha inválidos.</p>
             </form>
 
-            <!-- Botão de Cadastro Master (Oculto por padrão, aparece se não houver master) -->
+            <!-- Botão de Cadastro Master -->
             <div id="master-register-container" class="mt-6 text-center hidden border-t pt-4">
                 <p class="text-sm text-gray-600 mb-2">Primeiro acesso?</p>
-                <button id="btn-register-master" class="text-sm text-red-600 font-bold hover:underline">
-                    CADASTRAR USUÁRIO MASTER
-                </button>
+                <button type="button" id="btn-register-master" class="text-sm text-red-600 font-bold hover:underline">CADASTRAR USUÁRIO MASTER</button>
             </div>
         </div>
     </div>
     
-    <!-- Conteúdo Principal da Aplicação (Oculto até o login) -->
+    <!-- Conteúdo Principal -->
     <div id="app-content" class="hidden">
-        
-        <!-- Cabeçalho -->
         <header class="bg-white shadow-md border-b border-gray-200">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <h1 class="text-xl font-bold text-gray-800">Ferramenta de Remuneração Variável</h1>
                 </div>
                 <div class="flex items-center gap-4">
-                    <!-- Botão Lançamento (Visão Principal) -->
                     <button id="btn-view-launch" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2-1.343-2-3-2m0 8c-1.11 0-2.08-.402-2.599-1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 15c-1.11 0-2.08-.402-2.599-1M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7v1.522c0 .414.336.75.75.75h14.5a.75.75 0 00.75-.75V7" /></svg>
                         <span>Lançamento</span>
                     </button>
-                    <!-- Botão Painel de Gestão (Apenas Master) -->
                     <button id="btn-view-admin" class="hidden text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span>Painel de Gestão</span>
                     </button>
-                    <!-- Botão Sair -->
                     <button id="btn-logout" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                         <span>Sair</span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Container Principal -->
         <div class="container mx-auto p-4 max-w-7xl">
-
-            <!-- Painel de Cadastro (Master/Supervisor) -->
-            <!-- Este painel agora é 'hidden' por padrão e controlado via JS -->
             <div id="admin-controls" class="hidden bg-white p-4 rounded-lg shadow border border-gray-200 mb-6">
-                <!-- Contêiner flexível para alinhar botões à direita -->
                 <div class="flex flex-wrap justify-end items-center gap-3">
+                    <p id="user-id-log" class="hidden text-sm font-medium text-gray-600 mr-auto">Seu ID de Usuário (para log): <span class="font-mono bg-gray-200 text-gray-800 px-2 py-0.5 rounded-md" id="current-user-id-display">Carregando...</span></p>
                     
-                    <!-- ID de Log (Oculto por padrão) -->
-                    <p id="user-id-log" class="hidden text-sm font-medium text-gray-600 mr-auto">
-                        Seu ID de Usuário (para log): <span class="font-mono bg-gray-200 text-gray-800 px-2 py-0.5 rounded-md" id="current-user-id-display">Carregando...</span>
-                    </p>
-                    
-                    <!-- Botões do Admin Master -->
-                    <button id="btn-open-supervisor-modal" class="hidden flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">
+                    <button type="button" id="btn-open-supervisor-modal" class="hidden flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         <span>+ Cadastrar Gestão</span>
                     </button>
-                    <button id="btn-open-sector-modal" class="hidden flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">
+                    <button type="button" id="btn-open-sector-modal" class="hidden flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">
                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
                         <span>+ Cadastrar Setor</span>
                     </button>
-
-                    <!-- Botão do Supervisor/Master -->
-                    <button id="btn-open-employee-modal" class="hidden flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition duration-150">
+                    <button type="button" id="btn-open-employee-modal" class="hidden flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition duration-150">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                         <span>+ Cadastrar Colaborador</span>
                     </button>
-                    
-                    <!-- Botão do Supervisor (Gerenciar Metas) -->
-                    <button id="btn-manage-sector-indices" class="hidden flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-orange-600 transition duration-150">
+                    <button type="button" id="btn-manage-sector-indices" class="hidden flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-orange-600 transition duration-150">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.072-.267-2.09-.75-3.042z" /></svg>
                         <span>Gerenciar Metas</span>
                     </button>
                 </div>
             </div>
 
-
             <!-- Visão: Lançamento -->
             <div id="view-launch" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                <!-- Coluna da Esquerda: Novo Lançamento -->
                 <div class="md:col-span-1 bg-white p-6 rounded-lg shadow border border-gray-200 h-fit">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Novo Lançamento</h2>
-                    
                     <form id="launch-form">
                         <div class="space-y-5">
                             <div>
                                 <label for="month-ref" class="block text-sm font-medium text-gray-700">Mês de Referência (Filtro)</label>
                                 <input type="month" id="month-ref" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
                             </div>
-
-                            <!-- Filtro de Setor (Master/RH) -->
                             <div id="sector-filter-container" class="hidden">
                                 <label for="sector-filter" class="block text-sm font-medium text-gray-700">Filtrar por Setor</label>
                                 <select id="sector-filter" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white">
                                     <option value="all">Todos os Setores</option>
-                                    <!-- Options carregadas via JS -->
                                 </select>
                             </div>
-
                             <div>
                                 <label for="base-value" class="block text-sm font-medium text-gray-700">Valor Base Variável (R$)</label>
                                 <div class="mt-1 flex gap-2">
-                                    <!-- O atributo 'readonly' é controlado via JS -->
                                     <input type="number" id="base-value" placeholder="Ex: 1000.00" class="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                                    <button type="button" id="btn-save-base-value" class="hidden bg-green-600 text-white px-5 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">
-                                        Salvar
-                                    </button>
+                                    <button type="button" id="btn-save-base-value" class="hidden bg-green-600 text-white px-5 py-2 rounded-md font-semibold hover:bg-green-700 transition duration-150">Salvar</button>
                                 </div>
                                  <p id="base-value-loading" class="text-sm text-gray-500 mt-1 hidden">Carregando valor...</p>
                             </div>
-                            
-                            <!-- Campos do Supervisor (Ocultos para Master/RH) -->
                             <div id="supervisor-launch-fields" class="hidden space-y-5">
                                 <hr>
                                 <div>
                                     <label for="employee-select" class="block text-sm font-medium text-gray-700">Colaborador</label>
                                     <select id="employee-select" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white">
                                         <option value="">-- Selecione um colaborador --</option>
-                                        <!-- Options carregadas via JS -->
                                     </select>
                                 </div>
-
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Insira as pontuações</label>
-                                    <!-- Layout em Grid (2 colunas) -->
                                     <div id="indices-container" class="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-md min-h-[100px] flex items-center justify-center">
                                         <p class="text-sm text-gray-500">Selecione um colaborador para ver os índices de pontuação.</p>
                                     </div>
                                 </div>
-
                                 <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
                                     <p class="text-sm font-medium text-blue-700">Total Variável Calculado:</p>
                                     <p id="total-calculated" class="text-3xl font-bold text-red-600 mt-1">R$ 0,00</p>
                                 </div>
-
-                                <button type="submit" id="btn-submit-launch" class="w-full bg-red-600 text-white py-3 px-4 rounded-md font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 text-lg">
-                                    Lançar Remuneração
-                                </button>
-                                <button type="button" id="btn-cancel-edit" class="hidden w-full bg-gray-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-gray-700 transition duration-150">
-                                    Cancelar Edição
-                                </button>
+                                <button type="submit" id="btn-submit-launch" class="w-full bg-red-600 text-white py-3 px-4 rounded-md font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 text-lg">Lançar Remuneração</button>
+                                <button type="button" id="btn-cancel-edit" class="hidden w-full bg-gray-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-gray-700 transition duration-150">Cancelar Edição</button>
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <!-- Coluna da Direita: Histórico -->
                 <div class="md:col-span-2 bg-white p-6 rounded-lg shadow border border-gray-200">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-bold text-gray-800">Histórico de Lançamentos</h2>
@@ -340,7 +206,6 @@
                             <span>Download CSV</span>
                         </button>
                     </div>
-                    
                     <div class="overflow-x-auto">
                         <table id="historyTable" class="min-w-full divide-y divide-gray-200 border">
                             <thead class="bg-gray-50">
@@ -356,24 +221,17 @@
                                 </tr>
                             </thead>
                             <tbody id="history-table-body" class="bg-white divide-y divide-gray-200">
-                                <tr id="history-loading">
-                                    <td colspan="8" class="text-center py-6 text-gray-500">
-                                        Carregando histórico...
-                                    </td>
-                                </tr>
-                                <!-- Linhas de dados serão inseridas aqui -->
+                                <tr id="history-loading"><td colspan="8" class="text-center py-6 text-gray-500">Carregando histórico...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Visão: Painel de Gestão (Master) -->
+            <!-- Visão: Painel de Gestão -->
             <div id="view-admin" class="hidden">
                 <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Painel de Gestão (Admin Master)</h2>
-
-                    <!-- Abas -->
                     <div class="border-b border-gray-200 mb-6">
                         <nav class="flex -mb-px" aria-label="Tabs">
                             <button class="tab-button active" data-tab="supervisors">Supervisores</button>
@@ -381,10 +239,7 @@
                             <button class="tab-button" data-tab="employees">Colaboradores</button>
                         </nav>
                     </div>
-
-                    <!-- Conteúdo das Abas -->
                     <div>
-                        <!-- Aba Supervisores -->
                         <div id="tab-supervisors" class="tab-content active">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 border">
@@ -396,14 +251,10 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="supervisors-table-body" class="bg-white divide-y divide-gray-200">
-                                        <!-- Linhas de dados serão inseridas aqui -->
-                                    </tbody>
+                                    <tbody id="supervisors-table-body" class="bg-white divide-y divide-gray-200"></tbody>
                                 </table>
                             </div>
                         </div>
-
-                        <!-- Aba Setores -->
                         <div id="tab-sectors" class="tab-content">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 border">
@@ -414,14 +265,10 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="sectors-table-body" class="bg-white divide-y divide-gray-200">
-                                        <!-- Linhas de dados serão inseridas aqui -->
-                                    </tbody>
+                                    <tbody id="sectors-table-body" class="bg-white divide-y divide-gray-200"></tbody>
                                 </table>
                             </div>
                         </div>
-
-                        <!-- Aba Colaboradores -->
                         <div id="tab-employees" class="tab-content">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 border">
@@ -432,25 +279,22 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="employees-table-body" class="bg-white divide-y divide-gray-200">
-                                        <!-- Linhas de dados serão inseridas aqui -->
-                                    </tbody>
+                                    <tbody id="employees-table-body" class="bg-white divide-y divide-gray-200"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-        </div> <!-- Fim container -->
-    </div> <!-- Fim app-content -->
-
-    <!-- Modal: Cadastrar Master (NOVO) -->
+    <!-- Modais -->
     <div id="master-registration-modal" class="modal">
         <div class="modal-content">
+            <span class="close" id="close-master-reg">&times;</span>
             <h2 class="text-xl font-bold mb-6 text-red-600">Cadastro de Usuário Master</h2>
             <p class="text-sm text-gray-600 mb-4">Defina o usuário e senha para o acesso administrativo principal. <strong>Isso só pode ser feito uma vez.</strong></p>
-            
             <form id="master-registration-form">
                 <div class="space-y-4">
                     <div>
@@ -474,7 +318,6 @@
         </div>
     </div>
 
-    <!-- Modal: Cadastrar/Editar Supervisor (Gestão) -->
     <div id="supervisor-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-supervisor-modal">&times;</span>
@@ -491,7 +334,6 @@
                         <div class="flex gap-2 items-center">
                             <select id="supervisor-sector" class="flex-1 mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white" required>
                                 <option value="">-- Selecione um setor --</option>
-                                <!-- Opções carregadas via JS -->
                             </select>
                         </div>
                     </div>
@@ -515,8 +357,7 @@
             </form>
         </div>
     </div>
-    
-    <!-- Modal: Cadastrar/Editar Setor (Master) -->
+
     <div id="sector-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-sector-modal">&times;</span>
@@ -528,19 +369,15 @@
                         <label for="sector-name" class="block text-sm font-medium text-gray-700">Nome do Setor</label>
                         <input type="text" id="sector-name" placeholder="Ex: Vendas" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
                     </div>
-                    
-                    <!-- ADMIN MASTER: Apenas cadastra o nome. Índices foram removidos. -->
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" id="cancel-sector-modal" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
-                    <!-- O botão é re-habilitado via JS após remover a validação de 100% -->
                     <button type="submit" id="btn-submit-sector-form" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Salvar Setor</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Gerenciar Metas (Índices) do Setor (Supervisor) -->
     <div id="sector-indices-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-sector-indices-modal">&times;</span>
@@ -552,14 +389,10 @@
                         <label for="sector-indices-name" class="block text-sm font-medium text-gray-700">Setor</label>
                         <input type="text" id="sector-indices-name" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100" readonly>
                     </div>
-                    
                     <hr>
                     <label class="block text-sm font-medium text-gray-700">Defina os Índices:</label>
-                    <div id="indices-list" class="space-y-3 max-h-60 overflow-y-auto pr-2">
-                        <!-- Campos de índice dinâmicos -->
-                    </div>
+                    <div id="indices-list" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
                     <button type="button" id="add-index-field" class="text-sm text-red-600 font-semibold hover:text-red-800">+ Adicionar Índice</button>
-                
                     <div class="flex justify-end items-center mt-4 pt-4 border-t">
                         <span id="indices-total-percentage" class="text-lg font-bold text-gray-800">Total: 0%</span>
                     </div>
@@ -571,8 +404,7 @@
             </form>
         </div>
     </div>
-    
-    <!-- Modal: Cadastrar/Editar Colaborador -->
+
     <div id="employee-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-employee-modal">&times;</span>
@@ -586,10 +418,8 @@
                     </div>
                     <div>
                         <label for="employee-sector" class="block text-sm font-medium text-gray-700">Setor do Colaborador</label>
-                        <!-- O select é populado e travado (se for supervisor) via JS -->
                         <select id="employee-sector" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white" required>
                             <option value="">-- Selecione um setor --</option>
-                            <!-- Opções carregadas via JS -->
                         </select>
                     </div>
                 </div>
@@ -601,7 +431,6 @@
         </div>
     </div>
 
-    <!-- Modal: Confirmação de Exclusão -->
     <div id="delete-confirm-modal" class="modal">
         <div class="modal-content">
             <h2 class="text-xl font-bold text-gray-900">Confirmar Exclusão</h2>
@@ -613,7 +442,6 @@
         </div>
     </div>
 
-    <!-- Modal: Aviso Genérico -->
     <div id="alert-modal" class="modal">
         <div class="modal-content">
             <h2 class="text-xl font-bold text-gray-900" id="alert-title">Aviso</h2>
@@ -624,7 +452,6 @@
         </div>
     </div>
 
-    <!-- Modal: Confirmação de Férias -->
     <div id="vacation-modal" class="modal">
         <div class="modal-content">
             <h2 class="text-xl font-bold text-gray-900">Status do Colaborador</h2>
@@ -636,22 +463,11 @@
         </div>
     </div>
 
-
-    <!-- Script principal (Firebase e Lógica) -->
     <script type="module">
-        // --- IMPORTS DO FIREBASE ---
-        // ATENÇÃO: Os imports DEVEM ficar no topo do script, fora de qualquer função.
-        import { initializeApp, } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, 
-            onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp,
-            increment, orderBy
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // --- IDs Globais ---
-        
-        // ATENÇÃO: Cole seu 'firebaseConfig' (da Etapa 3 do guia) AQUI EMBAIXO:
         const firebaseConfig = {
             apiKey: "AIzaSyCUf800FNv--emagtwh5YevSPqFtk7Miiw",
             authDomain: "remuneracao-equipe.firebaseapp.com",
@@ -660,39 +476,54 @@
             messagingSenderId: "1070188778724",
             appId: "1:1070188778724:web:684e19b2259a99b17288f1"
         };
- // Este é o "caminho" no banco de dados. NÃO use espaços.
+        
         const appId = 'remuneracao';
-
-        // --- Variáveis Globais de Estado ---
         let db, auth;
-        let currentUserId = null; // ID anônimo do Firebase
-        let currentSupervisorId = null; // ID do supervisor logado (se for o caso)
+        let currentUserId = null; 
+        let currentSupervisorId = null; 
         let currentSupervisorSectorId = null;
         let isMaster = false;
         let isSupervisor = false;
         let isRhUser = false;
-        let currentEditingLaunchId = null; // Guarda o ID do lançamento sendo editado
-
-        // Listas locais para validação e filtros
+        let currentEditingLaunchId = null; 
         let globalSectors = [];
         let globalEmployees = [];
         let globalSupervisors = [];
-        let globalHistory = []; // Para CSV e ordenação
-
-        // Estado da Tabela de Histórico
+        let globalHistory = []; 
         let currentHistorySort = { column: 'createdAt', direction: 'desc' };
         
-        // --- Função de Hashing (SHA-256) ---
-        // Converte texto em hash SHA-256 para segurança
+        // --- FUNÇÃO DE HASH COM FALLBACK PARA ARQUIVOS LOCAIS ---
+        // O SHA-256 exige HTTPS ou localhost. Se não tiver, usamos um fallback simples.
         async function digestMessage(message) {
-            const msgUint8 = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
+            if (window.crypto && window.crypto.subtle) {
+                try {
+                    const msgUint8 = new TextEncoder().encode(message);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+                } catch (e) {
+                    console.warn("Erro no Crypto API (possível contexto inseguro). Usando fallback.");
+                    return simpleHashFallback(message);
+                }
+            } else {
+                console.warn("Crypto API indisponível. Usando fallback.");
+                return simpleHashFallback(message);
+            }
         }
 
-        // --- Elementos da UI (Login) ---
+        // Hash simples apenas para não salvar texto puro em ambiente local (file://)
+        function simpleHashFallback(str) {
+            let hash = 0;
+            if (str.length === 0) return hash.toString();
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash |= 0; // Converte para 32bit integer
+            }
+            return "local_" + hash.toString(16);
+        }
+
+        // --- Elementos UI ---
         const loginScreen = document.getElementById('login-screen');
         const appContent = document.getElementById('app-content');
         const loginForm = document.getElementById('login-form');
@@ -701,7 +532,6 @@
         const loginError = document.getElementById('login-error');
         const btnLogout = document.getElementById('btn-logout');
         
-        // Master Registration UI
         const masterRegisterContainer = document.getElementById('master-register-container');
         const btnRegisterMaster = document.getElementById('btn-register-master');
         const masterRegistrationModal = document.getElementById('master-registration-modal');
@@ -710,31 +540,22 @@
         const regMasterPassword = document.getElementById('reg-master-password');
         const regMasterConfirm = document.getElementById('reg-master-confirm');
         const cancelMasterReg = document.getElementById('cancel-master-reg');
+        const closeMasterReg = document.getElementById('close-master-reg');
 
-
-        // --- Elementos da UI (Conteúdo Principal) ---
         const userIdLog = document.getElementById('user-id-log');
         const currentUserIdDisplay = document.getElementById('current-user-id-display');
         const adminControls = document.getElementById('admin-controls');
         
-        // Botões de navegação
         const btnViewLaunch = document.getElementById('btn-view-launch');
         const btnViewAdmin = document.getElementById('btn-view-admin');
-        
-        // Vistas (Telas)
         const viewLaunch = document.getElementById('view-launch');
         const viewAdmin = document.getElementById('view-admin');
 
-        // Botões de Ação (Master)
-        const masterButtons = document.getElementById('master-buttons');
         const btnOpenSupervisorModal = document.getElementById('btn-open-supervisor-modal');
         const btnOpenSectorModal = document.getElementById('btn-open-sector-modal');
-        
-        // Botões de Ação (Supervisor)
         const btnOpenEmployeeModal = document.getElementById('btn-open-employee-modal');
         const btnManageSectorIndices = document.getElementById('btn-manage-sector-indices');
 
-        // Formulário de Lançamento
         const launchForm = document.getElementById('launch-form');
         const monthRefInput = document.getElementById('month-ref');
         const sectorFilterContainer = document.getElementById('sector-filter-container');
@@ -743,7 +564,6 @@
         const btnSaveBaseValue = document.getElementById('btn-save-base-value');
         const baseValueLoading = document.getElementById('base-value-loading');
         
-        // Campos de Lançamento (Supervisor)
         const supervisorLaunchFields = document.getElementById('supervisor-launch-fields');
         const employeeSelect = document.getElementById('employee-select');
         const indicesContainer = document.getElementById('indices-container');
@@ -751,23 +571,15 @@
         const btnSubmitLaunch = document.getElementById('btn-submit-launch');
         const btnCancelEdit = document.getElementById('btn-cancel-edit');
 
-        // Histórico de Lançamentos
         const historyTable = document.getElementById('historyTable');
         const historyTableBody = document.getElementById('history-table-body');
         const historyLoading = document.getElementById('history-loading');
         const btnDownloadCSV = document.getElementById('btn-download-csv');
-        const historyActionHeader = document.getElementById('history-action-header');
         
-        // Painel de Gestão (Abas)
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
         const supervisorsTableBody = document.getElementById('supervisors-table-body');
         const sectorsTableBody = document.getElementById('sectors-table-body');
         const employeesTableBody = document.getElementById('employees-table-body');
 
-        // --- Elementos da UI (Modais) ---
-
-        // Modal Supervisor (Gestão)
         const supervisorModal = document.getElementById('supervisor-modal');
         const supervisorForm = document.getElementById('supervisor-form');
         const supervisorModalTitle = document.getElementById('supervisor-modal-title');
@@ -780,7 +592,6 @@
         const closeSupervisorModal = document.getElementById('close-supervisor-modal');
         const cancelSupervisorModal = document.getElementById('cancel-supervisor-modal');
         
-        // Modal Setor (Master)
         const sectorModal = document.getElementById('sector-modal');
         const sectorForm = document.getElementById('sector-form');
         const sectorModalTitle = document.getElementById('sector-modal-title');
@@ -790,7 +601,6 @@
         const cancelSectorModal = document.getElementById('cancel-sector-modal');
         const btnSubmitSectorForm = document.getElementById('btn-submit-sector-form');
 
-        // Modal Gerenciar Metas (Supervisor)
         const sectorIndicesModal = document.getElementById('sector-indices-modal');
         const sectorIndicesForm = document.getElementById('sector-indices-form');
         const editIndicesSectorId = document.getElementById('edit-indices-sector-id');
@@ -802,7 +612,6 @@
         const closeSectorIndicesModal = document.getElementById('close-sector-indices-modal');
         const cancelSectorIndicesModal = document.getElementById('cancel-sector-indices-modal');
 
-        // Modal Colaborador
         const employeeModal = document.getElementById('employee-modal');
         const employeeForm = document.getElementById('employee-form');
         const employeeModalTitle = document.getElementById('employee-modal-title');
@@ -812,65 +621,58 @@
         const closeEmployeeModal = document.getElementById('close-employee-modal');
         const cancelEmployeeModal = document.getElementById('cancel-employee-modal');
 
-        // Modal Confirmação Exclusão
         const deleteConfirmModal = document.getElementById('delete-confirm-modal');
         const deleteConfirmMessage = document.getElementById('delete-confirm-message');
         const btnCancelDelete = document.getElementById('btn-cancel-delete');
         const btnConfirmDelete = document.getElementById('btn-confirm-delete');
         
-        // Modal Aviso
         const alertModal = document.getElementById('alert-modal');
         const alertTitle = document.getElementById('alert-title');
         const alertMessage = document.getElementById('alert-message');
         const btnCloseAlert = document.getElementById('btn-close-alert');
 
-        // Modal Férias
         const vacationModal = document.getElementById('vacation-modal');
         const vacationMessage = document.getElementById('vacation-message');
         const btnVacationNo = document.getElementById('btn-vacation-no');
         const btnVacationYes = document.getElementById('btn-vacation-yes');
-        let vacationEmployee = null; // Guarda o funcionário selecionado para o modal de férias
+        let vacationEmployee = null; 
 
-
-        // --- CAMINHO DO BANCO DE DADOS (Firestore) ---
-        // Todos os dados são aninhados sob um único documento para segurança e organização.
-        
-        // Caminho base para todos os dados da aplicação
         const getBasePath = () => doc(db, 'artifacts', appId);
-        
-        // Caminhos para as coleções
         const getSupervisorsCollection = () => collection(getBasePath(), 'supervisors');
         const getSectorsCollection = () => collection(getBasePath(), 'sectors');
         const getEmployeesCollection = () => collection(getBasePath(), 'employees');
         const getLaunchesCollection = () => collection(getBasePath(), 'launches');
         const getBaseValuesCollection = () => collection(getBasePath(), 'baseValues');
-        
-        // --- Caminho para Configuração do Master ---
         const getMasterConfigDoc = () => doc(db, 'artifacts', appId, 'system', 'master');
 
-        // --- FUNÇÕES DE UTILIDADE (Modais) ---
-
-        // Função genérica para mostrar modal
-        const showModal = (modalElement) => {
-            if (modalElement) modalElement.style.display = 'block';
-        };
-
-        // Função genérica para esconder modal
-        const hideModal = (modalElement) => {
-            if (modalElement) modalElement.style.display = 'none';
-        };
-
-        // Função para mostrar aviso
+        const showModal = (el) => { if (el) el.style.display = 'block'; };
+        const hideModal = (el) => { if (el) el.style.display = 'none'; };
         const showMessage = (title, message) => {
             if(alertTitle) alertTitle.textContent = title;
             if(alertMessage) alertMessage.textContent = message;
             showModal(alertModal);
         };
         
-        // Fechar modal de aviso
         if(btnCloseAlert) btnCloseAlert.addEventListener('click', () => hideModal(alertModal));
 
-        // Função genérica para fechar modais clicando fora
+        // Close buttons (X) logic
+        const closeButtons = [
+            closeSupervisorModal, 
+            closeSectorModal, 
+            closeSectorIndicesModal, 
+            closeEmployeeModal, 
+            closeMasterReg
+        ];
+
+        closeButtons.forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    const modal = btn.closest('.modal');
+                    if (modal) hideModal(modal);
+                });
+            }
+        });
+
         window.onclick = (event) => {
             if (event.target == supervisorModal) hideModal(supervisorModal);
             if (event.target == sectorModal) hideModal(sectorModal);
@@ -882,52 +684,24 @@
             if (event.target == masterRegistrationModal) hideModal(masterRegistrationModal);
         };
 
-        // --- NAVEGAÇÃO ENTRE VISÕES (Lançamento / Gestão) ---
-
         const switchView = (viewName) => {
-            // Elementos das visões
-            const launchView = document.getElementById('view-launch');
-            const adminView = document.getElementById('view-admin');
-            
-            // Botões de navegação
-            const launchBtn = document.getElementById('btn-view-launch');
-            const adminBtn = document.getElementById('btn-view-admin');
-
             if (viewName === 'admin') {
-                if(launchView) launchView.style.display = 'none';
-                if(adminView) adminView.style.display = 'block';
-                if(launchBtn) {
-                    launchBtn.classList.remove('text-red-600', 'font-semibold', 'bg-red-50');
-                    launchBtn.classList.add('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
-                }
-                if(adminBtn) {
-                    adminBtn.classList.add('text-red-600', 'font-semibold', 'bg-red-50');
-                    adminBtn.classList.remove('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
-                }
-                
-                // CORREÇÃO: Carrega a tabela de supervisores ao mudar para a visão admin
+                if(viewLaunch) viewLaunch.style.display = 'none';
+                if(viewAdmin) viewAdmin.style.display = 'block';
+                if(btnViewLaunch) btnViewLaunch.classList.replace('text-red-600', 'text-gray-600');
+                if(btnViewAdmin) btnViewAdmin.classList.replace('text-gray-600', 'text-red-600');
                 renderSupervisorsTable();
-
-            } else { // 'launch'
-                if(launchView) launchView.style.display = 'grid'; // 'grid' para o layout de colunas
-                if(adminView) adminView.style.display = 'none';
-                if(launchBtn) {
-                    launchBtn.classList.add('text-red-600', 'font-semibold', 'bg-red-50');
-                    launchBtn.classList.remove('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
-                }
-                if(adminBtn) {
-                    adminBtn.classList.remove('text-red-600', 'font-semibold', 'bg-red-50');
-                    adminBtn.classList.add('text-gray-600', 'hover:text-red-600', 'hover:bg-red-50');
-                }
+            } else { 
+                if(viewLaunch) viewLaunch.style.display = 'grid';
+                if(viewAdmin) viewAdmin.style.display = 'none';
+                if(btnViewLaunch) btnViewLaunch.classList.replace('text-gray-600', 'text-red-600');
+                if(btnViewAdmin) btnViewAdmin.classList.replace('text-red-600', 'text-gray-600');
             }
         };
 
         if(btnViewLaunch) btnViewLaunch.addEventListener('click', () => switchView('launch'));
         if(btnViewAdmin) btnViewAdmin.addEventListener('click', () => switchView('admin'));
 
-        // --- INICIALIZAÇÃO E AUTENTICAÇÃO ---
-
-        // Define o mês atual no input de mês/ano
         const setDefaultMonth = () => {
             const now = new Date();
             const year = now.getFullYear();
@@ -935,395 +709,207 @@
             if(monthRefInput) monthRefInput.value = `${year}-${month}`;
         };
 
-        // Inicia o Firebase
         const startFirebase = async () => {
-            // Verifica se a config foi colada
             if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("COLE_SUA_API_KEY_AQUI")) {
-                console.error("Configuração do Firebase ausente no index.html.");
-                // Mostra um erro crítico na tela de login
-                loginError.textContent = "Erro Crítico: A 'firebaseConfig' não foi colada no arquivo index.html. Siga a 'Parte 4' do Guia de Publicação.";
+                loginError.textContent = "Erro Crítico: Configuração do Firebase ausente.";
                 loginError.classList.remove('hidden');
                 return;
             }
-
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                
-                // Inicia o login anônimo (para log de ID)
                 await signInAnonymously(auth);
 
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         currentUserId = user.uid;
                         if(currentUserIdDisplay) currentUserIdDisplay.textContent = currentUserId;
-                        console.log("Firebase Auth (Anônimo) OK. ID de Log:", currentUserId);
-                        
-                        // Verifica se o master já foi cadastrado
                         checkMasterRegistration();
-                        
                     } else {
-                        console.error("Falha no login anônimo.");
                         currentUserId = null;
-                        if(currentUserIdDisplay) currentUserIdDisplay.textContent = "Erro de conexão";
                     }
                 });
-
             } catch (error) {
-                console.error("Erro ao inicializar o Firebase:", error);
-                loginError.textContent = `Erro de Conexão com Firebase. Verifique o console. (${error.message})`;
+                loginError.textContent = `Erro de Conexão: ${error.message}`;
                 loginError.classList.remove('hidden');
             }
         };
-        
-        // --- LÓGICA DE CADASTRO MASTER (Primeiro Acesso) ---
         
         const checkMasterRegistration = async () => {
              try {
                 const docRef = getMasterConfigDoc();
                 const docSnap = await getDoc(docRef);
-                
                 if (docSnap.exists()) {
-                    // Master já existe, esconde o botão
                     if(masterRegisterContainer) masterRegisterContainer.classList.add('hidden');
                 } else {
-                    // Master não existe, mostra o botão
                     if(masterRegisterContainer) masterRegisterContainer.classList.remove('hidden');
                 }
              } catch (error) {
-                 console.error("Erro ao verificar cadastro master:", error);
+                 console.error("Erro check master:", error);
              }
         };
         
-        // Abrir Modal de Cadastro Master
         if(btnRegisterMaster) btnRegisterMaster.addEventListener('click', (e) => {
-            e.preventDefault(); // Previne submit do form de login se estiver dentro
+            e.preventDefault();
             if(masterRegistrationForm) masterRegistrationForm.reset();
             showModal(masterRegistrationModal);
         });
         
-        // Cancelar Cadastro Master
-        if(cancelMasterReg) cancelMasterReg.addEventListener('click', () => {
-            hideModal(masterRegistrationModal);
-        });
+        if(cancelMasterReg) cancelMasterReg.addEventListener('click', () => hideModal(masterRegistrationModal));
         
-        // Salvar Cadastro Master
         if(masterRegistrationForm) masterRegistrationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const username = regMasterUsername.value.trim();
             const password = regMasterPassword.value;
             const confirm = regMasterConfirm.value;
             
-            if (password !== confirm) {
-                alert("As senhas não coincidem.");
-                return;
-            }
-            
-            if (password.length < 6) {
-                alert("A senha deve ter pelo menos 6 caracteres.");
-                return;
-            }
+            if (password !== confirm) return alert("Senhas não coincidem.");
+            if (password.length < 6) return alert("Senha muito curta.");
             
             try {
-                // Hash da senha
                 const passwordHash = await digestMessage(password);
-                
-                // Salvar no Firestore
                 const docRef = getMasterConfigDoc();
-                await setDoc(docRef, {
-                    username: username,
-                    passwordHash: passwordHash,
-                    createdAt: serverTimestamp()
-                });
-                
-                alert("Usuário Master cadastrado com sucesso! Agora você pode fazer login.");
+                await setDoc(docRef, { username: username, passwordHash: passwordHash, createdAt: serverTimestamp() });
+                alert("Master cadastrado! Faça login.");
                 hideModal(masterRegistrationModal);
-                checkMasterRegistration(); // Atualiza a tela (esconde o botão)
-                
+                checkMasterRegistration();
             } catch (error) {
-                console.error("Erro ao cadastrar master:", error);
-                alert("Erro ao cadastrar master. Tente novamente.");
+                console.error(error);
+                alert("Erro ao cadastrar.");
             }
         });
 
-
-        // --- LÓGICA DE LOGIN (Usuário/Senha) ---
-        
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = loginUsername.value.trim();
             const password = loginPassword.value;
-            
-            // Gera o hash da senha digitada para comparar
             const passwordHash = await digestMessage(password);
-            
             let loggedIn = false;
 
-            // 1. Verificar se é o Admin Master (Agora via DB)
             try {
                 const masterDocRef = getMasterConfigDoc();
                 const masterDocSnap = await getDoc(masterDocRef);
-                
                 if (masterDocSnap.exists()) {
                     const masterData = masterDocSnap.data();
                     if (masterData.username === username && masterData.passwordHash === passwordHash) {
-                        isMaster = true;
-                        isSupervisor = false;
-                        isRhUser = false;
-                        currentSupervisorId = 'master';
-                        loggedIn = true;
+                        isMaster = true; isSupervisor = false; isRhUser = false;
+                        currentSupervisorId = 'master'; loggedIn = true;
                     }
                 } 
-            } catch (error) {
-                console.error("Erro ao verificar master:", error);
-            }
+            } catch (error) { console.error(error); }
             
             if (!loggedIn) {
-                // 2. Verificar se é um Supervisor cadastrado
                 try {
-                    // Tenta login com HASH (padrão seguro novo)
                     let q = query(getSupervisorsCollection(), where("username", "==", username), where("passwordHash", "==", passwordHash));
                     let querySnapshot = await getDocs(q);
                     
-                    // Se falhar, tenta login com TEXTO PLANO (para compatibilidade com contas antigas)
-                    if (querySnapshot.empty) {
-                         // Aviso de segurança no console
-                         console.log("Tentando login legado (texto plano)...");
+                    if (querySnapshot.empty) { // Tenta legado
                          q = query(getSupervisorsCollection(), where("username", "==", username), where("password", "==", password));
                          querySnapshot = await getDocs(q);
-                         if (!querySnapshot.empty) {
-                             alert("Atenção: Sua senha ainda não está criptografada. Por favor, peça ao administrador para editar seu usuário e salvar novamente a senha.");
-                         }
+                         if (!querySnapshot.empty) alert("Atenção: Atualize sua senha para segurança.");
                     }
                     
                     if (!querySnapshot.empty) {
                         const supervisorDoc = querySnapshot.docs[0];
                         const supervisorData = supervisorDoc.data();
-                        
-                        isMaster = false;
-                        isSupervisor = true;
+                        isMaster = false; isSupervisor = true;
                         currentSupervisorId = supervisorDoc.id;
                         currentSupervisorSectorId = supervisorData.sectorId;
                         
-                        // 2b. Verificar se é um usuário do RH
                         const sectorDoc = await getDoc(doc(getSectorsCollection(), currentSupervisorSectorId));
                         if (sectorDoc.exists() && sectorDoc.data().name.toUpperCase() === 'RH') {
-                            isRhUser = true;
-                            isSupervisor = false; // RH não é um supervisor comum
-                        } else {
-                            isRhUser = false;
-                        }
-                        
+                            isRhUser = true; isSupervisor = false;
+                        } else { isRhUser = false; }
                         loggedIn = true;
                     }
-                } catch (error) {
-                    console.error("Erro ao verificar supervisor:", error);
-                    loginError.textContent = "Erro ao conectar ao banco. Tente novamente.";
-                    loginError.classList.remove('hidden');
-                    return;
-                }
+                } catch (error) { console.error(error); }
             }
 
-            // 3. Finalizar o login
             if (loggedIn) {
-                finalizeLogin();
+                loginScreen.classList.add('hidden');
+                appContent.classList.remove('hidden');
+                switchView('launch'); 
+                setDefaultMonth();
+                loadAllData();
+                applyPermissions();
             } else {
                 loginError.textContent = "Usuário ou senha inválidos.";
                 loginError.classList.remove('hidden');
             }
         });
 
-        // O que acontece após o login ser validado
-        const finalizeLogin = () => {
-            // CORREÇÃO: Esconde a tela de login IMEDIATAMENTE
-            loginScreen.classList.add('hidden');
-            appContent.classList.remove('hidden');
-            
-            // CORREÇÃO: Redefine a visão padrão para "Lançamento"
-            switchView('launch'); 
-
-            // Define o mês padrão e carrega os dados
-            setDefaultMonth();
-            loadAllData();
-            
-            // CORREÇÃO: Aplica as permissões IMEDIATAMENTE após o login
-            applyPermissions();
-        };
-
-        // Botão de Sair
-        btnLogout.addEventListener('click', () => {
-            // Limpa o estado
-            isMaster = false;
-            isSupervisor = false;
-            isRhUser = false;
-            currentSupervisorId = null;
-            currentSupervisorSectorId = null;
-
-            // Limpa os campos de login
-            loginUsername.value = '';
-            loginPassword.value = '';
+        if(btnLogout) btnLogout.addEventListener('click', () => {
+            isMaster = false; isSupervisor = false; isRhUser = false;
+            currentSupervisorId = null; currentSupervisorSectorId = null;
+            loginUsername.value = ''; loginPassword.value = '';
             loginError.classList.add('hidden');
-
-            // Troca as telas
             appContent.classList.add('hidden');
             loginScreen.classList.remove('hidden');
-            
-            // CORREÇÃO: Garante que a tela de login não fique na visão de gestão
             switchView('launch'); 
         });
 
-
-        // --- APLICAÇÃO DE PERMISSÕES (O que cada um vê) ---
-        // CORREÇÃO: Esta função é chamada DEPOIS do login (em finalizeLogin)
-        // e também é chamada DEPOIS que os dados são carregados (em loadAllData)
-        // para garantir que os botões que dependem de dados (como "Gerenciar Metas") apareçam.
         const applyPermissions = () => {
-            
-            // Painel de botões de cadastro
             if (adminControls) {
-                // CORREÇÃO: Verifica se o elemento existe antes de mexer
-                if (isMaster || isSupervisor || isRhUser) {
-                    adminControls.classList.remove('hidden');
-                } else {
-                    adminControls.classList.add('hidden');
-                }
+                if (isMaster || isSupervisor || isRhUser) adminControls.classList.remove('hidden');
+                else adminControls.classList.add('hidden');
             }
-
-            // Botões do Master
             const masterEls = [btnOpenSupervisorModal, btnOpenSectorModal, btnViewAdmin];
-            masterEls.forEach(el => {
-                if (el) isMaster ? el.classList.remove('hidden') : el.classList.add('hidden');
-            });
-            // O Master também vê o botão de Colaborador (agora Verde)
-            if (btnOpenEmployeeModal && isMaster) {
-                btnOpenEmployeeModal.classList.remove('hidden');
-            }
+            masterEls.forEach(el => { if (el) isMaster ? el.classList.remove('hidden') : el.classList.add('hidden'); });
             
-            // Botões do Supervisor (Não-RH)
-            const supervisorEls = [btnManageSectorIndices];
-             supervisorEls.forEach(el => {
-                if (el) isSupervisor ? el.classList.remove('hidden') : el.classList.add('hidden');
-            });
-            // O Supervisor também vê o botão de Colaborador (Azul)
-            if (btnOpenEmployeeModal && isSupervisor) {
-                btnOpenEmployeeModal.classList.remove('hidden');
-            }
+            if (btnOpenEmployeeModal) isMaster || isSupervisor ? btnOpenEmployeeModal.classList.remove('hidden') : btnOpenEmployeeModal.classList.add('hidden');
+            if (btnManageSectorIndices) isSupervisor ? btnManageSectorIndices.classList.remove('hidden') : btnManageSectorIndices.classList.add('hidden');
 
-            // Painel de Lançamento (Formulário)
-            const masterLaunchFields = [supervisorLaunchFields];
-            
             if (isMaster || isRhUser) {
-                // Master e RH NÃO podem lançar
                 if(supervisorLaunchFields) supervisorLaunchFields.classList.add('hidden');
-                // Master e RH PODEM ver o filtro de setor
                 if(sectorFilterContainer) sectorFilterContainer.classList.remove('hidden');
-                // Master PODE editar o valor base, RH não
                 if (baseValueInput) baseValueInput.readOnly = !isMaster;
                 if (btnSaveBaseValue) isMaster ? btnSaveBaseValue.classList.remove('hidden') : btnSaveBaseValue.classList.add('hidden');
-                
             } else if (isSupervisor) {
-                // Supervisor PODE lançar
                 if(supervisorLaunchFields) supervisorLaunchFields.classList.remove('hidden');
-                // Supervisor NÃO PODE ver o filtro de setor
                 if(sectorFilterContainer) sectorFilterContainer.classList.add('hidden');
-                // Supervisor NÃO PODE editar o valor base
                 if(baseValueInput) baseValueInput.readOnly = true;
                 if(btnSaveBaseValue) btnSaveBaseValue.classList.add('hidden');
             }
-            
-            // Histórico (Coluna Ação)
-            // Esconde a coluna Ação para Master e RH
             const actionCells = document.querySelectorAll('#history-action-header, [data-cell-type="action"]');
-            actionCells.forEach(cell => {
-                if (cell) (isMaster || isRhUser) ? cell.classList.add('hidden') : cell.classList.remove('hidden');
-            });
+            actionCells.forEach(cell => { if (cell) (isMaster || isRhUser) ? cell.classList.add('hidden') : cell.classList.remove('hidden'); });
         };
 
-
-        // --- CARREGAMENTO DE DADOS (Listeners do Firestore) ---
-        
-        // Função principal que carrega todos os dados
         const loadAllData = () => {
-            // Ouvinte dos Setores (necessário para todos os perfis)
-            const qSectors = query(getSectorsCollection());
-            onSnapshot(qSectors, (snapshot) => {
+            onSnapshot(query(getSectorsCollection()), (snapshot) => {
                 globalSectors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Popula os selects que dependem de setores (no Painel de Gestão e no formulário de Colaborador)
                 populateSectorSelects(globalSectors);
-                
-                // Carrega os outros dados que dependem dos setores (ex: Colaboradores)
                 loadEmployees();
-                loadHistory(); // O histórico depende dos nomes dos setores
-                renderSectorsTable(); // Desenha a tabela de setores no painel de gestão
-
-            }, (error) => {
-                console.error("Erro ao carregar setores:", error);
-                // CORREÇÃO: Mesmo com erro, aplica permissões para os botões aparecerem
-                applyPermissions(); 
-            });
+                loadHistory();
+                renderSectorsTable();
+            }, () => applyPermissions());
             
-            // Carrega os supervisores (para validação e Painel de Gestão)
-            const qSupervisors = query(getSupervisorsCollection());
-            onSnapshot(qSupervisors, (snapshot) => {
+            onSnapshot(query(getSupervisorsCollection()), (snapshot) => {
                 globalSupervisors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Desenha a tabela de supervisores (apenas se a visão admin estiver ativa)
-                if (viewAdmin.style.display === 'block') {
-                    renderSupervisorsTable();
-                }
+                if (viewAdmin.style.display === 'block') renderSupervisorsTable();
             });
-
-            // Carrega o valor base do mês selecionado
             loadBaseValue();
         };
 
-        // Popula os dropdowns de setor
         const populateSectorSelects = (sectors) => {
-            const selects = [supervisorSector, employeeSector, sectorFilterSelect];
-            selects.forEach(select => {
+            [supervisorSector, employeeSector, sectorFilterSelect].forEach(select => {
                 if (!select) return;
-                
-                // Guarda o valor selecionado (se houver)
                 const currentValue = select.value;
-                
-                // Limpa (exceto o primeiro item no filtro)
-                if (select.id === 'sector-filter') {
-                    select.innerHTML = '<option value="all">Todos os Setores</option>';
-                } else {
-                    select.innerHTML = '<option value="">-- Selecione um setor --</option>';
-                }
-
-                // Popula
+                select.innerHTML = select.id === 'sector-filter' ? '<option value="all">Todos os Setores</option>' : '<option value="">-- Selecione um setor --</option>';
                 sectors.forEach(sector => {
                     const option = document.createElement('option');
                     option.value = sector.id;
                     option.textContent = sector.name;
                     select.appendChild(option);
                 });
-                
-                // Restaura o valor selecionado
                 select.value = currentValue;
             });
         };
 
-        // Carrega Colaboradores (filtrados por setor, se for supervisor)
         const loadEmployees = () => {
-            let qEmployees;
-            
-            if (isSupervisor) {
-                // Supervisor: Carrega apenas colaboradores do seu setor
-                qEmployees = query(getEmployeesCollection(), where("sectorId", "==", currentSupervisorSectorId));
-            } else {
-                // Master/RH: Carrega todos
-                qEmployees = query(getEmployeesCollection());
-            }
-
-            onSnapshot(qEmployees, (snapshot) => {
+            let q = isSupervisor ? query(getEmployeesCollection(), where("sectorId", "==", currentSupervisorSectorId)) : query(getEmployeesCollection());
+            onSnapshot(q, (snapshot) => {
                 globalEmployees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Popula o select de colaborador no formulário de lançamento
                 if(employeeSelect) {
                     employeeSelect.innerHTML = '<option value="">-- Selecione um colaborador --</option>';
                     globalEmployees.forEach(emp => {
@@ -1333,1203 +919,365 @@
                         employeeSelect.appendChild(option);
                     });
                 }
-                
-                renderEmployeesTable(); // Atualiza a tabela no painel de gestão
-            }, (error) => {
-                console.error("Erro ao carregar colaboradores:", error);
+                renderEmployeesTable();
             });
         };
 
-        // Carrega o Valor Base (depende do Mês de Referência)
         const loadBaseValue = async () => {
-            const month = monthRefInput.value; // Formato "YYYY-MM"
-            if (!month) {
-                if(baseValueInput) baseValueInput.value = '';
-                return;
-            }
-
+            const month = monthRefInput.value;
+            if (!month) { if(baseValueInput) baseValueInput.value = ''; return; }
             if(baseValueLoading) baseValueLoading.classList.remove('hidden');
-            if(baseValueInput) baseValueInput.classList.add('hidden');
-            
             try {
-                const docRef = doc(getBaseValuesCollection(), month);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    if(baseValueInput) baseValueInput.value = docSnap.data().value;
-                } else {
-                    if(baseValueInput) baseValueInput.value = ''; // Nenhum valor salvo para este mês
-                }
-            } catch (error) {
-                console.error("Erro ao carregar valor base:", error);
-                if(baseValueInput) baseValueInput.value = '';
-            } finally {
-                if(baseValueLoading) baseValueLoading.classList.add('hidden');
-                if(baseValueInput) baseValueInput.classList.remove('hidden');
-            }
+                const docSnap = await getDoc(doc(getBaseValuesCollection(), month));
+                if (docSnap.exists()) baseValueInput.value = docSnap.data().value;
+                else baseValueInput.value = '';
+            } catch (e) { baseValueInput.value = ''; }
+            finally { if(baseValueLoading) baseValueLoading.classList.add('hidden'); baseValueInput.classList.remove('hidden'); }
         };
         
-        // Salva o Valor Base (Apenas Master)
         if(btnSaveBaseValue) btnSaveBaseValue.addEventListener('click', async () => {
             const month = monthRefInput.value;
             const value = parseFloat(baseValueInput.value);
-
-            if (!month) {
-                showMessage("Erro", "Selecione um Mês de Referência primeiro.");
-                return;
-            }
-            if (isNaN(value) || value < 0) {
-                 showMessage("Erro", "Insira um valor base válido.");
-                return;
-            }
-
+            if (!month || isNaN(value)) return showMessage("Erro", "Dados inválidos.");
             try {
-                const docRef = doc(getBaseValuesCollection(), month);
-                await setDoc(docRef, { value: value });
-                showMessage("Sucesso", `Valor base de R$ ${value.toFixed(2)} salvo para ${month}.`);
-            } catch (error) {
-                console.error("Erro ao salvar valor base:", error);
-                showMessage("Erro", "Não foi possível salvar o valor base.");
-            }
+                await setDoc(doc(getBaseValuesCollection(), month), { value: value });
+                showMessage("Sucesso", "Valor base salvo.");
+            } catch (e) { showMessage("Erro", "Erro ao salvar."); }
         });
 
-        // --- LÓGICA DO HISTÓRICO (Carregar, Ordenar, CSV) ---
-
-        // Carrega Histórico (filtrado por Mês e Setor)
         const loadHistory = () => {
-            const month = monthRefInput.value; // "YYYY-MM"
-            const sectorFilter = sectorFilterSelect.value; // ID do setor ou "all"
-
+            const month = monthRefInput.value;
+            const sectorFilter = sectorFilterSelect.value;
             if (!month) {
-                if(historyLoading) historyLoading.classList.remove('hidden');
-                if(historyLoading) historyLoading.textContent = "Selecione um mês para ver o histórico.";
-                return;
+                 if(historyLoading) historyLoading.classList.remove('hidden');
+                 return;
             }
-
-            if(historyLoading) historyLoading.classList.remove('hidden');
-            if(historyLoading) historyLoading.textContent = "Carregando histórico...";
-            
-            let qHistory;
-            
+            let q;
             if (isSupervisor) {
-                // Supervisor: Filtra por mês E pelo seu setor
-                qHistory = query(getLaunchesCollection(), 
-                    where("monthRef", "==", month), 
-                    where("sectorId", "==", currentSupervisorSectorId)
-                );
+                q = query(getLaunchesCollection(), where("monthRef", "==", month), where("sectorId", "==", currentSupervisorSectorId));
             } else {
-                // Master/RH: Filtra por mês E (opcionalmente) por setor
-                if (sectorFilter === 'all') {
-                    qHistory = query(getLaunchesCollection(), where("monthRef", "==", month));
-                } else {
-                    qHistory = query(getLaunchesCollection(), 
-                        where("monthRef", "==", month), 
-                        where("sectorId", "==", sectorFilter)
-                    );
-                }
+                q = sectorFilter === 'all' ? query(getLaunchesCollection(), where("monthRef", "==", month)) : query(getLaunchesCollection(), where("monthRef", "==", month), where("sectorId", "==", sectorFilter));
             }
-            
-            // Ouvinte do Histórico
-            onSnapshot(qHistory, (snapshot) => {
-                globalHistory = []; // Limpa o array global
-                
+            onSnapshot(q, (snapshot) => {
+                globalHistory = [];
                 snapshot.docs.forEach(doc => {
                     const data = doc.data();
                     const sector = globalSectors.find(s => s.id === data.sectorId);
-                    
-                    globalHistory.push({
-                        id: doc.id,
-                        ...data,
-                        // Adiciona dados resolvidos para ordenação
-                        sectorName: sector ? sector.name : 'Desconhecido',
-                        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(0) // Converte Timestamp
-                    });
+                    globalHistory.push({ id: doc.id, ...data, sectorName: sector ? sector.name : 'Desconhecido', createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(0) });
                 });
-                
-                renderHistoryTable(); // Desenha a tabela com os dados novos
-
-            }, (error) => {
-                console.error("Erro ao carregar histórico: ", error);
-                if(historyLoading) historyLoading.textContent = "Erro ao carregar histórico.";
-                globalHistory = [];
                 renderHistoryTable();
-            });
+            }, () => { globalHistory = []; renderHistoryTable(); });
         };
         
-        // Desenha o Histórico na tela (com ordenação)
         const renderHistoryTable = () => {
-            // Limpa a tabela (mantendo o cabeçalho)
             if(historyTableBody) historyTableBody.innerHTML = ''; 
-
             if (globalHistory.length === 0) {
-                if(historyLoading) historyLoading.classList.remove('hidden');
-                historyLoading.textContent = "Nenhum lançamento encontrado para este mês.";
-                // Adiciona a linha de "Nenhum lançamento" de volta
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="8" class="text-center py-6 text-gray-500">Nenhum lançamento encontrado para este mês.</td>`;
-                if(historyTableBody) historyTableBody.appendChild(tr);
+                if(historyTableBody) historyTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-500">Nenhum lançamento.</td></tr>';
+                if(historyLoading) historyLoading.classList.add('hidden');
                 return;
             }
-            
             if(historyLoading) historyLoading.classList.add('hidden');
-
-            // 1. Ordenar os dados
-            const sortedHistory = [...globalHistory].sort((a, b) => {
+            const sorted = [...globalHistory].sort((a, b) => {
                 const col = currentHistorySort.column;
                 const dir = currentHistorySort.direction === 'asc' ? 1 : -1;
-                
-                let valA = a[col];
-                let valB = b[col];
-
-                // Tratamento para valores nulos ou indefinidos
-                if (valA == null) valA = col === 'totalValue' || col === 'baseValue' ? -Infinity : '';
-                if (valB == null) valB = col === 'totalValue' || col === 'baseValue' ? -Infinity : '';
-
-                if (col === 'totalValue' || col === 'baseValue') {
-                    return (valA - valB) * dir;
-                }
-                if (col === 'createdAt') {
-                    return (valA.getTime() - valB.getTime()) * dir;
-                }
+                let valA = a[col] || '', valB = b[col] || '';
+                if (col === 'totalValue' || col === 'baseValue' || col === 'createdAt') return (valA - valB) * dir;
                 return valA.toString().localeCompare(valB.toString()) * dir;
             });
-            
-            // 2. Atualizar setas de ordenação no cabeçalho
-            document.querySelectorAll('#historyTable th[data-sort]').forEach(th => {
-                const arrow = th.querySelector('.sort-arrow');
-                if (!arrow) return;
-                
-                if (th.dataset.sort === currentHistorySort.column) {
-                    arrow.classList.add('active');
-                    arrow.textContent = currentHistorySort.direction === 'asc' ? '▲' : '▼';
-                } else {
-                    arrow.classList.remove('active');
-                    arrow.textContent = '';
-                }
-            });
-
-            // 3. Desenhar linhas
-            sortedHistory.forEach(launch => {
+            sorted.forEach(launch => {
                 const tr = document.createElement('tr');
-                tr.classList.add('hover:bg-gray-50');
+                const baseVal = `R$ ${launch.baseValue.toFixed(2).replace('.', ',')}`;
+                const totalVal = `R$ ${launch.totalValue.toFixed(2).replace('.', ',')}`;
+                const date = launch.createdAt instanceof Date ? launch.createdAt.toLocaleString('pt-BR') : '-';
+                let actionHtml = launch.status === 'MÉDIA' ? '---' : `<button class="text-blue-600 mr-3" data-edit-id="${launch.id}">Editar</button><button class="text-red-600" data-delete-id="${launch.id}">Excluir</button>`;
+                let statusClass = launch.status === 'FÉRIAS' ? 'text-blue-600' : (launch.status === 'MÉDIA' ? 'text-green-600' : 'text-red-600');
+                let detailsHtml = (launch.status === 'FÉRIAS' || launch.status === 'MÉDIA') ? `<span class="${statusClass}">${launch.status}</span>` : `<button class="text-red-600" data-launch-id="${launch.id}">Ver +</button>`;
                 
-                // Formata a data de lançamento
-                const launchedAt = launch.createdAt instanceof Date ? 
-                    launch.createdAt.toLocaleString('pt-BR', { 
-                        day: '2-digit', month: '2-digit', year: 'numeric', 
-                        hour: '2-digit', minute: '2-digit' 
-                    }) : 'Data inválida';
-
-                // Formata valores monetários
-                const baseValueBRL = `R$ ${launch.baseValue.toFixed(2).replace('.', ',')}`;
-                const totalValueBRL = `R$ ${launch.totalValue.toFixed(2).replace('.', ',')}`;
-                
-                // Coluna Detalhes
-                let detailsHtml = '';
-                if (launch.status === 'FÉRIAS') {
-                    detailsHtml = `<span class="font-medium text-blue-600">FÉRIAS</span>`;
-                } else if (launch.status === 'MÉDIA') { // --- NOVO ---
-                    detailsHtml = `<span class="font-medium text-green-600">MÉDIA</span>`;
-                } else {
-                    detailsHtml = `<button class="text-red-600 hover:text-red-800 font-medium" data-launch-id="${launch.id}">Ver +</button>`;
-                }
-
-                // Coluna Ação (Editar/Excluir)
-                // data-cell-type é usado pela função applyPermissions para esconder a célula
-                let actionHtml = '';
-                if (launch.status === 'MÉDIA') { // --- MODIFICADO: Só trava Média ---
-                    actionHtml = '---'; // Média continua travada
-                } else {
-                     // Férias e Normal liberados
-                     actionHtml = `
-                        <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${launch.id}">Editar</button>
-                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${launch.id}">Excluir</button>
-                    `;
-                }
-                
-                tr.innerHTML = `
-                    <td class="px-4 py-3">${launch.monthRef}</td>
-                    <td class="px-4 py-3">${launch.employeeName}</td>
-                    <td class="px-4 py-3">${launch.sectorName}</td>
-                    <td class="px-4 py-3">${baseValueBRL}</td>
-                    <td class="px-4 py-3 font-bold ${launch.status === 'FÉRIAS' ? 'text-blue-600' : (launch.status === 'MÉDIA' ? 'text-green-600' : 'text-red-600')}">${totalValueBRL}</td>
-                    <td class="px-4 py-3 text-sm text-gray-600">${launchedAt}</td>
-                    <td class="px-4 py-3 details-cell">${detailsHtml}</td>
-                    <td class="px-4 py-3 action-cell" data-cell-type="action">${actionHtml}</td>
-                `;
-
-                // Sub-linha de Detalhes (Scores)
+                tr.innerHTML = `<td class="px-4 py-3">${launch.monthRef}</td><td class="px-4 py-3">${launch.employeeName}</td><td class="px-4 py-3">${launch.sectorName}</td><td class="px-4 py-3">${baseVal}</td><td class="px-4 py-3 font-bold ${statusClass}">${totalVal}</td><td class="px-4 py-3 text-sm">${date}</td><td class="px-4 py-3">${detailsHtml}</td><td class="px-4 py-3" data-cell-type="action">${actionHtml}</td>`;
                 const trDetails = document.createElement('tr');
                 trDetails.id = `details-${launch.id}`;
                 trDetails.classList.add('hidden', 'bg-gray-50');
-                
-                const scoresHtml = launch.scores.map(s => 
-                    `<li class="text-sm text-gray-700">${s.name}: <span class="font-medium">${s.score} / ${s.max}</span></li>`
-                ).join('');
-                
-                trDetails.innerHTML = `<td colspan="8" class="px-8 py-4"><ul class="list-disc list-inside">${scoresHtml}</ul></td>`;
-                
-                if(historyTableBody) {
-                    historyTableBody.appendChild(tr);
-                    historyTableBody.appendChild(trDetails);
-                }
+                trDetails.innerHTML = `<td colspan="8" class="px-8 py-4"><ul class="list-disc list-inside">${launch.scores ? launch.scores.map(s => `<li>${s.name}: ${s.score}/${s.max}</li>`).join('') : ''}</ul></td>`;
+                historyTableBody.appendChild(tr);
+                historyTableBody.appendChild(trDetails);
             });
-            
-            // CORREÇÃO: Aplica permissões DEPOIS de desenhar a tabela,
-            // para garantir que a coluna "Ação" seja escondida se necessário.
             applyPermissions();
         };
-        
-        // Lógica de Ordenação do Histórico
-        document.querySelectorAll('#historyTable th[data-sort]').forEach(header => {
-            header.addEventListener('click', () => {
-                const column = header.dataset.sort;
-                if (!column || ['details', 'action'].includes(column)) return; // Não ordena por detalhes ou ação
 
-                if (currentHistorySort.column === column) {
-                    // Inverte a direção
-                    currentHistorySort.direction = currentHistorySort.direction === 'asc' ? 'desc' : 'asc';
-                } else {
-                    // Nova coluna, padrão ascendente
-                    currentHistorySort.column = column;
-                    currentHistorySort.direction = 'asc';
-                }
-                renderHistoryTable(); // Redesenha a tabela com a nova ordenação
-            });
-        });
-        
-        // Lógica para Download CSV
-        if(btnDownloadCSV) btnDownloadCSV.addEventListener('click', () => {
-            if (globalHistory.length === 0) {
-                showMessage("Aviso", "Não há dados no histórico para exportar.");
-                return;
-            }
-            
-            let csvContent = "";
-            
-            // Cabeçalho (dinâmico baseado nos índices)
-            // Pega o primeiro lançamento para descobrir os nomes dos índices
-            const firstLaunchScores = globalHistory[0].scores;
-            let headers = ["MesRef", "Colaborador", "Setor", "ValorBase", "ValorTotal", "LancadoEm", "Status"];
-            
-            // Adiciona cabeçalhos dinâmicos para os índices
-            if (firstLaunchScores) {
-                firstLaunchScores.forEach(s => {
-                    headers.push(`Indice_${s.name}`);
-                    headers.push(`Score_${s.name}`);
-                    headers.push(`Max_${s.name}`);
-                });
-            }
-            
-            // CORREÇÃO: Usar Ponto e Vírgula (;) para o Excel (Brasil)
-            csvContent += headers.join(';') + '\r\n';
-
-            // Linhas
-            globalHistory.forEach(launch => {
-                const createdAt = launch.createdAt instanceof Date ? launch.createdAt.toISOString() : 'Data inválida';
-                let row = [
-                    launch.monthRef,
-                    `"${launch.employeeName}"`, // Aspas para nomes
-                    `"${launch.sectorName}"`,
-                    launch.baseValue.toFixed(2),
-                    launch.totalValue.toFixed(2),
-                    createdAt,
-                    launch.status || '' // Adiciona status (ex: "FÉRIAS")
-                ];
-                
-                // Adiciona scores dinâmicos
-                if (launch.scores) {
-                    launch.scores.forEach(s => {
-                        row.push(`"${s.name}"`);
-                        row.push(s.score);
-                        row.push(s.max);
-                    });
-                }
-                
-                csvContent += row.join(';') + '\r\n';
-            });
-
-            // Cria e baixa o arquivo
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            const fileName = `Historico_RV_${monthRefInput.value || 'completo'}.csv`;
-            link.setAttribute('download', fileName);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-
-        // --- LÓGICA DO FORMULÁRIO DE LANÇAMENTO ---
-        
-        // Atualiza os filtros de histórico quando os campos mudam
-        if(monthRefInput) monthRefInput.addEventListener('change', () => {
-            loadHistory();
-            loadBaseValue(); // Carrega o novo valor base ao mudar o mês
-        });
-        if(sectorFilterSelect) sectorFilterSelect.addEventListener('change', loadHistory);
-
-        // Lógica do Modal de Férias
         if(employeeSelect) employeeSelect.addEventListener('change', (e) => {
-            const employeeId = e.target.value;
-            if (!employeeId) {
-                renderIndices([]); // Limpa os índices se des-selecionar
-                return;
-            }
-            
-            const employee = globalEmployees.find(emp => emp.id === employeeId);
-            if (!employee) return;
-
-            // Guarda o funcionário selecionado
-            vacationEmployee = employee;
-            
-            // Pergunta sobre férias
-            if(vacationMessage) vacationMessage.textContent = `O colaborador ${employee.name} está ou esteve de férias neste mês de referência?`;
+            const empId = e.target.value;
+            if (!empId) return renderIndices([]);
+            const emp = globalEmployees.find(e => e.id === empId);
+            if (!emp) return;
+            vacationEmployee = emp;
+            if(vacationMessage) vacationMessage.textContent = `${emp.name} está de férias?`;
             showModal(vacationModal);
         });
         
-        // Botão "Não" (Férias) - Carrega os índices
         if(btnVacationNo) btnVacationNo.addEventListener('click', () => {
             if (!vacationEmployee) return;
-            
-            const sector = globalSectors.find(s => s.id === vacationEmployee.sectorId);
-            if (sector && sector.indices) {
-                renderIndices(sector.indices);
-            } else {
-                renderIndices([]); // Limpa se o setor não tiver índices
-            }
-            
-            // Limpa o estado e fecha o modal
+            const sec = globalSectors.find(s => s.id === vacationEmployee.sectorId);
+            renderIndices(sec ? sec.indices : []);
             vacationEmployee = null;
             hideModal(vacationModal);
         });
 
-        // Botão "Sim" (Férias) - Lança R$ 0,00
         if(btnVacationYes) btnVacationYes.addEventListener('click', async () => {
             if (!vacationEmployee) return;
-            
             const month = monthRefInput.value;
-            if (!month) {
-                showMessage("Erro", "Selecione um Mês de Referência primeiro.");
-                return;
-            }
-
-            // --- TRAVA DE DUPLICIDADE (FÉRIAS) ---
-            // Verifica se já existe um lançamento para este colaborador neste mês
-            const alreadyLaunched = globalHistory.find(l => l.employeeId === vacationEmployee.id);
-            if (alreadyLaunched) {
-                showMessage("Bloqueio", "Este colaborador já possui um lançamento neste mês de referência.");
-                hideModal(vacationModal);
-                return;
-            }
-            // -------------------------------------
+            if (!month) return showMessage("Erro", "Selecione o mês.");
             
-            // Pega o Valor Base atual (só para registro)
-            const baseValue = parseFloat(baseValueInput.value) || 0;
+            const existing = globalHistory.find(l => l.employeeId === vacationEmployee.id);
+            if (existing) { hideModal(vacationModal); return showMessage("Bloqueio", "Já existe lançamento para este colaborador."); }
 
-            const launchData = {
-                monthRef: month,
-                employeeId: vacationEmployee.id,
-                employeeName: vacationEmployee.name,
-                sectorId: vacationEmployee.sectorId,
-                launchedBy: currentUserId, // ID Anônimo (Log)
-                launchedBySupervisor: currentSupervisorId, // ID do Supervisor (Permissão)
-                baseValue: baseValue,
-                totalValue: 0,
-                scores: [], // Sem pontuação
-                status: "FÉRIAS", // Status de Férias
-                createdAt: serverTimestamp()
-            };
-            
             try {
-                await addDoc(getLaunchesCollection(), launchData);
-                showMessage("Sucesso", `Lançamento de FÉRIAS (R$ 0,00) registrado para ${vacationEmployee.name}.`);
-                
-                // Limpa o formulário (MODIFICADO)
-                // launchForm.reset(); // Removemos o reset completo
-                // setDefaultMonth(); // Removemos o reset do mês
-                
-                // Limpamos manualmente apenas os campos do colaborador
-                if(employeeSelect) employeeSelect.value = ""; // Reset dropdown
-                renderIndices([]);
-                if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
-                
-            } catch (error) {
-                console.error("Erro ao lançar férias:", error);
-                showMessage("Erro", "Não foi possível registrar as férias.");
-            } finally {
-                vacationEmployee = null;
-                hideModal(vacationModal);
-            }
-        });
-        
-        // Desenha os campos de índice (metas)
-        const renderIndices = (indices) => {
-            if(indicesContainer) indicesContainer.innerHTML = ''; // Limpa o contêiner
-            
-            if (!indices || indices.length === 0) {
-                indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Nenhum índice definido para este setor. Peça ao Admin Master ou Supervisor para cadastrá-los.</p>';
-                indicesContainer.classList.remove('grid-layout');
-                calculateTotal();
-                return;
-            }
-
-            // CORREÇÃO: Adiciona classe para layout em grid
-            indicesContainer.classList.add('grid-layout');
-
-            indices.forEach(index => {
-                const itemDiv = document.createElement('div');
-                itemDiv.classList.add('index-item');
-                
-                const label = document.createElement('label');
-                label.setAttribute('for', `index-${index.name}`);
-                label.textContent = `${index.name} (Max: ${index.perc}%)`;
-                
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.id = `index-${index.name}`;
-                input.dataset.max = index.perc; // Guarda o máximo
-                input.dataset.name = index.name; // Guarda o nome
-                input.placeholder = `0 - ${index.perc}`;
-                input.min = "0";
-                input.max = index.perc; // Define o max (para as setinhas)
-                input.classList.add("score-input", "w-full", "px-3", "py-2", "border", "border-gray-300", "rounded-md", "shadow-sm", "focus:outline-none", "focus:ring-red-500", "focus:border-red-500");
-
-                // Trava de valor máximo (em tempo real)
-                input.addEventListener('input', (e) => {
-                    let value = parseFloat(e.target.value);
-                    const max = parseFloat(e.target.dataset.max);
-                    if (value > max) {
-                        e.target.value = max;
-                    }
-                    if (value < 0) {
-                        e.target.value = 0;
-                    }
-                    calculateTotal(); // Recalcula ao digitar
+                await addDoc(getLaunchesCollection(), {
+                    monthRef: month, employeeId: vacationEmployee.id, employeeName: vacationEmployee.name, sectorId: vacationEmployee.sectorId,
+                    launchedBy: currentUserId, launchedBySupervisor: currentSupervisorId, baseValue: parseFloat(baseValueInput.value) || 0, totalValue: 0, scores: [], status: "FÉRIAS", createdAt: serverTimestamp()
                 });
+                showMessage("Sucesso", "Férias lançadas.");
+                if(employeeSelect) employeeSelect.value = "";
+                renderIndices([]);
+            } catch (e) { console.error(e); showMessage("Erro", "Falha ao lançar."); }
+            finally { vacationEmployee = null; hideModal(vacationModal); }
+        });
 
-                itemDiv.appendChild(label);
-                itemDiv.appendChild(input);
-                indicesContainer.appendChild(itemDiv);
-            });
-            
-            calculateTotal(); // Calcula uma vez ao renderizar
-        };
-
-        // Calcula o Total Variável
-        const calculateTotal = () => {
-            const baseValue = parseFloat(baseValueInput.value) || 0;
-            const scoreInputs = document.querySelectorAll('.score-input');
-            
-            if (scoreInputs.length === 0) {
-                if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
-                return;
+        const renderIndices = (indices) => {
+            if(indicesContainer) indicesContainer.innerHTML = '';
+            if (!indices || indices.length === 0) {
+                indicesContainer.classList.remove('grid-layout');
+                indicesContainer.innerHTML = '<p class="text-sm text-gray-500">Sem índices.</p>';
+                return calculateTotal();
             }
-
-            let totalPoints = 0;
-            scoreInputs.forEach(input => {
-                const value = parseFloat(input.value) || 0;
-                totalPoints += value;
+            indicesContainer.classList.add('grid-layout');
+            indices.forEach(idx => {
+                const div = document.createElement('div');
+                div.className = 'index-item';
+                div.innerHTML = `<label>${idx.name} (Max: ${idx.perc}%)</label><input type="number" class="score-input w-full px-3 py-2 border rounded" data-max="${idx.perc}" data-name="${idx.name}" min="0" max="${idx.perc}">`;
+                div.querySelector('input').addEventListener('input', calculateTotal);
+                indicesContainer.appendChild(div);
             });
-
-            // Lógica: ValorBase * (Soma dos Pontos / 100)
-            const totalValue = baseValue * (totalPoints / 100);
-            
-            if(totalCalculated) totalCalculated.textContent = `R$ ${totalValue.toFixed(2).replace('.', ',')}`;
+            calculateTotal();
         };
-        
-        // Recalcula o total se o Valor Base mudar
-        if(baseValueInput) baseValueInput.addEventListener('input', calculateTotal);
 
-        // Salva o Lançamento (ou Edição)
+        const calculateTotal = () => {
+            const base = parseFloat(baseValueInput.value) || 0;
+            let points = 0;
+            document.querySelectorAll('.score-input').forEach(inp => points += parseFloat(inp.value) || 0);
+            if(totalCalculated) totalCalculated.textContent = `R$ ${(base * (points / 100)).toFixed(2)}`;
+        };
+
         if(launchForm) launchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+            const empId = employeeSelect.value;
             const month = monthRefInput.value;
-            const baseValue = parseFloat(baseValueInput.value);
-            const employeeId = employeeSelect.value;
+            if (!empId || !month) return showMessage("Erro", "Preencha tudo.");
             
-            // Validações
-            if (!month) {
-                showMessage("Erro de Validação", "O campo 'Mês de Referência' é obrigatório.");
-                return;
-            }
-            if (isNaN(baseValue) || baseValue <= 0) {
-                showMessage("Erro de Validação", "O 'Valor Base Variável' parece inválido ou não foi definido pelo Master para este mês.");
-                return;
-            }
-            if (!employeeId) {
-                showMessage("Erro de Validação", "Selecione um 'Colaborador' para fazer o lançamento.");
-                return;
-            }
-
-            // --- TRAVA DE DUPLICIDADE (LANÇAMENTO NORMAL) ---
             if (!currentEditingLaunchId) {
-                // Se não estiver editando (ou seja, é um novo lançamento), verifica duplicidade
-                const alreadyLaunched = globalHistory.find(l => l.employeeId === employeeId);
-                if (alreadyLaunched) {
-                    showMessage("Bloqueio", "Este colaborador já possui um lançamento neste mês de referência.");
-                    return;
-                }
-            }
-            // ------------------------------------------------
-            
-            const employee = globalEmployees.find(emp => emp.id === employeeId);
-            if (!employee) {
-                showMessage("Erro", "Colaborador selecionado não encontrado.");
-                return;
+                const existing = globalHistory.find(l => l.employeeId === empId);
+                if (existing) return showMessage("Bloqueio", "Já existe lançamento.");
             }
 
-            // Coleta os scores
             const scores = [];
-            const scoreInputs = document.querySelectorAll('.score-input');
-            let totalPoints = 0;
-            
-            scoreInputs.forEach(input => {
-                const scoreValue = parseFloat(input.value) || 0;
-                scores.push({
-                    name: input.dataset.name,
-                    score: scoreValue,
-                    max: parseFloat(input.dataset.max)
-                });
-                totalPoints += scoreValue;
+            let points = 0;
+            document.querySelectorAll('.score-input').forEach(inp => {
+                const v = parseFloat(inp.value) || 0;
+                scores.push({ name: inp.dataset.name, score: v, max: parseFloat(inp.dataset.max) });
+                points += v;
             });
-            
-            if (scores.length === 0) {
-                 showMessage("Erro de Validação", "Os índices de pontuação não foram carregados. Tente selecionar o colaborador novamente.");
-                return;
-            }
 
-            // Calcula o valor final
-            const totalValue = baseValue * (totalPoints / 100);
-
-            // Prepara os dados
-            const launchData = {
-                monthRef: month,
-                employeeId: employeeId,
-                employeeName: employee.name,
-                sectorId: employee.sectorId,
-                launchedBy: currentUserId, // ID Anônimo (Log)
-                launchedBySupervisor: currentSupervisorId, // ID do Supervisor (Permissão)
-                baseValue: baseValue,
-                totalValue: totalValue,
-                scores: scores,
-                status: "", // Status normal
-                createdAt: serverTimestamp() // Sempre define a data de criação/atualização
+            const base = parseFloat(baseValueInput.value) || 0;
+            const data = {
+                monthRef: month, employeeId: empId, employeeName: globalEmployees.find(e=>e.id===empId).name, sectorId: globalEmployees.find(e=>e.id===empId).sectorId,
+                launchedBy: currentUserId, launchedBySupervisor: currentSupervisorId, baseValue: base, totalValue: base * (points / 100), scores: scores, status: "", createdAt: serverTimestamp()
             };
 
             try {
                 if (currentEditingLaunchId) {
-                    // --- MODO EDIÇÃO ---
-                    const docRef = doc(getLaunchesCollection(), currentEditingLaunchId);
-                    // Em edição, não sobrescrevemos o 'createdAt' original,
-                    // mas podemos adicionar um 'updatedAt' se quisermos (opcional).
-                    // Por simplicidade, vamos apenas atualizar os dados.
-                    // (Removendo createdAt para não sobrescrever o original)
-                    delete launchData.createdAt; 
-                    
-                    await updateDoc(docRef, launchData);
-                    showMessage("Sucesso", "Lançamento atualizado com sucesso!");
-                    
+                    delete data.createdAt;
+                    await updateDoc(doc(getLaunchesCollection(), currentEditingLaunchId), data);
+                    showMessage("Sucesso", "Atualizado.");
                 } else {
-                    // --- MODO CRIAÇÃO ---
-                    await addDoc(getLaunchesCollection(), launchData);
-                    showMessage("Sucesso", "Remuneração lançada com sucesso!");
+                    await addDoc(getLaunchesCollection(), data);
+                    showMessage("Sucesso", "Lançado.");
                 }
-                
-                // --- NOVO: Atualiza a média do supervisor ---
-                if (isSupervisor) {
-                    const supervisor = globalSupervisors.find(s => s.id === currentSupervisorId);
-                    if (supervisor) {
-                        // Não precisamos 'await' isso, pode rodar em background
-                        updateSupervisorAverage(month, currentSupervisorId, supervisor.name, supervisor.sectorId);
-                    }
-                }
-                // --- FIM NOVO ---
-                
-                // Limpa o formulário
-                // launchForm.reset(); // <-- REMOVIDO! Este era o culpado.
-                // setDefaultMonth(); // <-- REMOVIDO! Este também.
-                renderIndices([]); // Limpa os campos de índice (Isto vai ser feito pelo resetLaunchFormToCreateMode)
-                if(totalCalculated) totalCalculated.textContent = "R$ 0,00"; // (Isto também)
-                
-                // Volta o botão para o estado padrão (se estava editando)
-                resetLaunchFormToCreateMode(); // Agora esta função fará a limpeza parcial corretamente.
-
-            } catch (error) {
-                console.error("Erro ao salvar lançamento:", error);
-                showMessage("Erro", "Não foi possível salvar o lançamento. Tente novamente.");
-            }
+                if(isSupervisor) updateSupervisorAverage(month, currentSupervisorId, globalSupervisors.find(s=>s.id===currentSupervisorId).name, currentSupervisorSectorId);
+                resetLaunchFormToCreateMode();
+            } catch (e) { console.error(e); showMessage("Erro", "Falha ao salvar."); }
         });
 
-        // Entra no modo de edição (preenche o formulário)
-        const loadLaunchForEdit = async (launchId) => {
-            try {
-                const docRef = doc(getLaunchesCollection(), launchId);
-                const docSnap = await getDoc(docRef);
-
-                if (!docSnap.exists()) {
-                    showMessage("Erro", "Lançamento não encontrado. Pode ter sido excluído.");
-                    return;
-                }
-
-                const launch = docSnap.data();
-
-                // 1. Define o Mês (e carrega o valor base)
-                monthRefInput.value = launch.monthRef;
-                await loadBaseValue(); // Espera o valor base carregar
-
-                // 2. Seleciona o Colaborador
-                employeeSelect.value = launch.employeeId;
-                
-                // 3. Carrega os Índices (precisa simular a seleção)
-                const employee = globalEmployees.find(emp => emp.id === launch.employeeId);
-                const sector = globalSectors.find(s => s.id === employee.sectorId);
-                
-                if (sector && sector.indices) {
-                    renderIndices(sector.indices);
-                } else {
-                    renderIndices([]);
-                }
-                
-                // 4. Preenche as Pontuações (precisa esperar os campos serem renderizados)
-                // Usamos um pequeno timeout para garantir que os campos existem no DOM
-                setTimeout(() => {
-                    launch.scores.forEach(score => {
-                        const input = document.getElementById(`index-${score.name}`);
-                        if (input) {
-                            input.value = score.score;
-                        }
-                    });
-                    // Recalcula o total com os valores preenchidos
-                    calculateTotal();
-                }, 100);
-
-                // 5. Muda o estado do formulário para "Edição"
-                currentEditingLaunchId = launchId;
-                if(btnSubmitLaunch) btnSubmitLaunch.textContent = "Salvar Alterações";
-                if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('bg-red-600', 'bg-orange-500'); // Muda cor para Laranja
-                if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('hover:bg-red-700', 'hover:bg-orange-600');
-                if(btnCancelEdit) btnCancelEdit.classList.remove('hidden');
-
-                // Rola a tela para o topo
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            } catch (error) {
-                console.error("Erro ao carregar lançamento para edição:", error);
-                showMessage("Erro", "Não foi possível carregar os dados para edição.");
-            }
-        };
-
-        // Reseta o formulário do modo "Edição" para o modo "Criação"
         const resetLaunchFormToCreateMode = () => {
             currentEditingLaunchId = null;
             if(btnSubmitLaunch) btnSubmitLaunch.textContent = "Lançar Remuneração";
-            if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('bg-orange-500', 'bg-red-600');
-            if(btnSubmitLaunch) btnSubmitLaunch.classList.replace('hover:bg-orange-600', 'hover:bg-red-700');
             if(btnCancelEdit) btnCancelEdit.classList.add('hidden');
-            
-            // if(launchForm) launchForm.reset(); // REMOVIDO: Limpava o valor base
-            // setDefaultMonth(); // REMOVIDO: Resetava o mês
-            
-            // Limpa manualmente apenas os campos do colaborador
-            if(employeeSelect) employeeSelect.value = ""; // Reset dropdown
-            renderIndices([]); // Limpa os campos de índice
-            if(totalCalculated) totalCalculated.textContent = "R$ 0,00"; // Reset total
+            if(employeeSelect) employeeSelect.value = "";
+            renderIndices([]);
+            if(totalCalculated) totalCalculated.textContent = "R$ 0,00";
         };
-
         if(btnCancelEdit) btnCancelEdit.addEventListener('click', resetLaunchFormToCreateMode);
 
-        // --- PAINEL DE GESTÃO (Tabelas) ---
+        const loadLaunchForEdit = async (id) => {
+            try {
+                const snap = await getDoc(doc(getLaunchesCollection(), id));
+                if (!snap.exists()) return showMessage("Erro", "Não encontrado.");
+                const data = snap.data();
+                monthRefInput.value = data.monthRef;
+                await loadBaseValue();
+                employeeSelect.value = data.employeeId;
+                const emp = globalEmployees.find(e => e.id === data.employeeId);
+                const sec = globalSectors.find(s => s.id === emp.sectorId);
+                renderIndices(sec ? sec.indices : []);
+                setTimeout(() => {
+                    data.scores.forEach(s => {
+                        const inp = document.querySelector(`.score-input[data-name="${s.name}"]`);
+                        if (inp) inp.value = s.score;
+                    });
+                    calculateTotal();
+                }, 100);
+                currentEditingLaunchId = id;
+                btnSubmitLaunch.textContent = "Salvar Alterações";
+                btnCancelEdit.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (e) { console.error(e); }
+        };
 
-        // Desenha a tabela de Supervisores
-        const renderSupervisorsTable = () => {
-            if (!supervisorsTableBody) return;
-            supervisorsTableBody.innerHTML = '';
-            
-            if (globalSupervisors.length === 0) {
-                 supervisorsTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-500">Nenhum supervisor cadastrado.</td></tr>';
-                 return;
+        document.body.addEventListener('click', async (e) => {
+            const t = e.target.closest('button');
+            if (!t) return;
+            if (t.dataset.launchId) document.getElementById(`details-${t.dataset.launchId}`).classList.toggle('hidden');
+            if (t.dataset.editId && !t.dataset.editType) loadLaunchForEdit(t.dataset.editId);
+            if (t.dataset.deleteId) {
+                itemToDelete = { id: t.dataset.deleteId, type: t.dataset.deleteType || 'lançamento', collection: t.dataset.deleteType ? (t.dataset.deleteType === 'supervisor' ? getSupervisorsCollection() : (t.dataset.deleteType === 'sector' ? getSectorsCollection() : getEmployeesCollection())) : getLaunchesCollection() };
+                showModal(deleteConfirmModal);
             }
-            
-            globalSupervisors.forEach(sup => {
-                const tr = document.createElement('tr');
-                const sector = globalSectors.find(s => s.id === sup.sectorId);
-                tr.innerHTML = `
-                    <td class="px-4 py-3">${sup.name}</td>
-                    <td class="px-4 py-3">${sup.username}</td>
-                    <td class="px-4 py-3">${sector ? sector.name : 'Setor não definido'}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${sup.id}">Editar</button>
-                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${sup.id}" data-delete-type="supervisor">Excluir</button>
-                    </td>
-                `;
-                supervisorsTableBody.appendChild(tr);
-            });
-        };
-        
-        // Desenha a tabela de Setores
-        const renderSectorsTable = () => {
-            if (!sectorsTableBody) return;
-            sectorsTableBody.innerHTML = '';
-            
-            if (globalSectors.length === 0) {
-                 sectorsTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Nenhum setor cadastrado.</td></tr>';
-                 return;
+            if (t.id === 'btn-open-supervisor-modal') { if(supervisorForm) supervisorForm.reset(); showModal(supervisorModal); }
+            if (t.id === 'btn-open-sector-modal') { if(sectorForm) sectorForm.reset(); showModal(sectorModal); }
+            if (t.id === 'btn-open-employee-modal') { 
+                if(employeeForm) employeeForm.reset(); 
+                if(isSupervisor) { employeeSector.value = currentSupervisorSectorId; employeeSector.disabled = true; } else employeeSector.disabled = false;
+                showModal(employeeModal); 
             }
-            
-            globalSectors.forEach(sec => {
-                const tr = document.createElement('tr');
-                const indicesCount = sec.indices ? sec.indices.length : 0;
-                const indicesText = indicesCount === 0 ? 
-                    '<span class="text-yellow-600">Pendente (Supervisor)</span>' : 
-                    `${indicesCount} índices definidos`;
-                
-                tr.innerHTML = `
-                    <td class="px-4 py-3">${sec.name}</td>
-                    <td class="px-4 py-3">${indicesText}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <!-- Editar Setor (Nome) está desabilitado por enquanto -->
-                        <!-- <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${sec.id}">Editar</button> -->
-                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${sec.id}" data-delete-type="sector">Excluir</button>
-                    </td>
-                `;
-                sectorsTableBody.appendChild(tr);
-            });
-        };
-        
-        // Desenha a tabela de Colaboradores
-        const renderEmployeesTable = () => {
-            if (!employeesTableBody) return;
-            employeesTableBody.innerHTML = '';
-            
-            if (globalEmployees.length === 0) {
-                 employeesTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Nenhum colaborador cadastrado.</td></tr>';
-                 return;
+            if (t.id === 'btn-manage-sector-indices') {
+                if(!currentSupervisorSectorId) return;
+                const s = globalSectors.find(sec=>sec.id===currentSupervisorSectorId);
+                if(s) {
+                    editIndicesSectorId.value = s.id; sectorIndicesName.value = s.name;
+                    indicesList.innerHTML = '';
+                    (s.indices||[]).forEach(i => createIndexField(i.name, i.perc));
+                    if(!(s.indices||[]).length) createIndexField();
+                    updateIndicesTotal();
+                    showModal(sectorIndicesModal);
+                }
             }
-            
-            globalEmployees.forEach(emp => {
-                const tr = document.createElement('tr');
-                const sector = globalSectors.find(s => s.id === emp.sectorId);
-                tr.innerHTML = `
-                    <td class="px-4 py-3">${emp.name}</td>
-                    <td class="px-4 py-3">${sector ? sector.name : 'Setor não definido'}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <button class="text-blue-600 hover:text-blue-800 font-medium mr-3" data-edit-id="${emp.id}" data-edit-type="employee">Editar</button>
-                        <button class="text-red-600 hover:text-red-800 font-medium" data-delete-id="${emp.id}" data-delete-type="employee">Excluir</button>
-                    </td>
-                `;
-                employeesTableBody.appendChild(tr);
-            });
+        });
+        
+        if(addIndexField) addIndexField.addEventListener('click', () => createIndexField());
+        const createIndexField = (n='', p='') => {
+            const d = document.createElement('div'); d.className = 'flex items-center gap-2';
+            d.innerHTML = `<div class="flex-1"><label class="text-xs">Nome</label><input class="index-name w-full px-3 py-2 border rounded" value="${n}" required></div><div class="w-24"><label class="text-xs">%</label><input type="number" class="index-perc w-full px-3 py-2 border rounded" value="${p}" required></div><button type="button" class="rm-idx text-red-500">X</button>`;
+            d.querySelector('.rm-idx').onclick = () => { d.remove(); updateIndicesTotal(); };
+            d.querySelector('.index-perc').oninput = updateIndicesTotal;
+            indicesList.appendChild(d);
         };
-        
-        // --- LÓGICA DE SALVAR (Formulários de Gestão) ---
-        
-        // Salvar Supervisor (AGORA COM HASH)
+        const updateIndicesTotal = () => {
+            let t = 0; document.querySelectorAll('.index-perc').forEach(i => t += parseFloat(i.value)||0);
+            indicesTotalPercentage.textContent = `Total: ${t}%`;
+            btnSubmitIndicesForm.disabled = t !== 100;
+            if(t!==100) indicesTotalPercentage.classList.add('text-red-600'); else indicesTotalPercentage.classList.remove('text-red-600');
+        };
+
+        if(sectorIndicesForm) sectorIndicesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const idx = []; let t = 0;
+            document.querySelectorAll('#indices-list .flex').forEach(r => {
+                const n = r.querySelector('.index-name').value.trim(); const p = parseFloat(r.querySelector('.index-perc').value);
+                if(n && p>0) { idx.push({name:n, perc:p}); t+=p; }
+            });
+            if(t!==100) return alert("Total deve ser 100%");
+            await updateDoc(doc(getSectorsCollection(), editIndicesSectorId.value), {indices: idx});
+            alert("Salvo."); hideModal(sectorIndicesModal);
+        });
+
+        // Listeners Modais Cancel
+        [cancelSupervisorModal, cancelSectorModal, cancelEmployeeModal, cancelSectorIndicesModal, btnCancelDelete].forEach(b => b ? b.onclick = () => document.querySelectorAll('.modal').forEach(m=>m.style.display='none') : null);
+
+        // Listeners Salvar Entidades
         if(supervisorForm) supervisorForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const p = supervisorPassword.value;
+            const data = { name: supervisorName.value, sectorId: supervisorSector.value, username: supervisorUsername.value.toLowerCase() };
+            if(p) data.passwordHash = await digestMessage(p);
+            else if(!editSupervisorId.value) return alert("Senha obrigatória");
             
-            const id = editSupervisorId.value;
-            const name = supervisorName.value;
-            const sectorId = supervisorSector.value;
-            const username = supervisorUsername.value.trim().toLowerCase();
-            const password = supervisorPassword.value;
-
-            // Validações de Duplicidade
-            const userExists = globalSupervisors.find(s => s.username === username && s.id !== id);
-            if (userExists) {
-                showMessage("Erro", "Este nome de 'Usuário (para login)' já está em uso.");
-                return;
-            }
-            
-            const sectorTaken = globalSupervisors.find(s => s.sectorId === sectorId && s.id !== id);
-            if (sectorTaken) {
-                showMessage("Erro", "Este setor já possui um supervisor cadastrado.");
-                return;
-            }
-
-            // Objeto base
-            const data = { name, sectorId, username };
-            
-            // Lógica de Senha (Novo/Edição)
-            if (id && !password) {
-                // Editando sem mudar senha: não faz nada com a senha
-            } else if (password.length < 6) {
-                 showMessage("Erro", "A senha deve ter no mínimo 6 caracteres.");
-                return;
-            } else {
-                // TEM UMA NOVA SENHA -> GERAR HASH
-                const passwordHash = await digestMessage(password);
-                data.passwordHash = passwordHash;
-                // Removemos o campo de senha em texto plano se existir (migração)
-                // Na verdade, o updateDoc com merge faz isso, mas é bom garantir no objeto
-            }
-
-            try {
-                if (id) {
-                    // Editando
-                    const docRef = doc(getSupervisorsCollection(), id);
-                    // Se tiver senha antiga em texto plano e estamos atualizando a senha,
-                    // seria bom limpar o campo 'password' antigo, mas o Firestore não deleta campos em update facilmente sem FieldValue.delete()
-                    // Por enquanto, apenas sobrescrevemos/adicionamos o hash.
-                    await updateDoc(docRef, data);
-                    showMessage("Sucesso", "Supervisor atualizado com sucesso!");
-                } else {
-                    // Criando
-                    await addDoc(getSupervisorsCollection(), data);
-                    showMessage("Sucesso", "Supervisor cadastrado com sucesso!");
-                }
-                hideModal(supervisorModal);
-            } catch (error) {
-                console.error("Erro ao salvar supervisor:", error);
-                showMessage("Erro", "Não foi possível salvar o supervisor.");
-            }
+            const col = getSupervisorsCollection();
+            if(editSupervisorId.value) await updateDoc(doc(col, editSupervisorId.value), data);
+            else await addDoc(col, data);
+            alert("Salvo."); hideModal(supervisorModal);
         });
-        
-        // Salvar Setor
+
         if(sectorForm) sectorForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const id = editSectorId.value;
-            const name = sectorName.value.trim();
-            
-            // Validação de Duplicidade (ignorando case)
-            const nameExists = globalSectors.find(s => s.name.toLowerCase() === name.toLowerCase() && s.id !== id);
-            if (nameExists) {
-                showMessage("Erro", "Já existe um setor com este nome.");
-                return;
-            }
-            
-            // Admin Master só cria o nome. Índices são adicionados pelo Supervisor.
-            const data = { 
-                name: name,
-                indices: [] // Supervisor define isso depois
-            };
-
-            try {
-                if (id) {
-                    // Editando (Admin Master não deve editar, mas a lógica está aqui)
-                    // NOTA: Ao editar, não mexemos nos índices.
-                    delete data.indices;
-                    const docRef = doc(getSectorsCollection(), id);
-                    await updateDoc(docRef, { name: name });
-                    showMessage("Sucesso", "Setor atualizado com sucesso!");
-                } else {
-                    // Criando
-                    await addDoc(getSectorsCollection(), data);
-                    showMessage("Sucesso", "Setor cadastrado! O supervisor deste setor deve agora 'Gerenciar Metas' para definir os índices.");
-                }
-                hideModal(sectorModal);
-            } catch (error) {
-                console.error("Erro ao salvar setor:", error);
-                showMessage("Erro", "Não foi possível salvar o setor.");
-            }
+            const data = { name: sectorName.value.trim() };
+            const col = getSectorsCollection();
+            if(editSectorId.value) await updateDoc(doc(col, editSectorId.value), data);
+            else { data.indices = []; await addDoc(col, data); }
+            alert("Salvo."); hideModal(sectorModal);
         });
 
-        // Salvar Colaborador
         if(employeeForm) employeeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const id = editEmployeeId.value;
-            const name = employeeName.value.trim();
-            const sectorId = employeeSector.value;
-
-            if (!sectorId) {
-                showMessage("Erro", "Selecione um setor para o colaborador.");
-                return;
-            }
-
-            // Validação de Duplicidade (mesmo nome)
-            const nameExists = globalEmployees.find(e => e.name.toLowerCase() === name.toLowerCase() && e.id !== id);
-             if (nameExists) {
-                showMessage("Erro", "Já existe um colaborador com este nome.");
-                return;
-            }
-
-            const data = { name, sectorId };
-
-            try {
-                if (id) {
-                    // Editando
-                    const docRef = doc(getEmployeesCollection(), id);
-                    await updateDoc(docRef, data);
-                    showMessage("Sucesso", "Colaborador atualizado com sucesso!");
-                } else {
-                    // Criando
-                    await addDoc(getEmployeesCollection(), data);
-                    showMessage("Sucesso", "Colaborador cadastrado com sucesso!");
-                }
-                hideModal(employeeModal);
-            } catch (error) {
-                console.error("Erro ao salvar colaborador:", error);
-                showMessage("Erro", "Não foi possível salvar o colaborador.");
-            }
+            const data = { name: employeeName.value.trim(), sectorId: employeeSector.value };
+            const col = getEmployeesCollection();
+            if(editEmployeeId.value) await updateDoc(doc(col, editEmployeeId.value), data);
+            else await addDoc(col, data);
+            alert("Salvo."); hideModal(employeeModal);
         });
 
-        // --- LÓGICA DE EDIÇÃO E EXCLUSÃO (Painel de Gestão e Histórico) ---
-        
-        let itemToDelete = { id: null, type: null, collection: null };
-
-        // Event listener centralizado para cliques em botões dinâmicos (Editar, Excluir, Ver +)
-        document.body.addEventListener('click', async (e) => {
-            const target = e.target.closest('button'); // Pega o botão clicado
-            if (!target) return;
-            
-            // --- Ações do Histórico ---
-            
-            // Ver + (Detalhes)
-            if (target.dataset.launchId) {
-                const detailRow = document.getElementById(`details-${target.dataset.launchId}`);
-                if (detailRow) detailRow.classList.toggle('hidden');
-            }
-            
-            // Editar Lançamento (Supervisor)
-            if (target.dataset.editId && !target.dataset.editType) {
-                loadLaunchForEdit(target.dataset.editId);
-            }
-            
-            // Excluir Lançamento (Supervisor)
-            if (target.dataset.deleteId && !target.dataset.deleteType) {
-                // --- NOVO: Pega os dados para recalcular a média ---
-                const launchData = globalHistory.find(l => l.id === target.dataset.deleteId);
-                // --- FIM NOVO ---
-                
-                itemToDelete = { 
-                    id: target.dataset.deleteId, 
-                    type: 'lançamento', 
-                    collection: getLaunchesCollection(),
-                    // --- NOVO: Armazena dados extras ---
-                    extra: launchData 
-                    // --- FIM NOVO ---
-                };
-                if(deleteConfirmMessage) deleteConfirmMessage.textContent = "Você tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.";
-                showModal(deleteConfirmModal);
-            }
-
-            // --- Ações do Painel de Gestão (Master) ---
-            
-            // Editar (Supervisor ou Colaborador)
-            if (target.dataset.editId && target.dataset.editType === 'supervisor') {
-                openSupervisorModalForEdit(target.dataset.editId);
-            }
-            if (target.dataset.editId && target.dataset.editType === 'employee') {
-                openEmployeeModalForEdit(target.dataset.editId);
-            }
-            
-            // Excluir (Supervisor, Setor ou Colaborador)
-            if (target.dataset.deleteId && target.dataset.deleteType) {
-                const type = target.dataset.deleteType;
-                let collection;
-                if (type === 'supervisor') collection = getSupervisorsCollection();
-                else if (type === 'sector') collection = getSectorsCollection();
-                else if (type === 'employee') collection = getEmployeesCollection();
-                
-                itemToDelete = { id: target.dataset.deleteId, type: type, collection: collection };
-                
-                if(deleteConfirmMessage) deleteConfirmMessage.textContent = `Você tem certeza que deseja excluir este ${type}? Esta ação não pode ser desfeita.`;
-                showModal(deleteConfirmModal);
-            }
-        });
-        
-        // Confirmação da Exclusão (Modal)
+        let itemToDelete = {};
         if(btnConfirmDelete) btnConfirmDelete.addEventListener('click', async () => {
-            const { id, type, collection } = itemToDelete;
-            if (!id || !collection) return;
-            
-            try {
-                // Lógica de exclusão em cascata (se necessário)
-                const batch = writeBatch(db);
-                
-                // 1. Excluir o item principal
-                const itemRef = doc(collection, id);
-                batch.delete(itemRef);
-
-                // 2. Se excluir um SETOR, excluir dependências
-                if (type === 'sector') {
-                    // Exclui colaboradores desse setor
-                    const empQuery = query(getEmployeesCollection(), where("sectorId", "==", id));
-                    const empSnap = await getDocs(empQuery);
-                    empSnap.docs.forEach(d => batch.delete(d.ref));
-                    
-                    // Exclui supervisores desse setor
-                    const supQuery = query(getSupervisorsCollection(), where("sectorId", "==", id));
-                    const supSnap = await getDocs(supQuery);
-                    supSnap.docs.forEach(d => batch.delete(d.ref));
-                    
-                    // Exclui lançamentos desse setor
-                    const launchQuery = query(getLaunchesCollection(), where("sectorId", "==", id));
-                    const launchSnap = await getDocs(launchQuery);
-                    launchSnap.docs.forEach(d => batch.delete(d.ref));
-                }
-                
-                await batch.commit();
-                
-                // --- NOVO: Recalcular média após exclusão ---
-                if (type === 'lançamento' && itemToDelete.extra && isSupervisor) {
-                    const launchData = itemToDelete.extra;
-                    // Verifica se o lançamento excluído era um normal (para recalcular)
-                    // e se quem está excluindo é o supervisor (isSupervisor)
-                    if (launchData.status === "" && launchData.launchedBySupervisor === currentSupervisorId) {
-                         const supervisor = globalSupervisors.find(s => s.id === currentSupervisorId);
-                         if (supervisor) {
-                            console.log("Recalculando média após exclusão...");
-                            // Não 'await', deixa rodar em background
-                            updateSupervisorAverage(launchData.monthRef, currentSupervisorId, supervisor.name, supervisor.sectorId);
-                         }
-                    }
-                }
-                // --- FIM NOVO ---
-                
-                showMessage("Sucesso", `O item (${type}) foi excluído com sucesso.`);
-            } catch (error) {
-                console.error(`Erro ao excluir ${type}:`, error);
-                showMessage("Erro", `Não foi possível excluir o item.`);
-            } finally {
-                hideModal(deleteConfirmModal);
-                itemToDelete = { id: null, type: null, collection: null };
-            }
-        });
-        
-        if(btnCancelDelete) btnCancelDelete.addEventListener('click', () => {
+            if(!itemToDelete.id) return;
+            try { await deleteDoc(doc(itemToDelete.collection, itemToDelete.id)); alert("Excluído."); }
+            catch(e){ console.error(e); alert("Erro ao excluir."); }
             hideModal(deleteConfirmModal);
-            itemToDelete = { id: null, type: null, collection: null };
         });
 
-        // Abre o modal de Supervisor para Edição
-        const openSupervisorModalForEdit = (id) => {
-            const supervisor = globalSupervisors.find(s => s.id === id);
-            if (!supervisor) return;
-            
-            if(supervisorForm) supervisorForm.reset();
-            if(supervisorModalTitle) supervisorModalTitle.textContent = "Editar Supervisor";
-            if(editSupervisorId) editSupervisorId.value = id;
-            if(supervisorName) supervisorName.value = supervisor.name;
-            if(supervisorSector) supervisorSector.value = supervisor.sectorId;
-            if(supervisorUsername) supervisorUsername.value = supervisor.username;
-            if(supervisorPassword) supervisorPassword.placeholder = "Deixe em branco para não alterar"; // Senha não obrigatória na edição
-            if(supervisorPassword) supervisorPassword.required = false;
-            
-            showModal(supervisorModal);
+        const renderSupervisorsTable = () => {
+            supervisorsTableBody.innerHTML = globalSupervisors.map(s => {
+                const sec = globalSectors.find(x=>x.id===s.sectorId);
+                return `<tr><td class="px-4 py-2">${s.name}</td><td class="px-4 py-2">${s.username}</td><td class="px-4 py-2">${sec?sec.name:'-'}</td><td class="px-4 py-2"><button class="text-blue-600 mr-2" onclick="openSupEdit('${s.id}')">Editar</button><button class="text-red-600" data-delete-id="${s.id}" data-delete-type="supervisor">Excluir</button></td></tr>`;
+            }).join('');
+            // Re-attach listeners for dynamic edit buttons in admin panel is complex with innerHTML, using global click listener instead
+        };
+        // Helpers for render
+        const renderSectorsTable = () => {
+            sectorsTableBody.innerHTML = globalSectors.map(s => `<tr><td class="px-4 py-2">${s.name}</td><td class="px-4 py-2">${(s.indices||[]).length} índices</td><td class="px-4 py-2"><button class="text-red-600" data-delete-id="${s.id}" data-delete-type="sector">Excluir</button></td></tr>`).join('');
+        };
+        const renderEmployeesTable = () => {
+            employeesTableBody.innerHTML = globalEmployees.map(e => {
+                const sec = globalSectors.find(x=>x.id===e.sectorId);
+                return `<tr><td class="px-4 py-2">${e.name}</td><td class="px-4 py-2">${sec?sec.name:'-'}</td><td class="px-4 py-2"><button class="text-blue-600 mr-2" onclick="openEmpEdit('${e.id}')">Editar</button><button class="text-red-600" data-delete-id="${e.id}" data-delete-type="employee">Excluir</button></td></tr>`;
+            }).join('');
         };
         
-        // Abre o modal de Colaborador para Edição
-        const openEmployeeModalForEdit = (id) => {
-            const employee = globalEmployees.find(e => e.id === id);
-            if (!employee) return;
-            
-            if(employeeForm) employeeForm.reset();
-            if(employeeModalTitle) employeeModalTitle.textContent = "Editar Colaborador";
-            if(editEmployeeId) editEmployeeId.value = id;
-            if(employeeName) employeeName.value = employee.name;
-            if(employeeSector) employeeSector.value = employee.sectorId;
-            if(employeeSector) employeeSector.disabled = false; // Master sempre pode editar
-            
-            showModal(employeeModal);
+        // Global Edit Handlers for Admin Panel (simplification)
+        window.openSupEdit = (id) => {
+            const s = globalSupervisors.find(x=>x.id===id);
+            if(s) {
+                editSupervisorId.value = s.id; supervisorName.value = s.name; supervisorSector.value = s.sectorId; supervisorUsername.value = s.username;
+                supervisorPassword.required = false; supervisorPassword.placeholder = "Deixe em branco para manter";
+                showModal(supervisorModal);
+            }
         };
-        
-        // --- NOVO: Função para calcular e salvar a média do supervisor ---
-        const updateSupervisorAverage = async (month, supervisorId, supervisorName, sectorId) => {
-            if (!month || !supervisorId || !supervisorName) return;
-
-            try {
-                // 1. Encontra todos os lançamentos NORMAIS (não-férias) deste supervisor neste mês
-                const q = query(getLaunchesCollection(),
-                    where("monthRef", "==", month),
-                    where("launchedBySupervisor", "==", supervisorId),
-                    where("status", "==", "") // Apenas lançamentos normais (não "FÉRIAS")
-                );
-
-                const querySnapshot = await getDocs(q);
-
-                let totalSum = 0;
-                let launchCount = 0;
-                
-                querySnapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    // Filtro local para garantir que não é uma média (embora 'status==""' já deva fazer isso)
-                    if (data.type !== 'average') {
-                        totalSum += data.totalValue;
-                        launchCount++;
-                    }
-                });
-
-                if (launchCount === 0) {
-                    // Se não houver lançamentos, remove a média antiga se existir
-                    console.log("Nenhum lançamento normal encontrado para calcular média.");
-                    const avgLaunchId = `avg_${supervisorId}_${month.replace('-', '')}`;
-                    const avgDocRef = doc(getLaunchesCollection(), avgLaunchId);
-                    const avgDocSnap = await getDoc(avgDocRef);
-                    if (avgDocSnap.exists()) {
-                        await deleteDoc(avgDocRef);
-                        console.log("Média anterior removida pois não há mais lançamentos.");
-                    }
-                    return;
-                }
-
-                const averageValue = totalSum / launchCount;
-                
-                // 2. Define um ID previsível para o lançamento da média
-                const avgLaunchId = `avg_${supervisorId}_${month.replace('-', '')}`;
-                const avgDocRef = doc(getLaunchesCollection(), avgLaunchId);
-
-                const avgLaunchData = {
-                    monthRef: month,
-                    employeeId: `avg_${supervisorId}`, // ID especial
-                    employeeName: `${supervisorName} (Média Equipe)`,
-                    sectorId: sectorId,
-                    launchedBy: 'system',
-                    launchedBySupervisor: supervisorId, // Para filtragem
-                    baseValue: 0, // Média já é o valor final
-                    totalValue: averageValue,
-                    scores: [],
-                    status: "MÉDIA", // Novo status
-                    type: "average", // Para exclusão dos cálculos
-                    createdAt: serverTimestamp() // Atualiza a data a cada recálculo
-                };
-
-                // 3. Salva (cria ou atualiza) o lançamento da média
-                await setDoc(avgDocRef, avgLaunchData, { merge: true }); 
-
-                console.log(`Média do supervisor ${supervisorName} atualizada para ${averageValue}`);
-
-            } catch (error) {
-                console.error("Erro ao atualizar média do supervisor:", error);
+        window.openEmpEdit = (id) => {
+            const e = globalEmployees.find(x=>x.id===id);
+            if(e) {
+                editEmployeeId.value = e.id; employeeName.value = e.name; employeeSector.value = e.sectorId;
+                employeeSector.disabled = false;
+                showModal(employeeModal);
             }
         };
 
-        // --- INICIALIZAÇÃO DA PÁGINA ---
-        
-        // Lógica para mostrar/esconder senha (Modal Supervisor)
-        if(showPassword) showPassword.addEventListener('change', () => {
-            if(supervisorPassword) supervisorPassword.type = showPassword.checked ? 'text' : 'password';
-        });
-        
-        // Lógica das Abas (Painel de Gestão)
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.dataset.tab;
-                
-                tabContents.forEach(content => {
-                    content.classList.toggle('active', content.id === `tab-${tabId}`);
-                });
-                
-                tabButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.tab === tabId);
-                });
-                
-                // Carrega a tabela respectiva ao clicar na aba
-                if (tabId === 'supervisors') renderSupervisorsTable();
-                if (tabId === 'sectors') renderSectorsTable();
-                if (tabId === 'employees') renderEmployeesTable();
-            });
-        });
-        
-        // Inicia o Firebase ao carregar o script
         startFirebase();
-
     </script>
-
 </body>
 </html>

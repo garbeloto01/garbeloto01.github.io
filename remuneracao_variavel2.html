@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferramenta de Remuneração Variável</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Adicionando Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary-red: #d90000;
@@ -135,6 +137,10 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2-1.343-2-3-2m0 8c-1.11 0-2.08-.402-2.599-1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 15c-1.11 0-2.08-.402-2.599-1M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7v1.522c0 .414.336.75.75.75h14.5a.75.75 0 00.75-.75V7" /></svg>
                         <span>Lançamento</span>
                     </button>
+                    <button id="btn-view-reports" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
+                        <span>Relatórios</span>
+                    </button>
                     <button id="btn-view-admin" class="hidden text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span>Painel de Gestão</span>
@@ -247,6 +253,25 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Visão: Relatórios de Evolução (ATUALIZADO) -->
+            <div id="view-reports" class="hidden bg-white p-6 rounded-lg shadow border border-gray-200">
+                 <div class="flex flex-wrap justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Relatório de Evolução (Variável)</h2>
+                    <div id="report-filter-container">
+                        <label for="report-employee-filter" class="mr-2 text-sm font-medium text-gray-700">Visualizar:</label>
+                        <select id="report-employee-filter" class="px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-sm w-64">
+                            <!-- Opções populadas via JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="relative h-[400px] w-full">
+                    <canvas id="evolutionChart"></canvas>
+                </div>
+                 <div class="mt-4 text-sm text-gray-500 text-center">
+                    * Exibindo evolução da remuneração variável ao longo do tempo.
                 </div>
             </div>
 
@@ -513,6 +538,7 @@
         let globalSupervisors = [];
         let globalHistory = []; 
         let currentHistorySort = { column: 'createdAt', direction: 'desc' };
+        let evolutionChart = null; // Variável para guardar instância do gráfico
         
         // Listener handlers
         let historyUnsubscribe = null;
@@ -564,8 +590,11 @@
         
         const btnViewLaunch = document.getElementById('btn-view-launch');
         const btnViewAdmin = document.getElementById('btn-view-admin');
+        const btnViewReports = document.getElementById('btn-view-reports');
         const viewLaunch = document.getElementById('view-launch');
         const viewAdmin = document.getElementById('view-admin');
+        const viewReports = document.getElementById('view-reports');
+        const reportEmployeeFilter = document.getElementById('report-employee-filter');
 
         const btnOpenSupervisorModal = document.getElementById('btn-open-supervisor-modal');
         const btnOpenSectorModal = document.getElementById('btn-open-sector-modal');
@@ -700,22 +729,31 @@
         };
 
         const switchView = (viewName) => {
+            btnViewLaunch.classList.replace('text-red-600', 'text-gray-600');
+            btnViewAdmin.classList.replace('text-red-600', 'text-gray-600');
+            btnViewReports.classList.replace('text-red-600', 'text-gray-600');
+
+            viewLaunch.style.display = 'none';
+            viewAdmin.style.display = 'none';
+            viewReports.style.display = 'none';
+
             if (viewName === 'admin') {
-                if(viewLaunch) viewLaunch.style.display = 'none';
-                if(viewAdmin) viewAdmin.style.display = 'block';
-                if(btnViewLaunch) btnViewLaunch.classList.replace('text-red-600', 'text-gray-600');
-                if(btnViewAdmin) btnViewAdmin.classList.replace('text-gray-600', 'text-red-600');
+                viewAdmin.style.display = 'block';
+                btnViewAdmin.classList.replace('text-gray-600', 'text-red-600');
                 renderSupervisorsTable();
+            } else if (viewName === 'reports') {
+                viewReports.style.display = 'block';
+                btnViewReports.classList.replace('text-gray-600', 'text-red-600');
+                populateReportEmployeeFilter(); // Popula filtro antes de carregar
             } else { 
-                if(viewLaunch) viewLaunch.style.display = 'grid';
-                if(viewAdmin) viewAdmin.style.display = 'none';
-                if(btnViewLaunch) btnViewLaunch.classList.replace('text-gray-600', 'text-red-600');
-                if(btnViewAdmin) btnViewAdmin.classList.replace('text-red-600', 'text-gray-600');
+                viewLaunch.style.display = 'grid';
+                btnViewLaunch.classList.replace('text-gray-600', 'text-red-600');
             }
         };
 
         if(btnViewLaunch) btnViewLaunch.addEventListener('click', () => switchView('launch'));
         if(btnViewAdmin) btnViewAdmin.addEventListener('click', () => switchView('admin'));
+        if(btnViewReports) btnViewReports.addEventListener('click', () => switchView('reports'));
 
         if(monthRefInput) {
             monthRefInput.addEventListener('change', () => {
@@ -727,6 +765,13 @@
         if(sectorFilterSelect) {
             sectorFilterSelect.addEventListener('change', () => {
                 loadHistory();
+            });
+        }
+
+        // Listener do filtro de relatório para atualizar o gráfico
+        if(reportEmployeeFilter) {
+            reportEmployeeFilter.addEventListener('change', () => {
+                loadAndRenderChart();
             });
         }
 
@@ -900,7 +945,7 @@
             } else if (isSupervisor) {
                 if(supervisorLaunchFields) supervisorLaunchFields.classList.remove('hidden');
                 if(sectorFilterContainer) sectorFilterContainer.classList.add('hidden');
-                if(baseValueInput) baseValueInput.readOnly = true;
+                if (baseValueInput) baseValueInput.readOnly = true;
                 if(btnSaveBaseValue) btnSaveBaseValue.classList.add('hidden');
             }
             const actionCells = document.querySelectorAll('#history-action-header, [data-cell-type="action"]');
@@ -927,7 +972,7 @@
             [supervisorSector, employeeSector, sectorFilterSelect].forEach(select => {
                 if (!select) return;
                 const currentValue = select.value;
-                select.innerHTML = select.id === 'sector-filter' ? '<option value="all">Todos os Setores</option>' : '<option value="">-- Selecione um setor --</option>';
+                select.innerHTML = (select.id === 'sector-filter') ? '<option value="all">Todos os Setores</option>' : '<option value="">-- Selecione um setor --</option>';
                 sectors.forEach(sector => {
                     const option = document.createElement('option');
                     option.value = sector.id;
@@ -981,11 +1026,11 @@
             } catch (e) { showMessage("Erro", "Erro ao salvar."); }
         });
 
+
         const loadHistory = () => {
             const month = monthRefInput.value;
             const sectorFilter = sectorFilterSelect.value;
             
-            // CLEANUP: Unsubscribe from previous listener to prevent memory leaks and UI flickering
             if (historyUnsubscribe) {
                 historyUnsubscribe();
                 historyUnsubscribe = null;
@@ -1034,7 +1079,6 @@
                 const totalVal = `R$ ${launch.totalValue.toFixed(2).replace('.', ',')}`;
                 const date = launch.createdAt instanceof Date ? launch.createdAt.toLocaleString('pt-BR') : '-';
                 
-                // CORREÇÃO: Adicionando metadados (mês, supervisor, setor) ao botão de excluir para permitir recálculo da média
                 let actionHtml = launch.status === 'MÉDIA' ? '---' : `<button class="text-blue-600 mr-3" data-edit-id="${launch.id}">Editar</button><button class="text-red-600" data-delete-id="${launch.id}" data-month="${launch.monthRef}" data-supervisor="${launch.launchedBySupervisor}" data-sector="${launch.sectorId}">Excluir</button>`;
                 
                 let statusClass = launch.status === 'FÉRIAS' ? 'text-blue-600' : (launch.status === 'MÉDIA' ? 'text-green-600' : 'text-red-600');
@@ -1051,6 +1095,190 @@
             applyPermissions();
         };
 
+        // --- CHART LOGIC ---
+        
+        // Popula o seletor de filtro do relatório com "Médias de Supervisores" e "Colaboradores"
+        const populateReportEmployeeFilter = () => {
+            if(!reportEmployeeFilter) return;
+            reportEmployeeFilter.innerHTML = '<option value="">-- Selecione para visualizar --</option>';
+            
+            // Group 1: Supervisores (Médias)
+            const groupSupervisors = document.createElement('optgroup');
+            groupSupervisors.label = "Médias de Gestão";
+            let hasSupervisors = false;
+
+            if (isMaster) {
+                globalSupervisors.forEach(sup => {
+                    const opt = document.createElement('option');
+                    opt.value = `avg_${sup.id}`; // ID padrão das médias
+                    opt.textContent = `Média - ${sup.name}`;
+                    groupSupervisors.appendChild(opt);
+                    hasSupervisors = true;
+                });
+            } else if (isSupervisor && currentSupervisorId) {
+                const me = globalSupervisors.find(s => s.id === currentSupervisorId);
+                if(me) {
+                    const opt = document.createElement('option');
+                    opt.value = `avg_${me.id}`;
+                    opt.textContent = `Minha Média (${me.name})`;
+                    groupSupervisors.appendChild(opt);
+                    hasSupervisors = true;
+                }
+            }
+            if(hasSupervisors) reportEmployeeFilter.appendChild(groupSupervisors);
+
+            // Group 2: Colaboradores Individuais
+            const groupEmployees = document.createElement('optgroup');
+            groupEmployees.label = "Colaboradores";
+            
+            let relevantEmployees = [];
+            if(isMaster) {
+                relevantEmployees = globalEmployees;
+            } else if (isSupervisor) {
+                relevantEmployees = globalEmployees.filter(e => e.sectorId === currentSupervisorSectorId);
+            }
+
+            // Ordenar por nome
+            relevantEmployees.sort((a,b) => a.name.localeCompare(b.name));
+
+            relevantEmployees.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = emp.name;
+                groupEmployees.appendChild(opt);
+            });
+            reportEmployeeFilter.appendChild(groupEmployees);
+        };
+
+        const loadAndRenderChart = async () => {
+            const employeeId = reportEmployeeFilter.value;
+            
+            // Se não tiver funcionário selecionado, limpar gráfico
+            if (!employeeId) {
+                if (evolutionChart) {
+                    evolutionChart.data.labels = [];
+                    evolutionChart.data.datasets = [];
+                    evolutionChart.update();
+                }
+                return;
+            }
+
+            // Query específica para o funcionário selecionado (seja supervisor ou colaborador)
+            const q = query(getLaunchesCollection(), where('employeeId', '==', employeeId));
+
+            try {
+                const snapshot = await getDocs(q);
+                const rawData = [];
+                snapshot.forEach(doc => rawData.push(doc.data()));
+
+                // Ordenar por mês
+                rawData.sort((a, b) => a.monthRef.localeCompare(b.monthRef));
+
+                const labels = rawData.map(d => {
+                    const [y, m] = d.monthRef.split('-');
+                    return `${m}/${y}`;
+                });
+                
+                const dataPoints = rawData.map(d => d.totalValue);
+                
+                // Nome para o dataset
+                const datasetLabel = rawData.length > 0 ? rawData[0].employeeName : "Sem dados";
+
+                // Configuração do Gráfico de Área
+                const ctx = document.getElementById('evolutionChart').getContext('2d');
+                
+                if (evolutionChart) {
+                    evolutionChart.destroy();
+                }
+                
+                // Gradiente para o fundo (efeito visual bonito)
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(220, 38, 38, 0.5)'); // Red-600 com opacidade
+                gradient.addColorStop(1, 'rgba(220, 38, 38, 0.0)');
+
+                evolutionChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: datasetLabel,
+                            data: dataPoints,
+                            borderColor: '#dc2626', // Tailwind red-600
+                            backgroundColor: gradient, // Preenchimento com gradiente
+                            fill: true, // Ativa o gráfico de área
+                            tension: 0.4, // Curvas suaves (estilo da foto)
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#dc2626',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: { font: { family: "'Inter', sans-serif", size: 12 } }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { family: "'Inter', sans-serif" },
+                                bodyFont: { family: "'Inter', sans-serif" },
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false }, // Remove grid vertical para visual limpo
+                                ticks: { font: { family: "'Inter', sans-serif" } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                border: { display: false }, // Remove borda do eixo Y
+                                grid: { color: '#f3f4f6' }, // Grid horizontal sutil
+                                ticks: { 
+                                    font: { family: "'Inter', sans-serif" },
+                                    callback: function(value) { return 'R$ ' + value; } 
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Se não houver dados, mostrar aviso (opcional, ou apenas gráfico vazio)
+                if(rawData.length === 0 && evolutionChart) {
+                     // Gráfico vazio já tratado pelo destroy/new
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar gráfico", error);
+                showMessage("Erro", "Falha ao carregar dados do gráfico.");
+            }
+        };
+        
+        // ... (rest of listeners: employeeSelect, vacation modal, indices, launchForm, delete, etc) ...
+        
         if(employeeSelect) employeeSelect.addEventListener('change', (e) => {
             const empId = e.target.value;
             if (!empId) return renderIndices([]);
@@ -1102,7 +1330,6 @@
                 div.className = 'index-item';
                 div.innerHTML = `<label>${idx.name} (Max: ${idx.perc}%)</label><input type="number" class="score-input w-full px-3 py-2 border rounded" data-max="${idx.perc}" data-name="${idx.name}" min="0" max="${idx.perc}">`;
                 
-                // Validation logic
                 const input = div.querySelector('input');
                 input.addEventListener('input', (e) => {
                     const max = parseFloat(e.target.dataset.max);
@@ -1209,7 +1436,6 @@
             if (t.dataset.launchId) document.getElementById(`details-${t.dataset.launchId}`).classList.toggle('hidden');
             if (t.dataset.editId && !t.dataset.editType) loadLaunchForEdit(t.dataset.editId);
             if (t.dataset.deleteId) {
-                // CORREÇÃO: Capturar metadados para recálculo ao clicar em excluir
                 itemToDelete = { 
                     id: t.dataset.deleteId, 
                     type: t.dataset.deleteType || 'lançamento', 
@@ -1268,10 +1494,8 @@
             alert("Salvo."); hideModal(sectorIndicesModal);
         });
 
-        // Listeners Modais Cancel
         [cancelSupervisorModal, cancelSectorModal, cancelEmployeeModal, cancelSectorIndicesModal, btnCancelDelete].forEach(b => b ? b.onclick = () => document.querySelectorAll('.modal').forEach(m=>m.style.display='none') : null);
 
-        // Listeners Salvar Entidades
         if(supervisorForm) supervisorForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const p = supervisorPassword.value;
@@ -1279,7 +1503,6 @@
             if(p) data.passwordHash = await digestMessage(p);
             else if(!editSupervisorId.value) return alert("Senha obrigatória");
             
-            // Check for duplicate sector supervisor
             const sectorTaken = globalSupervisors.find(s => s.sectorId === supervisorSector.value && s.id !== editSupervisorId.value);
             if (sectorTaken) return showMessage("Erro", "Setor já tem supervisor.");
 
@@ -1313,7 +1536,6 @@
             try { 
                 await deleteDoc(doc(itemToDelete.collection, itemToDelete.id)); 
                 
-                // CORREÇÃO: Recalcular (ou apagar) média do supervisor após exclusão de um lançamento
                 if (itemToDelete.type === 'lançamento' && itemToDelete.supervisorId && itemToDelete.month) {
                     const sup = globalSupervisors.find(s => s.id === itemToDelete.supervisorId);
                     const supName = sup ? sup.name : 'Supervisor';
@@ -1332,7 +1554,7 @@
                 return `<tr><td class="px-4 py-2">${s.name}</td><td class="px-4 py-2">${s.username}</td><td class="px-4 py-2">${sec?sec.name:'-'}</td><td class="px-4 py-2"><button class="text-blue-600 mr-2" onclick="openSupEdit('${s.id}')">Editar</button><button class="text-red-600" data-delete-id="${s.id}" data-delete-type="supervisor">Excluir</button></td></tr>`;
             }).join('');
         };
-        // Helpers for render
+        
         const renderSectorsTable = () => {
             sectorsTableBody.innerHTML = globalSectors.map(s => `<tr><td class="px-4 py-2">${s.name}</td><td class="px-4 py-2">${(s.indices||[]).length} índices</td><td class="px-4 py-2"><button class="text-red-600" data-delete-id="${s.id}" data-delete-type="sector">Excluir</button></td></tr>`).join('');
         };
@@ -1343,7 +1565,6 @@
             }).join('');
         };
         
-        // Global Edit Handlers for Admin Panel (simplification)
         window.openSupEdit = (id) => {
             const s = globalSupervisors.find(x=>x.id===id);
             if(s) {
@@ -1408,20 +1629,16 @@
             } catch (error) { console.error("Erro media:", error); }
         };
 
-        // CORREÇÃO 1: Lógica para Download do CSV
         if(btnDownloadCSV) btnDownloadCSV.addEventListener('click', () => {
             if (!globalHistory || globalHistory.length === 0) return alert("Sem dados para exportar.");
             
-            // Cabeçalho do CSV (usando ; como separador para Excel em PT-BR)
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Mês Ref;Colaborador;Setor;Valor Base;Valor Total;Data Lançamento;Status;Detalhes\n";
 
             globalHistory.forEach(row => {
                 const date = row.createdAt instanceof Date ? row.createdAt.toLocaleDateString('pt-BR') : '-';
-                // Formatar detalhes dos índices em uma única string
                 const details = (row.scores || []).map(s => `${s.name}: ${s.score}/${s.max}`).join(' | ');
                 
-                // Montar a linha, tratando possíveis ; nos dados para evitar quebra de colunas
                 const line = [
                     row.monthRef,
                     row.employeeName,
@@ -1431,7 +1648,7 @@
                     date,
                     row.status || 'OK',
                     details
-                ].map(field => String(field || '').replace(/;/g, ',')).join(';'); // Remove ; internos e une com ;
+                ].map(field => String(field || '').replace(/;/g, ',')).join(';'); 
                 
                 csvContent += line + "\n";
             });
@@ -1445,9 +1662,7 @@
             document.body.removeChild(link);
         });
 
-        // CORREÇÃO 2: Lógica para Mostrar/Ocultar Senha no cadastro de supervisor
         if(showPassword) showPassword.addEventListener('change', (e) => {
-            // Se estiver checado, mostra texto; senão, mostra password (bolinhas)
             supervisorPassword.type = e.target.checked ? 'text' : 'password';
         });
 

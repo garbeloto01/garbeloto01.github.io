@@ -724,6 +724,20 @@
         if(btnViewLaunch) btnViewLaunch.addEventListener('click', () => switchView('launch'));
         if(btnViewAdmin) btnViewAdmin.addEventListener('click', () => switchView('admin'));
 
+        // CORREÇÃO: Atualizar dados ao mudar o mês ou o filtro de setor
+        if(monthRefInput) {
+            monthRefInput.addEventListener('change', () => {
+                loadBaseValue();
+                loadHistory();
+            });
+        }
+
+        if(sectorFilterSelect) {
+            sectorFilterSelect.addEventListener('change', () => {
+                loadHistory();
+            });
+        }
+
         const setDefaultMonth = () => {
             const now = new Date();
             const year = now.getFullYear();

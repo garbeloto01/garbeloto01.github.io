@@ -145,6 +145,10 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span>Painel de Gestão</span>
                     </button>
+                    <button id="btn-change-password" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
+                        <span>Senha</span>
+                    </button>
                     <button id="btn-logout" class="text-gray-600 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-red-50">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                         <span>Sair</span>
@@ -154,6 +158,7 @@
         </header>
 
         <div class="container mx-auto p-4 max-w-7xl">
+            <!-- ... (admin controls and other views remain exactly the same) ... -->
             <div id="admin-controls" class="hidden bg-white p-4 rounded-lg shadow border border-gray-200 mb-6">
                 <div class="flex flex-wrap justify-end items-center gap-3">
                     <p id="user-id-log" class="hidden text-sm font-medium text-gray-600 mr-auto">Seu ID de Usuário (para log): <span class="font-mono bg-gray-200 text-gray-800 px-2 py-0.5 rounded-md" id="current-user-id-display">Carregando...</span></p>
@@ -337,6 +342,34 @@
     </div>
 
     <!-- Modais -->
+    <div id="change-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-change-pass-modal">&times;</span>
+            <h2 class="text-xl font-bold mb-6 text-gray-900">Trocar Senha</h2>
+            <form id="change-password-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Senha Atual</label>
+                        <input type="password" id="cp-old-password" class="mt-1 w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nova Senha</label>
+                        <input type="password" id="cp-new-password" class="mt-1 w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
+                        <p class="text-xs text-gray-500 mt-1">Mínimo 6 caracteres, com maiúscula, minúscula, número e especial (@, #, $, etc).</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Confirmar Nova Senha</label>
+                        <input type="password" id="cp-confirm-password" class="mt-1 w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500" required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-change-pass" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-150">Cancelar</button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition duration-150">Alterar Senha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="master-registration-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-master-reg">&times;</span>
@@ -513,7 +546,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // CORREÇÃO: Adicionado deleteField aos imports
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, deleteField, onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCUf800FNv--emagtwh5YevSPqFtk7Miiw",
@@ -538,7 +572,7 @@
         let globalSupervisors = [];
         let globalHistory = []; 
         let currentHistorySort = { column: 'createdAt', direction: 'desc' };
-        let evolutionChart = null; // Variável para guardar instância do gráfico
+        let evolutionChart = null; 
         
         // Listener handlers
         let historyUnsubscribe = null;
@@ -566,6 +600,7 @@
             return "local_" + hash.toString(16);
         }
 
+        // DOM Elements
         const loginScreen = document.getElementById('login-screen');
         const appContent = document.getElementById('app-content');
         const loginForm = document.getElementById('login-form');
@@ -591,6 +626,7 @@
         const btnViewLaunch = document.getElementById('btn-view-launch');
         const btnViewAdmin = document.getElementById('btn-view-admin');
         const btnViewReports = document.getElementById('btn-view-reports');
+        const btnChangePassword = document.getElementById('btn-change-password'); // NOVO
         const viewLaunch = document.getElementById('view-launch');
         const viewAdmin = document.getElementById('view-admin');
         const viewReports = document.getElementById('view-reports');
@@ -628,6 +664,7 @@
         const sectorsTableBody = document.getElementById('sectors-table-body');
         const employeesTableBody = document.getElementById('employees-table-body');
 
+        // Modais de Cadastro
         const supervisorModal = document.getElementById('supervisor-modal');
         const supervisorForm = document.getElementById('supervisor-form');
         const supervisorModalTitle = document.getElementById('supervisor-modal-title');
@@ -668,6 +705,15 @@
         const employeeSector = document.getElementById('employee-sector');
         const closeEmployeeModal = document.getElementById('close-employee-modal');
         const cancelEmployeeModal = document.getElementById('cancel-employee-modal');
+
+        // Modal Troca Senha
+        const changePasswordModal = document.getElementById('change-password-modal');
+        const changePasswordForm = document.getElementById('change-password-form');
+        const cpOldPassword = document.getElementById('cp-old-password');
+        const cpNewPassword = document.getElementById('cp-new-password');
+        const cpConfirmPassword = document.getElementById('cp-confirm-password');
+        const closeChangePassModal = document.getElementById('close-change-pass-modal');
+        const cancelChangePass = document.getElementById('cancel-change-pass');
 
         const deleteConfirmModal = document.getElementById('delete-confirm-modal');
         const deleteConfirmMessage = document.getElementById('delete-confirm-message');
@@ -718,7 +764,7 @@
         if(btnCloseAlert) btnCloseAlert.addEventListener('click', () => hideModal(alertModal));
 
         const closeButtons = [
-            closeSupervisorModal, closeSectorModal, closeSectorIndicesModal, closeEmployeeModal, closeMasterReg
+            closeSupervisorModal, closeSectorModal, closeSectorIndicesModal, closeEmployeeModal, closeMasterReg, closeChangePassModal
         ];
         closeButtons.forEach(btn => {
             if (btn) btn.addEventListener('click', () => { const modal = btn.closest('.modal'); if (modal) hideModal(modal); });
@@ -744,7 +790,7 @@
             } else if (viewName === 'reports') {
                 viewReports.style.display = 'block';
                 btnViewReports.classList.replace('text-gray-600', 'text-red-600');
-                populateReportEmployeeFilter(); // Popula filtro antes de carregar
+                populateReportEmployeeFilter(); 
             } else { 
                 viewLaunch.style.display = 'grid';
                 btnViewLaunch.classList.replace('text-gray-600', 'text-red-600');
@@ -754,6 +800,68 @@
         if(btnViewLaunch) btnViewLaunch.addEventListener('click', () => switchView('launch'));
         if(btnViewAdmin) btnViewAdmin.addEventListener('click', () => switchView('admin'));
         if(btnViewReports) btnViewReports.addEventListener('click', () => switchView('reports'));
+        
+        // Lógica para Trocar Senha
+        if(btnChangePassword) btnChangePassword.addEventListener('click', () => {
+            if(changePasswordForm) changePasswordForm.reset();
+            showModal(changePasswordModal);
+        });
+
+        if(cancelChangePass) cancelChangePass.addEventListener('click', () => hideModal(changePasswordModal));
+
+        if(changePasswordForm) changePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const oldPass = cpOldPassword.value;
+            const newPass = cpNewPassword.value;
+            const confPass = cpConfirmPassword.value;
+
+            if (newPass !== confPass) return alert("As novas senhas não coincidem.");
+            
+            // CORREÇÃO: Regex mais flexível para caracteres especiais (permite qualquer simbolo)
+            // Mínimo 6 chars, 1 maiúscula, 1 minúscula, 1 número, 1 especial (qualquer simbolo)
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+            
+            if (!passwordRegex.test(newPass)) {
+                return alert("A nova senha deve ter:\n- Mínimo 6 caracteres\n- Pelo menos 1 Letra Maiúscula\n- Pelo menos 1 Letra Minúscula\n- Pelo menos 1 Número\n- Pelo menos 1 Caractere especial (ex: @, #, ., -, etc)");
+            }
+
+            try {
+                const oldHash = await digestMessage(oldPass);
+                const newHash = await digestMessage(newPass);
+
+                // Verificar qual coleção atualizar
+                let userRef;
+                let validOldPass = false;
+
+                if (isMaster) {
+                    userRef = getMasterConfigDoc();
+                    const docSnap = await getDoc(userRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.passwordHash === oldHash || data.password === oldPass) validOldPass = true;
+                    }
+                } else if (isSupervisor && currentSupervisorId) {
+                    userRef = doc(getSupervisorsCollection(), currentSupervisorId);
+                    const docSnap = await getDoc(userRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        // CORREÇÃO: Verifica tanto o hash quanto a senha plana (legado)
+                        if (data.passwordHash === oldHash || data.password === oldPass) validOldPass = true;
+                    }
+                }
+
+                if (!validOldPass) return alert("Senha atual incorreta.");
+
+                // Atualiza para o novo hash e remove o campo de senha plana se existir (segurança)
+                await updateDoc(userRef, { passwordHash: newHash, password: deleteField() });
+                
+                alert("Senha alterada com sucesso!");
+                hideModal(changePasswordModal);
+            } catch (error) {
+                console.error("Erro ao trocar senha:", error);
+                alert("Erro técnico ao alterar senha. Veja o console para detalhes.");
+            }
+        });
 
         if(monthRefInput) {
             monthRefInput.addEventListener('change', () => {
@@ -768,7 +876,6 @@
             });
         }
 
-        // Listener do filtro de relatório para atualizar o gráfico
         if(reportEmployeeFilter) {
             reportEmployeeFilter.addEventListener('change', () => {
                 loadAndRenderChart();

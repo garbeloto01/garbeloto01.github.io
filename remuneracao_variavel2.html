@@ -1408,6 +1408,49 @@
             } catch (error) { console.error("Erro media:", error); }
         };
 
+        // CORREÇÃO 1: Lógica para Download do CSV
+        if(btnDownloadCSV) btnDownloadCSV.addEventListener('click', () => {
+            if (!globalHistory || globalHistory.length === 0) return alert("Sem dados para exportar.");
+            
+            // Cabeçalho do CSV (usando ; como separador para Excel em PT-BR)
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Mês Ref;Colaborador;Setor;Valor Base;Valor Total;Data Lançamento;Status;Detalhes\n";
+
+            globalHistory.forEach(row => {
+                const date = row.createdAt instanceof Date ? row.createdAt.toLocaleDateString('pt-BR') : '-';
+                // Formatar detalhes dos índices em uma única string
+                const details = (row.scores || []).map(s => `${s.name}: ${s.score}/${s.max}`).join(' | ');
+                
+                // Montar a linha, tratando possíveis ; nos dados para evitar quebra de colunas
+                const line = [
+                    row.monthRef,
+                    row.employeeName,
+                    row.sectorName,
+                    row.baseValue.toFixed(2).replace('.', ','),
+                    row.totalValue.toFixed(2).replace('.', ','),
+                    date,
+                    row.status || 'OK',
+                    details
+                ].map(field => String(field || '').replace(/;/g, ',')).join(';'); // Remove ; internos e une com ;
+                
+                csvContent += line + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `remuneracao_${monthRefInput.value || 'geral'}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // CORREÇÃO 2: Lógica para Mostrar/Ocultar Senha no cadastro de supervisor
+        if(showPassword) showPassword.addEventListener('change', (e) => {
+            // Se estiver checado, mostra texto; senão, mostra password (bolinhas)
+            supervisorPassword.type = e.target.checked ? 'text' : 'password';
+        });
+
         startFirebase();
     </script>
 </body>

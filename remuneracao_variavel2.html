@@ -514,6 +514,10 @@
         let globalHistory = []; 
         let currentHistorySort = { column: 'createdAt', direction: 'desc' };
         
+        // Listener handlers
+        let historyUnsubscribe = null;
+        let employeesUnsubscribe = null;
+        
         async function digestMessage(message) {
             if (window.crypto && window.crypto.subtle) {
                 try {
@@ -652,25 +656,14 @@
         const btnVacationYes = document.getElementById('btn-vacation-yes');
         let vacationEmployee = null; 
 
-        // *** CORREÇÃO: Adicionando Event Listeners para as Abas ***
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remover classe ativa de todos os botões
                 tabButtons.forEach(btn => btn.classList.remove('active'));
-                // Adicionar classe ativa ao botão clicado
                 button.classList.add('active');
-
-                // Esconder todo o conteúdo das abas
                 tabContents.forEach(content => content.classList.remove('active'));
-
-                // Mostrar o conteúdo correspondente à aba clicada
                 const tabId = button.getAttribute('data-tab');
                 const contentToShow = document.getElementById(`tab-${tabId}`);
-                if (contentToShow) {
-                    contentToShow.classList.add('active');
-                }
-
-                // Atualizar renderização se necessário (embora o listener global já cuide disso)
+                if (contentToShow) contentToShow.classList.add('active');
                 if (tabId === 'supervisors') renderSupervisorsTable();
                 if (tabId === 'sectors') renderSectorsTable();
                 if (tabId === 'employees') renderEmployeesTable();
@@ -724,7 +717,6 @@
         if(btnViewLaunch) btnViewLaunch.addEventListener('click', () => switchView('launch'));
         if(btnViewAdmin) btnViewAdmin.addEventListener('click', () => switchView('admin'));
 
-        // CORREÇÃO: Atualizar dados ao mudar o mês ou o filtro de setor
         if(monthRefInput) {
             monthRefInput.addEventListener('change', () => {
                 loadBaseValue();
@@ -883,6 +875,10 @@
             appContent.classList.add('hidden');
             loginScreen.classList.remove('hidden');
             switchView('launch'); 
+            
+            // Cleanup listeners
+            if(historyUnsubscribe) historyUnsubscribe();
+            if(employeesUnsubscribe) employeesUnsubscribe();
         });
 
         const applyPermissions = () => {
@@ -943,8 +939,12 @@
         };
 
         const loadEmployees = () => {
+            if (employeesUnsubscribe) {
+                employeesUnsubscribe();
+                employeesUnsubscribe = null;
+            }
             let q = isSupervisor ? query(getEmployeesCollection(), where("sectorId", "==", currentSupervisorSectorId)) : query(getEmployeesCollection());
-            onSnapshot(q, (snapshot) => {
+            employeesUnsubscribe = onSnapshot(q, (snapshot) => {
                 globalEmployees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if(employeeSelect) {
                     employeeSelect.innerHTML = '<option value="">-- Selecione um colaborador --</option>';
@@ -984,6 +984,13 @@
         const loadHistory = () => {
             const month = monthRefInput.value;
             const sectorFilter = sectorFilterSelect.value;
+            
+            // CLEANUP: Unsubscribe from previous listener to prevent memory leaks and UI flickering
+            if (historyUnsubscribe) {
+                historyUnsubscribe();
+                historyUnsubscribe = null;
+            }
+
             if (!month) {
                  if(historyLoading) historyLoading.classList.remove('hidden');
                  return;
@@ -994,7 +1001,8 @@
             } else {
                 q = sectorFilter === 'all' ? query(getLaunchesCollection(), where("monthRef", "==", month)) : query(getLaunchesCollection(), where("monthRef", "==", month), where("sectorId", "==", sectorFilter));
             }
-            onSnapshot(q, (snapshot) => {
+            
+            historyUnsubscribe = onSnapshot(q, (snapshot) => {
                 globalHistory = [];
                 snapshot.docs.forEach(doc => {
                     const data = doc.data();
